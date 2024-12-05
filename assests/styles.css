@@ -1,0 +1,672 @@
+.meeting-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.meeting-screen {
+  background-image: url(imgs/background.jpg);
+  background-size: cover;
+  flex: 1;
+  padding: 20px;
+}
+
+.meeting-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.content-wrapper {
+  gap: 20px;
+  display: flex;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 36%;
+}
+
+.header-section {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: start;
+  padding: 51px 0 16px 7px;
+}
+
+.date-wrapper {
+  display: flex;
+  font-size: 24px;
+  padding: 10px 0;
+  max-width: 100%;
+  align-items: center;
+  gap: 40px 50px;
+  overflow: hidden;
+  color: #fff;
+  text-align: center;
+  justify-content: start;
+  flex-wrap: wrap;
+  padding: 26px 100px;
+  font: 510 40px SF Pro, sans-serif;
+}
+
+.logo {
+  width: 200px;
+  height: auto;
+  aspect-ratio: 2.21;
+  object-fit: contain;
+  object-position: center;
+  align-self: stretch;
+  min-width: 240px;
+  margin: auto 0;
+}
+
+.current-date {
+  align-self: stretch;
+  min-width: 240px;
+  overflow: hidden;
+  width: 359px;
+  margin: auto 0;
+  padding: 13px 13px 90px;
+}
+
+.welcome-text {
+  padding: 15px 0;
+  display: flex;
+  margin-top: 24px;
+  align-items: center;
+  gap: 40px 50px;
+  overflow: hidden;
+  color: #fff;
+  text-align: center;
+  justify-content: start;
+  /* padding: 26px 100px; */
+  font: 510 60px SF Pro, sans-serif;
+}
+
+.welcome-message {
+  align-self: stretch;
+  flex: 1;
+  min-width: 240px;
+  width: 100%;
+  gap: 10px;
+  overflow: hidden;
+  margin: auto 0;
+  padding: 1px 0;
+}
+
+.rooms-container {
+  display: flex;
+  margin-top: 24px;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.room-section {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 28px 0;
+}
+
+.room-number {
+  color: #fff;
+  font-size: 28px;
+  align-self: start;
+}
+.room-details {
+  display: flex;
+  margin-top: 47px;
+  align-items: center;
+  gap: 39px;
+  overflow: hidden;
+  font-family: Inter, sans-serif;
+  color: #000;
+  font-weight: 400;
+  justify-content: start;
+  padding: 10px 22px 10px 0;
+}
+
+.meeting-info {
+  padding: 15px;
+  min-height: 200px;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.85);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  flex-basis: 0%;
+  margin: auto 0;
+}
+
+.meeting-header {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  padding: 3px 0;
+}
+
+.meeting-title {
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.15px;
+}
+
+.meeting-time {
+  display: flex;
+  font-size: 16px;
+  margin-top: 10px;
+  align-items: center;
+  overflow: hidden;
+  letter-spacing: -0.1px;
+  line-height: 1;
+  justify-content: start;
+  flex-wrap: wrap;
+}
+
+.time-spacer {
+  align-self: stretch;
+  display: flex;
+  min-width: 240px;
+  width: 255px;
+  height: 20px;
+  margin: auto 0;
+}
+
+.start-time,
+.end-time {
+  align-self: stretch;
+  margin: auto 0;
+}
+
+.meeting-stats {
+  display: flex;
+  margin-top: 20px;
+  width: 100%;
+  flex-direction: column;
+  font-size: 20px;
+  letter-spacing: -0.1px;
+  line-height: 1;
+  justify-content: center;
+}
+
+.stats-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 30px;
+  overflow: hidden;
+  justify-content: start;
+  flex-wrap: wrap;
+}
+
+.temperature,
+.humidity {
+  align-self: stretch;
+  width: 200px;
+  margin: auto 0;
+}
+
+.current,
+.power {
+  align-self: stretch;
+  min-width: 240px;
+  flex: 1;
+  margin: auto 0;
+  padding: 3px 0;
+}
+
+.status-indicator {
+  display: flex;
+  margin-top: 15px;
+  height: 31px;
+  width: 360px;
+  max-width: 100%;
+  align-items: center;
+  gap: 10px;
+  color: #8f8f8f;
+  justify-content: start;
+}
+
+.indicator-dot {
+  border-radius: 50%;
+  align-self: stretch;
+  display: flex;
+  width: 15px;
+  height: 15px;
+  margin: auto 0;
+}
+
+.indicator-dot.busy {
+  background-color: #ff0000;
+}
+
+.indicator-dot.available {
+  background-color: #00ff00;
+}
+
+.status-text {
+  align-self: stretch;
+  width: 211px;
+  margin: auto 0;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 64%;
+}
+
+.schedule-section {
+  display: flex;
+  width: 100%;
+  height: 80%;
+  flex-direction: column;
+  font-family: SF Pro, sans-serif;
+  color: #000;
+}
+
+.schedule-content {
+  max-width: 100%;
+  height: 100%;
+  padding: 0 20px 100px 0;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  font-weight: 510;
+  text-align: center;
+  padding: 11px 19px;
+}
+
+.schedule-title {
+  font-size: 32px;
+  margin-bottom: 20px;
+  align-self: center;
+}
+
+.schedule-actions {
+  display: flex;
+  margin-top: 42px;
+  width: 100%;
+  align-items: center;
+  gap: 40px 100px;
+  font-size: 24px;
+  color: #fff;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.upload-button {
+  border-radius: 23px;
+  background-color: rgba(130, 132, 255, 0.86);
+  align-self: stretch;
+  display: flex;
+  min-width: 240px;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  justify-content: end;
+  margin: auto 0;
+  padding: 11px 16px;
+}
+
+.upload-icon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  width: 60px;
+  align-self: stretch;
+  margin: auto 0;
+}
+
+.schedule-table {
+  min-height: auto;
+  max-height: 70vh;
+  overflow-y: auto;
+  font-size: 16px;
+  margin: 15px 0;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: start;
+  margin: 27px 0 -64px 18px;
+}
+
+.table-header,
+.table-row {
+  border-bottom: 1px solid #000; /* Đổi màu border thành đen và thêm solid */
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  justify-content: start;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+/* Thêm hover effect cho row */
+.table-row:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Tạo style riêng cho header */
+.table-header {
+  font-weight: bold;
+  border-bottom: 2px solid #000; /* Border dày hơn cho header */
+}
+
+/* Thêm border cho cell để tách biệt các cột */
+.table-header > div,
+.table-row > div {
+  padding: 0 10px;
+  flex: 1;
+  text-align: left;
+}
+
+/* Điều chỉnh width cho từng cột cụ thể nếu cần */
+.table-header > div:nth-child(1),
+.table-row > div:nth-child(1) {
+  flex: 0 0 50px; /* Cột TT */
+}
+
+.room-buttons {
+  font-size: 24px;
+  padding: 15px;
+  gap: 20px;
+  display: flex;
+  margin-top: 26px;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  letter-spacing: -0.08px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 20px 23px;
+}
+
+.room-button {
+  padding: 15px;
+  width: auto;
+  min-width: 150px;
+  background-color: rgba(69, 255, 218, 0.6);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  margin: auto 0;
+  border-radius: 20px;
+}
+/* New update - Room button hover effects */
+.room-button {
+  border-radius: 23px;
+  background-color: rgba(69, 255, 218, 0.6);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.room-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(69, 255, 218, 0.4);
+  background-color: rgba(69, 255, 218, 0.8);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.room-button:active {
+  transform: scale(0.98);
+}
+
+/* Upload button hover effects */
+.upload-button {
+  transition: all 0.3s ease-out;
+  cursor: pointer;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-button:hover {
+  background-color: rgba(130, 132, 255, 1);
+  box-shadow: 0 5px 15px rgba(130, 132, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.upload-button:active {
+  transform: translateY(1px);
+}
+
+/* Table row hover effects */
+.table-row {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.table-row:hover {
+  background-color: rgba(69, 255, 218, 0.1);
+  transform: translateX(5px);
+  box-shadow: -5px 0 0 rgba(69, 255, 218, 0.5);
+}
+
+/* Meeting info card hover effects */
+.meeting-info {
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.meeting-info:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(69, 255, 218, 0.3);
+}
+
+/* Status indicator hover effect */
+.status-indicator {
+  transition: all 0.2s ease;
+}
+
+.status-indicator:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+
+/* Indicator dot pulse animation for busy status */
+.indicator-dot.busy {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+
+/* Smooth transition for all interactive elements */
+* {
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.button-content {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  justify-content: start;
+}
+
+.button-text {
+  align-self: stretch;
+  min-width: 240px;
+  width: 100%;
+  flex: 1;
+  margin: auto 0;
+  padding: 0 2px;
+}
+
+@media (max-width: 991px) {
+  .meeting-screen {
+    max-width: 100%;
+  }
+
+  .meeting-container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  .content-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+
+  .header-section {
+    max-width: 100%;
+    margin-top: 40px;
+  }
+
+  .date-wrapper,
+  .welcome-text {
+    padding: 0 20px;
+  }
+
+  .welcome-message {
+    max-width: 100%;
+    font-size: 40px;
+  }
+
+  .schedule-title {
+    max-width: 100%;
+    font-size: 40px;
+  }
+
+  .schedule-actions {
+    max-width: 100%;
+    margin-top: 40px;
+  }
+
+  .schedule-table {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .room-buttons {
+    max-width: 100%;
+    margin-right: 9px;
+    white-space: initial;
+    padding: 0 20px;
+  }
+
+  .room-button {
+    white-space: initial;
+    padding: 0 20px;
+  }
+
+  .button-content,
+  .button-text {
+    white-space: initial;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .content-wrapper {
+    gap: 15px;
+  }
+
+  .left-column {
+    width: 40%;
+  }
+
+  .right-column {
+    width: 60%;
+  }
+}
+
+@media (max-width: 991px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+
+  .date-wrapper {
+    font-size: 20px;
+  }
+
+  .welcome-text {
+    font-size: 32px;
+  }
+
+  .meeting-title {
+    font-size: 20px;
+  }
+
+  .schedule-title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .meeting-container {
+    padding: 10px;
+  }
+
+  .logo {
+    width: 150px;
+  }
+
+  .date-wrapper,
+  .welcome-text {
+    font-size: 18px;
+  }
+
+  .room-buttons {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .meeting-info {
+    min-height: 180px;
+  }
+
+  .meeting-time,
+  .meeting-stats,
+  .schedule-table {
+    font-size: 14px;
+  }
+
+  .room-button {
+    min-width: 120px;
+    padding: 10px;
+  }
+}
