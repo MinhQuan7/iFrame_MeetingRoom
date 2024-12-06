@@ -184,56 +184,68 @@ function processExcelFile(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
-        reader.onload = function (e) {
+        reader.onload = function(e) {
             try {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: "array" });
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-
-                // In ra toàn bộ dữ liệu để debug
-                console.log("Raw sheet data:", XLSX.utils.sheet_to_json(firstSheet, { raw: true }));
-
-                // Chuyển sheet sang JSON với nhiều tùy chọn
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { 
-                    raw: false,  // Chuyển đổi giá trị sang dạng string
-                    defval: '',  // Giá trị mặc định nếu ô trống
+                
+                // Get raw data
+                const rawData = XLSX.utils.sheet_to_json(firstSheet, { 
+                    raw: false,
+                    defval: '',
+                    header: 'A'
                 });
 
-                // In ra dữ liệu JSON để debug
-                console.log("Raw JSON data:", jsonData);
+                // Extract room names from header row
+                const roomNames = {
+                    'PHÒNG LOTUS': 'Phòng Lotus',
+                    'P.LAVENDER 1': 'Phòng Lavender 1',
+                    'PHÒNG LAVENDER 2': 'Phòng Lavender 2'
+                };
 
-                const formattedData = jsonData
-                    .filter(row => {
-                        // Lọc các dòng có dữ liệu thực
-                        return row['Ngày'] || row['NGÀY'] || row['__EMPTY'];
-                    })
-                    .map((row, index) => {
-                        // Chọn cột phù hợp
-                        const date = row['Ngày'] || row['NGÀY'] || row['__EMPTY'] || '';
-                        const dayOfWeek = row['Thứ'] || row['THỨ'] || row['__EMPTY_1'] || '';
-                        const room = row['Phòng'] || row['PHÒNG'] || row['__EMPTY_2'] || '';
-                        const startTime = row['Giờ bắt đầu'] || row['GIỜ BẮT ĐẦU'] || row['__EMPTY_3'] || '';
-                        const endTime = row['Giờ kết thúc'] || row['GIỜ KẾT THÚC'] || row['__EMPTY_4'] || '';
-                        const duration = row['Thời gian'] || row['THỜI GIAN SỬ DỤNG'] || row['__EMPTY_5'] || '';
-                        const purpose = row['Mục đích'] || row['MỤC ĐÍCH SỬ DỤNG'] || row['__EMPTY_6'] || '';
-                        const content = row['Nội dung'] || row['NỘI DUNG'] || row['__EMPTY_7'] || '';
+                // Process meetings
+                const meetings = [];
+                let currentDate = '';
+                let currentDay = '';
 
-                        return {
-                            id: index + 1,
-                            date: formatDate(date),
-                            dayOfWeek: getDayOfWeek(dayOfWeek),
-                            room: normalizeRoomName(room),
-                            startTime: formatTime(startTime),
-                            endTime: formatTime(endTime),
-                            duration: duration,
-                            purpose: purpose,
-                            content: content,
-                        };
+                rawData.forEach((row, index) => {
+                    // Check if row contains date
+                    if (row['A'] && (row['A'].includes('THỨ') || !isNaN(row['A']))) {
+                        currentDay = row['A'].includes('THỨ') ? row['A'] : '';
+                        currentDate = !isNaN(row['A']) ? formatDate(row['A']) : '';
+                    }
+
+                    // Get time from column B
+                    const timeSlot = row['B'];
+                    if (!timeSlot) return;
+
+                    // Check each room column (C, D, E) for meetings
+                    ['C', 'D', 'E'].forEach((col, roomIndex) => {
+                        if (row[col] && typeof row[col] === 'string' && row[col].trim() !== '') {
+                            const roomName = Object.values(roomNames)[roomIndex];
+                            
+                            // Parse meeting details
+                            const meetingInfo = parseMeetingInfo(row[col]);
+                            
+                            meetings.push({
+                                id: meetings.length + 1,
+                                date: currentDate,
+                                dayOfWeek: getDayOfWeek(currentDay),
+                                room: roomName,
+                                startTime: formatTime(timeSlot),
+                                endTime: calculateEndTime(timeSlot),
+                                duration: calculateDuration(timeSlot, calculateEndTime(timeSlot)),
+                                purpose: meetingInfo.purpose,
+                                content: meetingInfo.content
+                            });
+                        }
                     });
+                });
 
-                resolve(formattedData);
+                resolve(meetings);
             } catch (error) {
-                console.error("Chi tiết lỗi:", error);
+                console.error("Error processing file:", error);
                 reject(error);
             }
         };
@@ -243,6 +255,62 @@ function processExcelFile(file) {
     });
 }
 
+function parseMeetingInfo(cellContent) {
+    if (!cellContent) return { purpose: '', content: '' };
+    
+    const lines = cellContent.split('\r\n');
+    const content = lines[0];
+    let purpose = '';
+
+    // Extract purpose from common patterns
+    if (content.toLowerCase().includes('họp')) {
+        purpose = 'Họp';
+    } else if (content.toLowerCase().includes('đào tạo')) {
+        purpose = 'Đào tạo';
+    } else if (content.toLowerCase().includes('pv')) {
+        purpose = 'Phỏng vấn';
+    } else {
+        purpose = 'Khác';
+    }
+
+    return {
+        purpose,
+        content
+    };
+}
+
+function calculateEndTime(startTime) {
+    if (!startTime) return '';
+    
+    // Convert time format (e.g., "7H30" to "8:00")
+    const time = startTime.replace('H', ':').replace('h', ':');
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    // Add 30 minutes for default meeting duration
+    let endHours = hours;
+    let endMinutes = minutes + 30;
+    
+    if (endMinutes >= 60) {
+        endHours += 1;
+        endMinutes -= 60;
+    }
+    
+    return `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+}
+
+function calculateDuration(startTime, endTime) {
+    if (!startTime || !endTime) return '';
+    
+    const start = startTime.replace('H', ':').replace('h', ':');
+    const [startHours, startMinutes] = start.split(':').map(Number);
+    const [endHours, endMinutes] = endTime.split(':').map(Number);
+    
+    const durationMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
+    const hours = Math.floor(durationMinutes / 60);
+    const minutes = durationMinutes % 60;
+    
+    return `${hours}:${String(minutes).padStart(2, '0')}`;
+}
 
 // Cập nhật bảng lịch
 function updateScheduleTable(data) {
