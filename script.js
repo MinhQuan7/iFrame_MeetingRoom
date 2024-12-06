@@ -232,6 +232,96 @@ function isTimeInRange(current, start, end) {
 
 // Xử lý tải file Excel
 // Đảm bảo đã import thư viện XLSX vào HTML
+// function processExcelFile(file) {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+
+//     reader.onload = function (e) {
+//       try {
+//         const data = new Uint8Array(e.target.result);
+//         const workbook = XLSX.read(data, { type: "array" });
+//         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+
+//         // Get raw data
+//         const rawData = XLSX.utils.sheet_to_json(firstSheet, {
+//           raw: false,
+//           defval: "",
+//           header: "A",
+//         });
+
+//         // Extract room names from header row
+//         const roomNames = {
+//           "PHÒNG LOTUS": "Phòng Lotus",
+//           "P.LAVENDER 1": "Phòng Lavender 1",
+//           "PHÒNG LAVENDER 2": "Phòng Lavender 2",
+//         };
+
+//         // Process meetings
+//         const meetings = [];
+//         let currentDate = "";
+//         let currentDay = "";
+
+//         rawData.forEach((row, index) => {
+//           // Check if row contains date
+//           // if (row['A'] && (row['A'].includes('THỨ') || !isNaN(row['A']))) {
+//           //     currentDay = row['A'].includes('THỨ') ? row['A'] : '';
+//           //     currentDate = !isNaN(row['A']) ? formatDate(row['A']) : '';
+//           // }
+//           if (row["A"]) {
+//             if (row["A"].includes("THỨ")) {
+//               currentDay = row["A"];
+//             } else if (!isNaN(Number(row["A"]))) {
+//               currentDate = formatDate(row["A"]);
+//               console.log("Raw date:", row["A"], "Formatted:", currentDate);
+//             }
+//           }
+
+//           // Get time from column B
+//           const timeSlot = row["B"];
+//           if (!timeSlot) return;
+
+//           // Check each room column (C, D, E) for meetings
+//           ["C", "D", "E"].forEach((col, roomIndex) => {
+//             if (
+//               row[col] &&
+//               typeof row[col] === "string" &&
+//               row[col].trim() !== ""
+//             ) {
+//               const roomName = Object.values(roomNames)[roomIndex];
+
+//               // Parse meeting details
+//               const meetingInfo = parseMeetingInfo(row[col]);
+
+//               meetings.push({
+//                 id: meetings.length + 1,
+//                 date: currentDate,
+//                 dayOfWeek: getDayOfWeek(currentDay),
+//                 room: roomName,
+//                 startTime: formatTime(timeSlot),
+//                 endTime: calculateEndTime(timeSlot),
+//                 duration: calculateDuration(
+//                   timeSlot,
+//                   calculateEndTime(timeSlot)
+//                 ),
+//                 purpose: meetingInfo.purpose,
+//                 content: meetingInfo.content,
+//               });
+//             }
+//           });
+//         });
+
+//         resolve(meetings);
+//       } catch (error) {
+//         console.error("Error processing file:", error);
+//         reject(error);
+//       }
+//     };
+
+//     reader.onerror = reject;
+//     reader.readAsArrayBuffer(file);
+//   });
+// }
+
 function processExcelFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -239,15 +329,22 @@ function processExcelFile(file) {
     reader.onload = function (e) {
       try {
         const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
+        const workbook = XLSX.read(data, { 
+          type: "array",
+          cellDates: true  // Thêm option này để đọc đúng định dạng ngày
+        });
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
-        // Get raw data
+        // Get raw data với options được điều chỉnh
         const rawData = XLSX.utils.sheet_to_json(firstSheet, {
-          raw: false,
+          raw: true,
           defval: "",
           header: "A",
+          dateNF: 'dd/mm/yyyy'  // Định dạng ngày mong muốn
         });
+
+        // Log toàn bộ dữ liệu thô để kiểm tra
+        console.log("Raw Excel Data:", rawData);
 
         // Extract room names from header row
         const roomNames = {
@@ -261,18 +358,40 @@ function processExcelFile(file) {
         let currentDate = "";
         let currentDay = "";
 
+        // Thêm logging để debug từng row
         rawData.forEach((row, index) => {
-          // Check if row contains date
-          // if (row['A'] && (row['A'].includes('THỨ') || !isNaN(row['A']))) {
-          //     currentDay = row['A'].includes('THỨ') ? row['A'] : '';
-          //     currentDate = !isNaN(row['A']) ? formatDate(row['A']) : '';
-          // }
-          if (row["A"]) {
-            if (row["A"].includes("THỨ")) {
-              currentDay = row["A"];
-            } else if (!isNaN(Number(row["A"]))) {
-              currentDate = formatDate(row["A"]);
-              console.log("Raw date:", row["A"], "Formatted:", currentDate);
+          console.log(`Processing row ${index}:`, row);
+          console.log(`Value in column A:`, row['A']);
+          console.log(`Type of A:`, typeof row['A']);
+
+          // Kiểm tra nếu có giá trị ở cột A
+          if (row['A'] !== undefined && row['A'] !== '') {
+            const cellValue = row['A'];
+            console.log(`Found value in A:`, cellValue, `Type:`, typeof cellValue);
+
+            // Nếu là thứ
+            if (typeof cellValue === 'string' && cellValue.toUpperCase().includes('THỨ')) {
+              currentDay = cellValue;
+              console.log(`Set current day to:`, currentDay);
+            } 
+            // Nếu là số hoặc ngày
+            else {
+              // Thử chuyển đổi sang số
+              const numValue = Number(cellValue);
+              if (!isNaN(numValue)) {
+                // Xử lý như Excel serial date
+                const excelDate = new Date(Date.UTC(1900, 0, numValue - 1));
+                currentDate = formatDate(excelDate);
+                console.log(`Converted Excel serial date:`, numValue, `to:`, currentDate);
+              } else if (cellValue instanceof Date) {
+                // Nếu là Date object
+                currentDate = formatDate(cellValue);
+                console.log(`Converted Date object to:`, currentDate);
+              } else {
+                // Thử parse như string
+                currentDate = formatDate(cellValue);
+                console.log(`Attempted to parse string date:`, cellValue, `Result:`, currentDate);
+              }
             }
           }
 
@@ -282,14 +401,8 @@ function processExcelFile(file) {
 
           // Check each room column (C, D, E) for meetings
           ["C", "D", "E"].forEach((col, roomIndex) => {
-            if (
-              row[col] &&
-              typeof row[col] === "string" &&
-              row[col].trim() !== ""
-            ) {
+            if (row[col] && typeof row[col] === "string" && row[col].trim() !== "") {
               const roomName = Object.values(roomNames)[roomIndex];
-
-              // Parse meeting details
               const meetingInfo = parseMeetingInfo(row[col]);
 
               meetings.push({
@@ -299,13 +412,13 @@ function processExcelFile(file) {
                 room: roomName,
                 startTime: formatTime(timeSlot),
                 endTime: calculateEndTime(timeSlot),
-                duration: calculateDuration(
-                  timeSlot,
-                  calculateEndTime(timeSlot)
-                ),
+                duration: calculateDuration(timeSlot, calculateEndTime(timeSlot)),
                 purpose: meetingInfo.purpose,
                 content: meetingInfo.content,
               });
+
+              // Log mỗi meeting được tạo
+              console.log(`Created meeting:`, meetings[meetings.length - 1]);
             }
           });
         });
@@ -320,6 +433,62 @@ function processExcelFile(file) {
     reader.onerror = reject;
     reader.readAsArrayBuffer(file);
   });
+}
+
+// Điều chỉnh hàm formatDate để xử lý nhiều kiểu dữ liệu hơn
+function formatDate(dateInput) {
+  console.log("formatDate input:", dateInput, "type:", typeof dateInput);
+
+  if (!dateInput) return "";
+
+  try {
+    // Nếu là Date object
+    if (dateInput instanceof Date) {
+      return `${String(dateInput.getDate()).padStart(2, "0")}/${String(
+        dateInput.getMonth() + 1
+      ).padStart(2, "0")}/${dateInput.getFullYear()}`;
+    }
+
+    // Nếu là số (Excel serial date)
+    if (typeof dateInput === 'number' || !isNaN(Number(dateInput))) {
+      const numDate = Number(dateInput);
+      const excelDate = new Date(Date.UTC(1900, 0, numDate - 1));
+      if (!isNaN(excelDate.getTime())) {
+        return `${String(excelDate.getUTCDate()).padStart(2, "0")}/${String(
+          excelDate.getUTCMonth() + 1
+        ).padStart(2, "0")}/${excelDate.getUTCFullYear()}`;
+      }
+    }
+
+    // Xử lý string
+    const dateStr = String(dateInput).trim();
+    
+    // Các định dạng phổ biến
+    const formats = [
+      /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, // dd/mm/yyyy
+      /^(\d{1,2})-(\d{1,2})-(\d{4})$/, // dd-mm-yyyy
+      /^(\d{4})-(\d{1,2})-(\d{1,2})$/, // yyyy-mm-dd
+    ];
+
+    for (let format of formats) {
+      const match = dateStr.match(format);
+      if (match) {
+        const [_, part1, part2, part3] = match;
+        // Với định dạng yyyy-mm-dd
+        if (format === formats[2]) {
+          return `${part3.padStart(2, "0")}/${part2.padStart(2, "0")}/${part1}`;
+        }
+        // Với các định dạng khác
+        return `${part1.padStart(2, "0")}/${part2.padStart(2, "0")}/${part3}`;
+      }
+    }
+
+    console.log("Could not parse date:", dateInput);
+    return "";
+  } catch (error) {
+    console.error("Error in formatDate:", error);
+    return "";
+  }
 }
 
 function parseMeetingInfo(cellContent) {
