@@ -1,49 +1,3 @@
-// Các hàm tiện ích
-function formatDate(dateStr) {
-  if (!dateStr) return "";
-  
-  // Chuyển đổi thành chuỗi và làm sạch dữ liệu
-  const cleanStr = String(dateStr).trim();
-  
-  // Xử lý ngày từ Excel (số serial)
-  if (!isNaN(Number(cleanStr))) {
-    const serialDate = Number(cleanStr);
-    // Excel bắt đầu từ 1/1/1900, trừ 1 vì JS bắt đầu từ 0
-    const jsDate = new Date(Date.UTC(1900, 0, serialDate - 1));
-    
-    // Kiểm tra tính hợp lệ của ngày
-    if (!isNaN(jsDate.getTime())) {
-      return `${String(jsDate.getUTCDate()).padStart(2, "0")}/${String(
-        jsDate.getUTCMonth() + 1
-      ).padStart(2, "0")}/${jsDate.getUTCFullYear()}`;
-    }
-  }
-
-  // Các định dạng ngày thông thường
-  const formats = [
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, // dd/mm/yyyy
-    /^(\d{1,2})-(\d{1,2})-(\d{4})$/, // dd-mm-yyyy
-    /^(\d{4})-(\d{1,2})-(\d{1,2})$/, // yyyy-mm-dd
-  ];
-
-  for (let format of formats) {
-    const match = cleanStr.match(format);
-    if (match) {
-      const parts = match.slice(1); // Lấy các nhóm matched
-      if (format === formats[2]) {
-        // Nếu là yyyy-mm-dd
-        const [year, month, day] = parts;
-        return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`;
-      } else {
-        const [day, month, year] = parts;
-        return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`;
-      }
-    }
-  }
-
-  return "";
-}
-
 function getCurrentTime() {
   const now = new Date();
   return `${String(now.getHours()).padStart(2, "0")}:${String(
@@ -51,85 +5,64 @@ function getCurrentTime() {
   ).padStart(2, "0")}`;
 }
 
-function getDayOfWeek(dayString) {
-  if (!dayString) return "Không xác định";
+// function formatTime(timeStr) {
+//   if (!timeStr) return "";
 
-  const normalizedDay = dayString.toString().toLowerCase().trim();
-  
-  // Mở rộng map để bao gồm thêm các định dạng tiếng Việt
-  const dayMap = {
-    2: "Thứ Hai",
-    3: "Thứ Ba", 
-    4: "Thứ Tư",
-    5: "Thứ Năm",
-    6: "Thứ Sáu",
-    7: "Thứ Bảy",
-    cn: "Chủ Nhật",
-    "thứ 2": "Thứ Hai",
-    "thứ 3": "Thứ Ba",
-    "thứ 4": "Thứ Tư", 
-    "thứ 5": "Thứ Năm",
-    "thứ 6": "Thứ Sáu",
-    "thứ 7": "Thứ Bảy",
-    "chủ nhật": "Chủ Nhật",
-    "thu 2": "Thứ Hai",
-    "thu 3": "Thứ Ba",
-    "thu 4": "Thứ Tư",
-    "thu 5": "Thứ Năm", 
-    "thu 6": "Thứ Sáu",
-    "thu 7": "Thứ Bảy",
-    monday: "Thứ Hai",
-    tuesday: "Thứ Ba", 
-    wednesday: "Thứ Tư",
-    thursday: "Thứ Năm",
-    friday: "Thứ Sáu",
-    saturday: "Thứ Bảy",
-    sunday: "Chủ Nhật"
-  };
+//   // Loại bỏ các giá trị không phải thời gian
+//   const roomKeywords = [
+//     "phòng",
+//     "p.",
+//     "lavender",
+//     "lotus",
+//     "watch",
+//     "sk",
+//     "meeting",
+//     "phong",
+//     "room",
+//   ];
 
-  // Kiểm tra xem có chứa từ "thứ" không
-  if (normalizedDay.includes("thứ")) {
-    // Tách số từ chuỗi "thứ X"
-    const num = normalizedDay.match(/\d+/);
-    if (num) {
-      return dayMap[num[0]] || dayString;
-    }
-  }
+//   // Chuyển sang chữ thường và loại bỏ khoảng trắng
+//   const lowerTimeStr = String(timeStr).toLowerCase().trim();
 
-  return dayMap[normalizedDay] || dayString;
-}
+//   // Kiểm tra nếu chứa từ khóa phòng thì bỏ qua
+//   if (roomKeywords.some((keyword) => lowerTimeStr.includes(keyword))) {
+//     return "";
+//   }
 
-// Hàm format ngày từ Excel
-function formatExcelDate(excelDate) {
-  if (!excelDate) return "";
+//   // Các định dạng thời gian
+//   const timeFormats = [
+//     /^\d{1,2}:\d{2}$/, // HH:MM
+//     /^\d{1,2}h\d{2}$/, // Hh:MM
+//     /^\d{1,2}h\s?\d{2}$/, // H h MM
+//     /^\d{1,2}\.\d{2}$/, // HH.MM
+//   ];
 
-  // Kiểm tra nếu là số (Excel date serial)
-  if (typeof excelDate === "number") {
-    // Chuyển đổi từ Excel date serial sang JavaScript Date
-    const jsDate = new Date(Date.UTC(1900, 0, excelDate - 1));
+//   for (let format of timeFormats) {
+//     if (format.test(lowerTimeStr)) {
+//       // Chuẩn hóa định dạng
+//       const timeParts = lowerTimeStr
+//         .replace("h", ":")
+//         .replace(".", ":")
+//         .split(":");
+//       const hours = timeParts[0].padStart(2, "0");
+//       const minutes = timeParts[1].padStart(2, "0");
+//       return `${hours}:${minutes}`;
+//     }
+//   }
 
-    // Format lại ngày
-    const day = String(jsDate.getUTCDate()).padStart(2, "0");
-    const month = String(jsDate.getUTCMonth() + 1).padStart(2, "0");
-    const year = jsDate.getUTCFullYear();
+//   // Nếu là số thập phân (Excel time)
+//   if (!isNaN(parseFloat(timeStr))) {
+//     const totalMinutes = Math.round(parseFloat(timeStr) * 24 * 60);
+//     const hours = Math.floor(totalMinutes / 60);
+//     const minutes = totalMinutes % 60;
+//     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+//       2,
+//       "0"
+//     )}`;
+//   }
 
-    return `${day}/${month}/${year}`;
-  }
-
-  // Nếu đã là chuỗi ngày, thử parse
-  if (typeof excelDate === "string") {
-    // Thử parse các định dạng khác nhau
-    const parsedDate = new Date(excelDate);
-    if (!isNaN(parsedDate)) {
-      const day = String(parsedDate.getDate()).padStart(2, "0");
-      const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
-      const year = parsedDate.getFullYear();
-      return `${day}/${month}/${year}`;
-    }
-  }
-
-  return "";
-}
+//   return "";
+// }
 
 function formatTime(timeStr) {
   if (!timeStr) return "";
@@ -190,33 +123,7 @@ function formatTime(timeStr) {
   return "";
 }
 
-function normalizeRoomName(room) {
-  if (!room) return "Không xác định";
 
-  // Chuyển sang chữ thường và loại bỏ khoảng trắng thừa
-  const normalized = String(room).toLowerCase().trim();
-
-  const roomMap = {
-    lotus: "Phòng Lotus",
-    "lavender 1": "Phòng Lavender 1",
-    "lavender 2": "Phòng Lavender 2",
-    "p.1": "Phòng Lotus",
-    "p.2": "Phòng Lavender 1",
-    "p.3": "Phòng Lavender 2",
-    "p. lavender 1": "Phòng Lavender 1",
-    "p. lavender 2": "Phòng Lavender 2",
-  };
-
-  // Thử map trực tiếp
-  if (roomMap[normalized]) return roomMap[normalized];
-
-  // Nếu không, kiểm tra từng từ khóa
-  for (let [key, value] of Object.entries(roomMap)) {
-    if (normalized.includes(key)) return value;
-  }
-
-  return room;
-}
 function isTimeInRange(current, start, end) {
   // So sánh thời gian dạng HH:MM
   const [currentHour, currentMin] = current.split(":").map(Number);
@@ -230,6 +137,104 @@ function isTimeInRange(current, start, end) {
   return currentTime >= startTime && currentTime <= endTime;
 }
 
+function formatDayOfWeek(day) {
+  if (!day) return "";
+  
+  const dayMap = {
+    "2": "Thứ Hai",
+    "3": "Thứ Ba",
+    "4": "Thứ Tư",
+    "5": "Thứ Năm",
+    "6": "Thứ Sáu",
+    "7": "Thứ Bảy",
+    "CN": "Chủ Nhật",
+    "THỨ 2": "Thứ Hai",
+    "THỨ 3": "Thứ Ba",
+    "THỨ 4": "Thứ Tư",
+    "THỨ 5": "Thứ Năm",
+    "THỨ 6": "Thứ Sáu",
+    "THỨ 7": "Thứ Bảy",
+    "CHỦ NHẬT": "Chủ Nhật"
+  };
+
+  const normalizedDay = String(day).trim().toUpperCase();
+  return dayMap[normalizedDay] || day;
+}
+
+// Hàm format tên phòng
+function formatRoomName(room) {
+  if (!room) return "";
+
+  const roomMap = {
+    "PHÒNG LOTUS": "Phòng Lotus",
+    "P.LOTUS": "Phòng Lotus",
+    "P.LAVENDER 1": "Phòng Lavender 1",
+    "PHÒNG LAVENDER 1": "Phòng Lavender 1",
+    "P.LAVENDER 2": "Phòng Lavender 2", 
+    "PHÒNG LAVENDER 2": "Phòng Lavender 2"
+  };
+
+  const normalizedRoom = String(room).trim().toUpperCase();
+  return roomMap[normalizedRoom] || room;
+}
+
+
+// Hàm format thời gian
+function formatTime(time) {
+  if (!time) return "";
+
+  // Xử lý định dạng HH:MM
+  const timeRegex = /^(\d{1,2}):(\d{2})$/;
+  if (timeRegex.test(time)) {
+    const [hours, minutes] = time.split(':');
+    return `${hours.padStart(2, '0')}:${minutes}`;
+  }
+
+  // Xử lý định dạng số từ Excel
+  if (typeof time === 'number') {
+    const totalMinutes = Math.round(time * 24 * 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  }
+
+  return "";
+}
+
+// Hàm format thời gian sử dụng
+function formatDuration(duration) {
+  if (!duration) return "";
+  
+  // Nếu đã ở định dạng "HH:MM"
+  if (typeof duration === 'string' && duration.includes(':')) {
+    const [hours, minutes] = duration.split(':');
+    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+  }
+
+  // Xử lý số từ Excel
+  if (typeof duration === 'number') {
+    const totalMinutes = Math.round(duration * 24 * 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  }
+
+  return "";
+}
+
+// Hàm xác định mục đích sử dụng
+function determinePurpose(content) {
+  if (!content) return "Khác";
+
+  const contentLower = String(content).toLowerCase();
+  
+  if (contentLower.includes("họp")) return "Họp";
+  if (contentLower.includes("đào tạo")) return "Đào tạo";
+  if (contentLower.includes("phỏng vấn") || contentLower.includes("pv")) return "Phỏng vấn";
+  
+  return "Khác";
+}
+
 function processExcelFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -239,96 +244,104 @@ function processExcelFile(file) {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { 
           type: "array",
-          cellDates: true
-        });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-
-        const rawData = XLSX.utils.sheet_to_json(firstSheet, {
-          raw: true,
-          defval: "",
-          header: "A",
+          cellDates: true,
           dateNF: 'dd/mm/yyyy'
         });
 
-        console.log("Raw Excel Data:", rawData);
+        // Debug: Log all sheet names
+        console.log("All Sheet Names:", workbook.SheetNames);
 
-        const roomNames = {
-          "PHÒNG LOTUS": "Phòng Lotus",
-          "P.LAVENDER 1": "Phòng Lavender 1",
-          "PHÒNG LAVENDER 2": "Phòng Lavender 2",
-        };
+        // Choose the first sheet or the one with the most data
+        const targetSheet = workbook.SheetNames[0];
+        const firstSheet = workbook.Sheets[targetSheet];
 
-        const meetings = [];
-        let currentDate = "";
-        let currentDay = "";
-        let lastValidDate = "";
+        // Debug: Log the entire sheet content
+        console.log("Full Sheet Content:", firstSheet);
 
-        // Skip first 3 rows and process data
-        rawData.slice(3).forEach((row, index) => {
-          console.log(`Processing row ${index + 4}:`, row);
-          
-          if (row['A']) {
-            const cellValue = row['A'];
-            
-            // Process date value
-            let processedDate = null;
-            
-            if (typeof cellValue === 'string' && cellValue.toUpperCase().includes('THỨ')) {
-              currentDay = cellValue.trim();
-            } else if (cellValue instanceof Date) {
-              processedDate = cellValue;
-            } else if (!isNaN(cellValue)) {
-              processedDate = new Date(Date.UTC(1900, 0, cellValue - 1));
-            }
+        // Decode the full range of the sheet
+        const range = XLSX.utils.decode_range(firstSheet['!ref']);
+        console.log("Full sheet range:", range);
 
-            // Check if the date is from 2024
-            if (processedDate) {
-              const year = processedDate.getFullYear();
-              if (year === 2024) {
-                lastValidDate = formatDate(processedDate);
-                currentDate = lastValidDate;
-              } else {
-                // Skip this row if not from 2024
-                return;
-              }
-            }
-          }
-
-          // Only process if we have a valid 2024 date
-          if (!lastValidDate || !lastValidDate.endsWith('2024')) {
-            return;
-          }
-
-          const timeSlot = row["B"];
-          if (!timeSlot) return;
-
-          ["C", "D", "E"].forEach((col, roomIndex) => {
-            if (row[col] && typeof row[col] === "string" && row[col].trim() !== "") {
-              const roomName = Object.values(roomNames)[roomIndex];
-              const meetingInfo = parseMeetingInfo(row[col]);
-
-              meetings.push({
-                id: meetings.length + 1,
-                date: lastValidDate,
-                dayOfWeek: getDayOfWeek(currentDay),
-                room: roomName,
-                startTime: formatTime(timeSlot),
-                endTime: calculateEndTime(timeSlot),
-                duration: calculateDuration(timeSlot, calculateEndTime(timeSlot)),
-                purpose: meetingInfo.purpose,
-                content: meetingInfo.content,
-              });
-
-              console.log(`Created meeting for 2024 with date:`, lastValidDate);
-            }
-          });
+        // Detailed logging of range
+        console.log("Range Details:", {
+          start_row: range.s.r,
+          end_row: range.e.r,
+          start_col: range.s.c,
+          end_col: range.e.c
         });
 
-        // Add validation message if no 2024 meetings found
-        if (meetings.length === 0) {
-          console.warn("No meetings found for the year 2024");
+        // Read raw data with full details
+        const rawData = XLSX.utils.sheet_to_json(firstSheet, {
+          raw: true,
+          defval: "",
+          header: 1,
+          blankrows: false  // Explicitly skip blank rows
+        });
+
+        // Detailed logging of raw data
+        console.log("Total raw data rows:", rawData.length);
+        console.log("First 10 rows of raw data:");
+        rawData.slice(0, 10).forEach((row, index) => {
+          console.log(`Row ${index}:`, row);
+        });
+
+        // More aggressive header and data row detection
+        let headerRowIndex = -1;
+        let startDataIndex = -1;
+
+        // Thorough header detection
+        for (let i = 0; i < rawData.length; i++) {
+          const row = rawData[i];
+          
+          // More flexible and verbose header detection
+          const hasHeaderKeywords = row.some(cell => 
+            String(cell).toLowerCase().match(/ng[ày]|date|th[ứ]|day|room|phòng|time|giờ/i)
+          );
+
+          if (hasHeaderKeywords) {
+            headerRowIndex = i;
+            startDataIndex = i + 1;
+            console.log("Header row found at index:", headerRowIndex);
+            console.log("Header row content:", row);
+            break;
+          }
         }
 
+        // Fallback for header detection
+        if (headerRowIndex === -1) {
+          headerRowIndex = 0;
+          startDataIndex = 1;
+          console.warn("No specific header row found. Using first row as header.");
+        }
+
+        const meetings = [];
+        for (let i = startDataIndex; i < rawData.length; i++) {
+          const row = rawData[i];
+          // Log each row being processed
+          console.log(`Processing row ${i}:`, row);
+          try {
+            const meeting = {
+              id: meetings.length + 1,
+              date: formatDate(row[0]), 
+              dayOfWeek: formatDayOfWeek(row[1]), 
+              room: formatRoomName(row[2]), 
+              startTime: formatTime(row[3]), 
+              endTime: formatTime(row[4]), 
+              duration: formatDuration(row[5]), 
+              content: row[7] || "", 
+              purpose: determinePurpose(row[7])
+            };
+
+            // Detailed logging of meeting object
+            console.log(`Meeting object for row ${i}:`, meeting);
+            meetings.push(meeting);
+          } catch (rowError) {
+            console.error(`Error processing row ${i}:`, rowError);
+          }
+        }
+
+        console.log("Total processed meetings:", meetings.length);
+        console.log("Processed meetings:", meetings);
         resolve(meetings);
       } catch (error) {
         console.error("Error processing file:", error);
@@ -340,6 +353,7 @@ function processExcelFile(file) {
     reader.readAsArrayBuffer(file);
   });
 }
+
 
 // Điều chỉnh hàm formatDate để xử lý nhiều kiểu dữ liệu hơn
 function formatDate(dateInput) {
