@@ -230,8 +230,6 @@ function isTimeInRange(current, start, end) {
   return currentTime >= startTime && currentTime <= endTime;
 }
 
-// Xử lý tải file Excel
-// Đảm bảo đã import thư viện XLSX vào HTML
 // function processExcelFile(file) {
 //   return new Promise((resolve, reject) => {
 //     const reader = new FileReader();
@@ -239,15 +237,22 @@ function isTimeInRange(current, start, end) {
 //     reader.onload = function (e) {
 //       try {
 //         const data = new Uint8Array(e.target.result);
-//         const workbook = XLSX.read(data, { type: "array" });
+//         const workbook = XLSX.read(data, { 
+//           type: "array",
+//           cellDates: true  // Thêm option này để đọc đúng định dạng ngày
+//         });
 //         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
-//         // Get raw data
+//         // Get raw data với options được điều chỉnh
 //         const rawData = XLSX.utils.sheet_to_json(firstSheet, {
-//           raw: false,
+//           raw: true,
 //           defval: "",
 //           header: "A",
+//           dateNF: 'dd/mm/yyyy'  // Định dạng ngày mong muốn
 //         });
+
+//         // Log toàn bộ dữ liệu thô để kiểm tra
+//         console.log("Raw Excel Data:", rawData);
 
 //         // Extract room names from header row
 //         const roomNames = {
@@ -261,18 +266,40 @@ function isTimeInRange(current, start, end) {
 //         let currentDate = "";
 //         let currentDay = "";
 
+//         // Thêm logging để debug từng row
 //         rawData.forEach((row, index) => {
-//           // Check if row contains date
-//           // if (row['A'] && (row['A'].includes('THỨ') || !isNaN(row['A']))) {
-//           //     currentDay = row['A'].includes('THỨ') ? row['A'] : '';
-//           //     currentDate = !isNaN(row['A']) ? formatDate(row['A']) : '';
-//           // }
-//           if (row["A"]) {
-//             if (row["A"].includes("THỨ")) {
-//               currentDay = row["A"];
-//             } else if (!isNaN(Number(row["A"]))) {
-//               currentDate = formatDate(row["A"]);
-//               console.log("Raw date:", row["A"], "Formatted:", currentDate);
+//           console.log(`Processing row ${index}:`, row);
+//           console.log(`Value in column A:`, row['A']);
+//           console.log(`Type of A:`, typeof row['A']);
+
+//           // Kiểm tra nếu có giá trị ở cột A
+//           if (row['A'] !== undefined && row['A'] !== '') {
+//             const cellValue = row['A'];
+//             console.log(`Found value in A:`, cellValue, `Type:`, typeof cellValue);
+
+//             // Nếu là thứ
+//             if (typeof cellValue === 'string' && cellValue.toUpperCase().includes('THỨ')) {
+//               currentDay = cellValue;
+//               console.log(`Set current day to:`, currentDay);
+//             } 
+//             // Nếu là số hoặc ngày
+//             else {
+//               // Thử chuyển đổi sang số
+//               const numValue = Number(cellValue);
+//               if (!isNaN(numValue)) {
+//                 // Xử lý như Excel serial date
+//                 const excelDate = new Date(Date.UTC(1900, 0, numValue - 1));
+//                 currentDate = formatDate(excelDate);
+//                 console.log(`Converted Excel serial date:`, numValue, `to:`, currentDate);
+//               } else if (cellValue instanceof Date) {
+//                 // Nếu là Date object
+//                 currentDate = formatDate(cellValue);
+//                 console.log(`Converted Date object to:`, currentDate);
+//               } else {
+//                 // Thử parse như string
+//                 currentDate = formatDate(cellValue);
+//                 console.log(`Attempted to parse string date:`, cellValue, `Result:`, currentDate);
+//               }
 //             }
 //           }
 
@@ -282,14 +309,8 @@ function isTimeInRange(current, start, end) {
 
 //           // Check each room column (C, D, E) for meetings
 //           ["C", "D", "E"].forEach((col, roomIndex) => {
-//             if (
-//               row[col] &&
-//               typeof row[col] === "string" &&
-//               row[col].trim() !== ""
-//             ) {
+//             if (row[col] && typeof row[col] === "string" && row[col].trim() !== "") {
 //               const roomName = Object.values(roomNames)[roomIndex];
-
-//               // Parse meeting details
 //               const meetingInfo = parseMeetingInfo(row[col]);
 
 //               meetings.push({
@@ -299,13 +320,13 @@ function isTimeInRange(current, start, end) {
 //                 room: roomName,
 //                 startTime: formatTime(timeSlot),
 //                 endTime: calculateEndTime(timeSlot),
-//                 duration: calculateDuration(
-//                   timeSlot,
-//                   calculateEndTime(timeSlot)
-//                 ),
+//                 duration: calculateDuration(timeSlot, calculateEndTime(timeSlot)),
 //                 purpose: meetingInfo.purpose,
 //                 content: meetingInfo.content,
 //               });
+
+//               // Log mỗi meeting được tạo
+//               console.log(`Created meeting:`, meetings[meetings.length - 1]);
 //             }
 //           });
 //         });
@@ -331,67 +352,47 @@ function processExcelFile(file) {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { 
           type: "array",
-          cellDates: true  // Thêm option này để đọc đúng định dạng ngày
+          cellDates: true
         });
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
-        // Get raw data với options được điều chỉnh
         const rawData = XLSX.utils.sheet_to_json(firstSheet, {
           raw: true,
           defval: "",
           header: "A",
-          dateNF: 'dd/mm/yyyy'  // Định dạng ngày mong muốn
+          dateNF: 'dd/mm/yyyy'
         });
 
-        // Log toàn bộ dữ liệu thô để kiểm tra
         console.log("Raw Excel Data:", rawData);
 
-        // Extract room names from header row
         const roomNames = {
           "PHÒNG LOTUS": "Phòng Lotus",
           "P.LAVENDER 1": "Phòng Lavender 1",
           "PHÒNG LAVENDER 2": "Phòng Lavender 2",
         };
 
-        // Process meetings
         const meetings = [];
         let currentDate = "";
         let currentDay = "";
+        let lastValidDate = ""; // Thêm biến để lưu ngày hợp lệ cuối cùng
 
-        // Thêm logging để debug từng row
         rawData.forEach((row, index) => {
           console.log(`Processing row ${index}:`, row);
-          console.log(`Value in column A:`, row['A']);
-          console.log(`Type of A:`, typeof row['A']);
-
-          // Kiểm tra nếu có giá trị ở cột A
-          if (row['A'] !== undefined && row['A'] !== '') {
+          
+          // Xử lý ngày và thứ
+          if (row['A']) {
             const cellValue = row['A'];
-            console.log(`Found value in A:`, cellValue, `Type:`, typeof cellValue);
-
-            // Nếu là thứ
+            
             if (typeof cellValue === 'string' && cellValue.toUpperCase().includes('THỨ')) {
-              currentDay = cellValue;
-              console.log(`Set current day to:`, currentDay);
-            } 
-            // Nếu là số hoặc ngày
-            else {
-              // Thử chuyển đổi sang số
-              const numValue = Number(cellValue);
-              if (!isNaN(numValue)) {
-                // Xử lý như Excel serial date
-                const excelDate = new Date(Date.UTC(1900, 0, numValue - 1));
-                currentDate = formatDate(excelDate);
-                console.log(`Converted Excel serial date:`, numValue, `to:`, currentDate);
-              } else if (cellValue instanceof Date) {
-                // Nếu là Date object
-                currentDate = formatDate(cellValue);
-                console.log(`Converted Date object to:`, currentDate);
-              } else {
-                // Thử parse như string
-                currentDate = formatDate(cellValue);
-                console.log(`Attempted to parse string date:`, cellValue, `Result:`, currentDate);
-              }
+              currentDay = cellValue.trim();
+            } else if (cellValue instanceof Date) {
+              lastValidDate = formatDate(cellValue);
+              currentDate = lastValidDate;
+            } else if (!isNaN(cellValue)) {
+              // Xử lý số serial Excel
+              const excelDate = new Date(Date.UTC(1900, 0, cellValue - 1));
+              lastValidDate = formatDate(excelDate);
+              currentDate = lastValidDate;
             }
           }
 
@@ -405,9 +406,10 @@ function processExcelFile(file) {
               const roomName = Object.values(roomNames)[roomIndex];
               const meetingInfo = parseMeetingInfo(row[col]);
 
+              // Sử dụng lastValidDate thay vì currentDate
               meetings.push({
                 id: meetings.length + 1,
-                date: currentDate,
+                date: lastValidDate, // Sử dụng ngày hợp lệ cuối cùng
                 dayOfWeek: getDayOfWeek(currentDay),
                 room: roomName,
                 startTime: formatTime(timeSlot),
@@ -417,8 +419,7 @@ function processExcelFile(file) {
                 content: meetingInfo.content,
               });
 
-              // Log mỗi meeting được tạo
-              console.log(`Created meeting:`, meetings[meetings.length - 1]);
+              console.log(`Created meeting with date:`, lastValidDate);
             }
           });
         });
