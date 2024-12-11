@@ -188,19 +188,19 @@ function processExcelFile(file) {
         // More flexible column matching
         const columnIndices = {
           startTime: headers.findIndex(h => 
-            h.includes('giờ bắt đầu') || 
+            h.includes('GIỜ BẮT ĐẦU') || 
             h.includes('start') || 
             h.includes('bắt đầu') ||
             h === 'start time'
           ),
           endTime: headers.findIndex(h => 
-            h.includes('giờ kết thúc') || 
+            h.includes('GIỜ KẾT THÚC') || 
             h.includes('end') || 
             h.includes('kết thúc') ||
             h === 'end time'
           ),
           duration: headers.findIndex(h => 
-            h.includes('thời gian sử dụng') || 
+            h.includes('THỜI GIAN SỬ DỤNG') || 
             h.includes('duration') || 
             h.includes('thời gian') ||
             h === 'duration time'
