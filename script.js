@@ -5,125 +5,50 @@ function getCurrentTime() {
   ).padStart(2, "0")}`;
 }
 
-// function formatTime(timeStr) {
-//   if (!timeStr) return "";
-
-//   // Loại bỏ các giá trị không phải thời gian
-//   const roomKeywords = [
-//     "phòng",
-//     "p.",
-//     "lavender",
-//     "lotus",
-//     "watch",
-//     "sk",
-//     "meeting",
-//     "phong",
-//     "room",
-//   ];
-
-//   // Chuyển sang chữ thường và loại bỏ khoảng trắng
-//   const lowerTimeStr = String(timeStr).toLowerCase().trim();
-
-//   // Kiểm tra nếu chứa từ khóa phòng thì bỏ qua
-//   if (roomKeywords.some((keyword) => lowerTimeStr.includes(keyword))) {
-//     return "";
-//   }
-
-//   // Các định dạng thời gian
-//   const timeFormats = [
-//     /^\d{1,2}:\d{2}$/, // HH:MM
-//     /^\d{1,2}h\d{2}$/, // Hh:MM
-//     /^\d{1,2}h\s?\d{2}$/, // H h MM
-//     /^\d{1,2}\.\d{2}$/, // HH.MM
-//   ];
-
-//   for (let format of timeFormats) {
-//     if (format.test(lowerTimeStr)) {
-//       // Chuẩn hóa định dạng
-//       const timeParts = lowerTimeStr
-//         .replace("h", ":")
-//         .replace(".", ":")
-//         .split(":");
-//       const hours = timeParts[0].padStart(2, "0");
-//       const minutes = timeParts[1].padStart(2, "0");
-//       return `${hours}:${minutes}`;
-//     }
-//   }
-
-//   // Nếu là số thập phân (Excel time)
-//   if (!isNaN(parseFloat(timeStr))) {
-//     const totalMinutes = Math.round(parseFloat(timeStr) * 24 * 60);
-//     const hours = Math.floor(totalMinutes / 60);
-//     const minutes = totalMinutes % 60;
-//     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-//       2,
-//       "0"
-//     )}`;
-//   }
-
-//   return "";
-// }
-
 function formatTime(timeStr) {
   if (!timeStr) return "";
 
-  // Loại bỏ các giá trị không phải thời gian
-  const roomKeywords = [
-    "phòng",
-    "p.",
-    "lavender",
-    "lotus",
-    "watch",
-    "sk",
-    "meeting",
-    "phong",
-    "room",
-  ];
+  console.log("Formatting time value:", timeStr, "Type:", typeof timeStr);
 
-  // Chuyển sang chữ thường và loại bỏ khoảng trắng
-  const lowerTimeStr = String(timeStr).toLowerCase().trim();
-
-  // Kiểm tra nếu chứa từ khóa phòng thì bỏ qua
-  if (roomKeywords.some((keyword) => lowerTimeStr.includes(keyword))) {
-    return "";
-  }
-
-  // Các định dạng thời gian
-  const timeFormats = [
-    /^\d{1,2}:\d{2}$/, // HH:MM
-    /^\d{1,2}h\d{2}$/, // Hh:MM
-    /^\d{1,2}h\s?\d{2}$/, // H h MM
-    /^\d{1,2}\.\d{2}$/, // HH.MM
-  ];
-
-  for (let format of timeFormats) {
-    if (format.test(lowerTimeStr)) {
-      // Chuẩn hóa định dạng
-      const timeParts = lowerTimeStr
-        .replace("h", ":")
-        .replace(".", ":")
-        .split(":");
-      const hours = timeParts[0].padStart(2, "0");
-      const minutes = timeParts[1].padStart(2, "0");
-      return `${hours}:${minutes}`;
+  // Handle Excel time values (numbers between 0 and 1)
+  if (typeof timeStr === 'number' || !isNaN(timeStr)) {
+    const floatTime = parseFloat(timeStr);
+    if (floatTime >= 0 && floatTime <= 1) {
+      const totalMinutes = Math.round(floatTime * 24 * 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
     }
   }
 
-  // Nếu là số thập phân (Excel time)
-  if (!isNaN(parseFloat(timeStr))) {
-    const totalMinutes = Math.round(parseFloat(timeStr) * 24 * 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-      2,
-      "0"
-    )}`;
+  // Convert to string and normalize
+  const normalizedTime = String(timeStr).toLowerCase().trim()
+    .replace(/[^0-9h:\.]/g, '') // Remove all characters except numbers, h, : and .
+    .replace(/\s+/g, '');       // Remove all whitespace
+
+  // Handle various time formats
+  const timeFormats = {
+    colon: /^(\d{1,2}):(\d{2})$/,         // 13:30
+    hourMinute: /^(\d{1,2})h(\d{2})$/,    // 13h30
+    decimal: /^(\d{1,2})\.(\d{2})$/,      // 13.30
+    simple: /^(\d{1,2})(\d{2})$/          // 1330
+  };
+
+  for (const [format, regex] of Object.entries(timeFormats)) {
+    const match = normalizedTime.match(regex);
+    if (match) {
+      const [_, hours, minutes] = match;
+      const hrs = parseInt(hours, 10);
+      const mins = parseInt(minutes, 10);
+      
+      if (hrs >= 0 && hrs < 24 && mins >= 0 && mins < 60) {
+        return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+      }
+    }
   }
 
   return "";
 }
-
-
 function isTimeInRange(current, start, end) {
   // So sánh thời gian dạng HH:MM
   const [currentHour, currentMin] = current.split(":").map(Number);
@@ -179,44 +104,30 @@ function formatRoomName(room) {
 }
 
 
-// Hàm format thời gian
-function formatTime(time) {
-  if (!time) return "";
-
-  // Xử lý định dạng HH:MM
-  const timeRegex = /^(\d{1,2}):(\d{2})$/;
-  if (timeRegex.test(time)) {
-    const [hours, minutes] = time.split(':');
-    return `${hours.padStart(2, '0')}:${minutes}`;
-  }
-
-  // Xử lý định dạng số từ Excel
-  if (typeof time === 'number') {
-    const totalMinutes = Math.round(time * 24 * 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-  }
-
-  return "";
-}
-
 // Hàm format thời gian sử dụng
 function formatDuration(duration) {
   if (!duration) return "";
-  
-  // Nếu đã ở định dạng "HH:MM"
-  if (typeof duration === 'string' && duration.includes(':')) {
-    const [hours, minutes] = duration.split(':');
-    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+
+  console.log("Formatting duration value:", duration, "Type:", typeof duration);
+
+  // Handle string format "HH:MM"
+  if (typeof duration === 'string') {
+    const match = duration.trim().match(/^(\d{1,2}):(\d{2})$/);
+    if (match) {
+      const [_, hours, minutes] = match;
+      return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+    }
   }
 
-  // Xử lý số từ Excel
-  if (typeof duration === 'number') {
-    const totalMinutes = Math.round(duration * 24 * 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  // Handle numeric values (Excel time)
+  if (typeof duration === 'number' || !isNaN(duration)) {
+    const floatDuration = parseFloat(duration);
+    if (floatDuration > 0) {
+      const totalMinutes = Math.round(floatDuration * 24 * 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    }
   }
 
   return "";
@@ -239,7 +150,7 @@ function processExcelFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onload = function (e) {
+    reader.onload = function(e) {
       try {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { 
@@ -248,100 +159,94 @@ function processExcelFile(file) {
           dateNF: 'dd/mm/yyyy'
         });
 
-        // Debug: Log all sheet names
-        console.log("All Sheet Names:", workbook.SheetNames);
-
-        // Choose the first sheet or the one with the most data
-        const targetSheet = workbook.SheetNames[0];
-        const firstSheet = workbook.Sheets[targetSheet];
-
-        // Debug: Log the entire sheet content
-        console.log("Full Sheet Content:", firstSheet);
-
-        // Decode the full range of the sheet
-        const range = XLSX.utils.decode_range(firstSheet['!ref']);
-        console.log("Full sheet range:", range);
-
-        // Detailed logging of range
-        console.log("Range Details:", {
-          start_row: range.s.r,
-          end_row: range.e.r,
-          start_col: range.s.c,
-          end_col: range.e.c
-        });
-
-        // Read raw data with full details
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         const rawData = XLSX.utils.sheet_to_json(firstSheet, {
           raw: true,
           defval: "",
-          header: 1,
-          blankrows: false  // Explicitly skip blank rows
+          header: 1
         });
 
-        // Detailed logging of raw data
-        console.log("Total raw data rows:", rawData.length);
-        console.log("First 10 rows of raw data:");
-        rawData.slice(0, 10).forEach((row, index) => {
-          console.log(`Row ${index}:`, row);
-        });
+        // Debug: Print raw data
+        console.log("Raw Excel Data:", rawData);
 
-        // More aggressive header and data row detection
-        let headerRowIndex = -1;
-        let startDataIndex = -1;
+        // Find header row with more flexible matching
+        const headerRowIndex = rawData.findIndex(row => 
+          row.some(cell => 
+            String(cell).toLowerCase().match(/giờ|thời gian|start|end|duration/i)
+          )
+        );
 
-        // Thorough header detection
-        for (let i = 0; i < rawData.length; i++) {
-          const row = rawData[i];
-          
-          // More flexible and verbose header detection
-          const hasHeaderKeywords = row.some(cell => 
-            String(cell).toLowerCase().match(/ng[ày]|date|th[ứ]|day|room|phòng|time|giờ/i)
-          );
-
-          if (hasHeaderKeywords) {
-            headerRowIndex = i;
-            startDataIndex = i + 1;
-            console.log("Header row found at index:", headerRowIndex);
-            console.log("Header row content:", row);
-            break;
-          }
+        if (headerRowIndex === -1) {
+          console.warn("Warning: Header row not found");
+          return reject(new Error("Cannot find header row"));
         }
 
-        // Fallback for header detection
-        if (headerRowIndex === -1) {
-          headerRowIndex = 0;
-          startDataIndex = 1;
-          console.warn("No specific header row found. Using first row as header.");
+        // Get header row and find column indices
+        const headers = rawData[headerRowIndex].map(h => String(h).toLowerCase().trim());
+        console.log("Headers found:", headers);
+
+        // More flexible column matching
+        const columnIndices = {
+          startTime: headers.findIndex(h => 
+            h.includes('giờ bắt đầu') || 
+            h.includes('start') || 
+            h.includes('bắt đầu') ||
+            h === 'start time'
+          ),
+          endTime: headers.findIndex(h => 
+            h.includes('giờ kết thúc') || 
+            h.includes('end') || 
+            h.includes('kết thúc') ||
+            h === 'end time'
+          ),
+          duration: headers.findIndex(h => 
+            h.includes('thời gian sử dụng') || 
+            h.includes('duration') || 
+            h.includes('thời gian') ||
+            h === 'duration time'
+          )
+        };
+
+        console.log("Column indices found:", columnIndices);
+
+        // Validate column indices
+        if (columnIndices.startTime === -1 || columnIndices.endTime === -1 || columnIndices.duration === -1) {
+          console.warn("Warning: Some columns not found", columnIndices);
         }
 
         const meetings = [];
-        for (let i = startDataIndex; i < rawData.length; i++) {
+        for (let i = headerRowIndex + 1; i < rawData.length; i++) {
           const row = rawData[i];
-          // Log each row being processed
-          console.log(`Processing row ${i}:`, row);
-          try {
-            const meeting = {
-              id: meetings.length + 1,
-              date: formatDate(row[0]), 
-              dayOfWeek: formatDayOfWeek(row[1]), 
-              room: formatRoomName(row[2]), 
-              startTime: formatTime(row[3]), 
-              endTime: formatTime(row[4]), 
-              duration: formatDuration(row[5]), 
-              content: row[7] || "", 
-              purpose: determinePurpose(row[7])
-            };
+          if (!row.some(cell => cell)) continue; // Skip empty rows
 
-            // Detailed logging of meeting object
-            console.log(`Meeting object for row ${i}:`, meeting);
-            meetings.push(meeting);
-          } catch (rowError) {
-            console.error(`Error processing row ${i}:`, rowError);
-          }
+          // Log raw values for debugging
+          console.log(`Processing row ${i}:`, {
+            rawStartTime: row[columnIndices.startTime],
+            rawEndTime: row[columnIndices.endTime],
+            rawDuration: row[columnIndices.duration]
+          });
+
+          // Extract time values with fallback to specific columns if needed
+          const startTimeValue = row[columnIndices.startTime] || row[3]; // Fallback to column D
+          const endTimeValue = row[columnIndices.endTime] || row[4];     // Fallback to column E
+          const durationValue = row[columnIndices.duration] || row[5];    // Fallback to column F
+
+          const meeting = {
+            id: meetings.length + 1,
+            date: formatDate(row[0]),
+            dayOfWeek: formatDayOfWeek(row[1]),
+            room: formatRoomName(row[2]),
+            startTime: formatTime(startTimeValue),
+            endTime: formatTime(endTimeValue),
+            duration: formatDuration(durationValue),
+            content: row[7] || "",
+            purpose: determinePurpose(row[7])
+          };
+
+          console.log(`Processed meeting data:`, meeting);
+          meetings.push(meeting);
         }
 
-        console.log("Total processed meetings:", meetings.length);
-        console.log("Processed meetings:", meetings);
         resolve(meetings);
       } catch (error) {
         console.error("Error processing file:", error);
@@ -353,7 +258,6 @@ function processExcelFile(file) {
     reader.readAsArrayBuffer(file);
   });
 }
-
 
 // Điều chỉnh hàm formatDate để xử lý nhiều kiểu dữ liệu hơn
 function formatDate(dateInput) {
