@@ -10,6 +10,13 @@ function formatTime(timeStr) {
 
   console.log("Formatting time value:", timeStr, "Type:", typeof timeStr);
 
+  // Handle Date objects from Excel
+  if (timeStr instanceof Date) {
+    const hours = timeStr.getHours();
+    const minutes = timeStr.getMinutes();
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  }
+
   // Handle Excel time values (numbers between 0 and 1)
   if (typeof timeStr === 'number' || !isNaN(timeStr)) {
     const floatTime = parseFloat(timeStr);
@@ -21,34 +28,36 @@ function formatTime(timeStr) {
     }
   }
 
-  // Convert to string and normalize
-  const normalizedTime = String(timeStr).toLowerCase().trim()
-    .replace(/[^0-9h:\.]/g, '') // Remove all characters except numbers, h, : and .
-    .replace(/\s+/g, '');       // Remove all whitespace
+  // Handle string format
+  if (typeof timeStr === 'string') {
+    const normalizedTime = timeStr.toLowerCase().trim()
+      .replace(/[^0-9h:\.]/g, '')
+      .replace(/\s+/g, '');
 
-  // Handle various time formats
-  const timeFormats = {
-    colon: /^(\d{1,2}):(\d{2})$/,         // 13:30
-    hourMinute: /^(\d{1,2})h(\d{2})$/,    // 13h30
-    decimal: /^(\d{1,2})\.(\d{2})$/,      // 13.30
-    simple: /^(\d{1,2})(\d{2})$/          // 1330
-  };
+    const timeFormats = {
+      colon: /^(\d{1,2}):(\d{2})$/,         // 13:30
+      hourMinute: /^(\d{1,2})h(\d{2})$/,    // 13h30
+      decimal: /^(\d{1,2})\.(\d{2})$/,      // 13.30
+      simple: /^(\d{1,2})(\d{2})$/          // 1330
+    };
 
-  for (const [format, regex] of Object.entries(timeFormats)) {
-    const match = normalizedTime.match(regex);
-    if (match) {
-      const [_, hours, minutes] = match;
-      const hrs = parseInt(hours, 10);
-      const mins = parseInt(minutes, 10);
-      
-      if (hrs >= 0 && hrs < 24 && mins >= 0 && mins < 60) {
-        return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+    for (const [format, regex] of Object.entries(timeFormats)) {
+      const match = normalizedTime.match(regex);
+      if (match) {
+        const [_, hours, minutes] = match;
+        const hrs = parseInt(hours, 10);
+        const mins = parseInt(minutes, 10);
+        
+        if (hrs >= 0 && hrs < 24 && mins >= 0 && mins < 60) {
+          return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+        }
       }
     }
   }
 
   return "";
 }
+
 function isTimeInRange(current, start, end) {
   // So sánh thời gian dạng HH:MM
   const [currentHour, currentMin] = current.split(":").map(Number);
@@ -109,6 +118,13 @@ function formatDuration(duration) {
   if (!duration) return "";
 
   console.log("Formatting duration value:", duration, "Type:", typeof duration);
+
+  // Handle Date objects from Excel
+  if (duration instanceof Date) {
+    const hours = duration.getHours();
+    const minutes = duration.getMinutes();
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  }
 
   // Handle string format "HH:MM"
   if (typeof duration === 'string') {
