@@ -442,14 +442,27 @@ function formatDate(dateInput) {
   if (!dateInput) return "";
 
   try {
-    // Nếu là Date object
+    // Xử lý Date object
     if (dateInput instanceof Date) {
-      return `${String(dateInput.getDate()).padStart(2, "0")}/${String(
-        dateInput.getMonth() + 1
-      ).padStart(2, "0")}/${dateInput.getFullYear()}`;
+      // Kiểm tra date hợp lệ
+      if (!isNaN(dateInput.getTime())) {
+        return `${String(dateInput.getDate()).padStart(2, "0")}/${String(
+          dateInput.getMonth() + 1
+        ).padStart(2, "0")}/${dateInput.getFullYear()}`;
+      }
     }
 
-    // Nếu là số (Excel serial date)
+    // Chuyển đổi string date thành Date object nếu có thể
+    if (typeof dateInput === 'string' && dateInput.includes('GMT')) {
+      const date = new Date(dateInput);
+      if (!isNaN(date.getTime())) {
+        return `${String(date.getDate()).padStart(2, "0")}/${String(
+          date.getMonth() + 1
+        ).padStart(2, "0")}/${date.getFullYear()}`;
+      }
+    }
+
+    // Xử lý số serial từ Excel
     if (typeof dateInput === 'number' || !isNaN(Number(dateInput))) {
       const numDate = Number(dateInput);
       const excelDate = new Date(Date.UTC(1900, 0, numDate - 1));
@@ -460,10 +473,8 @@ function formatDate(dateInput) {
       }
     }
 
-    // Xử lý string
+    // Xử lý chuỗi ngày thông thường
     const dateStr = String(dateInput).trim();
-    
-    // Các định dạng phổ biến
     const formats = [
       /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, // dd/mm/yyyy
       /^(\d{1,2})-(\d{1,2})-(\d{4})$/, // dd-mm-yyyy
@@ -474,11 +485,9 @@ function formatDate(dateInput) {
       const match = dateStr.match(format);
       if (match) {
         const [_, part1, part2, part3] = match;
-        // Với định dạng yyyy-mm-dd
         if (format === formats[2]) {
           return `${part3.padStart(2, "0")}/${part2.padStart(2, "0")}/${part1}`;
         }
-        // Với các định dạng khác
         return `${part1.padStart(2, "0")}/${part2.padStart(2, "0")}/${part3}`;
       }
     }
