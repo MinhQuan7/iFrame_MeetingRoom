@@ -27,7 +27,7 @@
   flex-direction: column;
   line-height: normal;
   width: 40%;
-  margin-left: -100px;
+  margin-left: -220px;
   height: fit-content;
   padding-right: 40px;
 }
@@ -42,54 +42,48 @@
 }
 
 .date-wrapper {
-  display: flex;
-  font-size: 24px;
-  padding: 10px 0;
-  max-width: 100%;
-  align-items: center;
-  gap: 40px 50px;
-  overflow: hidden;
-  color: #fff;
-  text-align: center;
-  justify-content: start;
-  flex-wrap: wrap;
-  padding: 26px 100px;
-  font: 510 40px SF Pro, sans-serif;
+  color: #000;
+  font: 510 15px SF Pro, sans-serif; /* Simplified font declaration */
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .logo {
-  width: 200px;
+  width: 30px; /* Reduced from original size */
   height: auto;
-  aspect-ratio: 2.21;
   object-fit: contain;
+  aspect-ratio: 2.21;
   object-position: center;
   align-self: stretch;
-  min-width: 240px;
-  margin: auto 0;
+  min-width: 200px;
+  margin-top: -20px;
 }
 
 .current-date {
+  font-size: 16px; /* Reduced font size */
+  color: #ffffff;
+  white-space: nowrap;
   align-self: stretch;
-  min-width: 150px;
-  overflow: hidden;
-  width: 200px;
-  font-size: 40px;
   margin: auto 0;
-  padding: 13px 13px 90px;
+  padding-top: 20px;
+  margin-top: -30px;
+  padding-bottom: 40px;
+  margin-left: 300px;
 }
 
 .welcome-text {
+  max-width: 300px;
+  font-size: 20px;
+  font-weight: 500;
   padding: 15px 0;
   display: flex;
-  margin-top: 24px;
+  margin-top: -120px;
+  margin-left: 250px;
   align-items: center;
   gap: 40px 50px;
   overflow: hidden;
   color: #fff;
   text-align: center;
   justify-content: start;
-  /* padding: 26px 100px; */
-  font: 510 60px SF Pro, sans-serif;
 }
 
 .welcome-message {
@@ -105,8 +99,10 @@
 
 .rooms-container {
   display: flex;
-  margin-top: 24px;
+  flex-direction: column;
+  gap: 15px;
   width: 100%;
+  margin-top: 24px;
   flex-direction: column;
   overflow: hidden;
   justify-content: space-between;
@@ -117,18 +113,16 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  overflow: hidden;
-  padding: 28px 0;
 }
 
 .room-number {
   color: #fff;
-  font-size: 28px;
-  align-self: start;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 .room-details {
   display: flex;
-  margin-top: 47px;
   align-items: center;
   gap: 39px;
   overflow: hidden;
@@ -141,7 +135,10 @@
 
 .meeting-info {
   padding: 15px;
-  min-height: 200px;
+  display: flex;
+  width: 65vh;
+  flex-direction: column;
+  gap: 10px;
   border-radius: 16px;
   background-color: rgba(255, 255, 255, 0.85);
   align-self: stretch;
@@ -156,6 +153,7 @@
 .meeting-header {
   display: flex;
   width: 100%;
+  gap: 8px;
   flex-direction: column;
   overflow: hidden;
   justify-content: center;
@@ -276,33 +274,27 @@
   height: fit-content;
 }
 
-/* .schedule-section {
-  display: flex;
-  width: 90%;
-  height: 80%;
-  flex-direction: column;
-  font-family: SF Pro, sans-serif;
-  color: #000;
-} */
-
 .schedule-content {
   max-width: 100%;
-  padding: 0 20px 100px 0;
+  height: 100%; /* Added to ensure content takes full height */
+  padding: 20px 20px 20px 20px; /* Adjusted padding */
   border-radius: 16px;
   background-color: rgba(255, 255, 255, 0.85);
   display: flex;
   flex-direction: column;
   font-weight: 510;
   text-align: center;
+  overflow: hidden; /* Prevent content overflow */
 }
+
 .schedule-section {
   display: flex;
   width: 90%;
-  height: 95vh;
+  height: 95vh; /* Changed from 95vh to use full viewport height */
   flex-direction: column;
   font-family: SF Pro, sans-serif;
   color: #000;
-  overflow-y: auto; /* Enables vertical scrolling */
+  overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbars */
 }
 
 /* Custom Scrollbar Styles */
@@ -336,16 +328,16 @@
 
 .schedule-actions {
   display: flex;
-  margin-top: 42px;
+  margin-top: 20px; /* Reduced from 42px */
+  margin-bottom: 20px;
   width: 100%;
   align-items: center;
-  gap: 40px 100px;
+  gap: 20px;
   font-size: 24px;
   color: #fff;
   justify-content: space-between;
-  flex-wrap: wrap;
+  flex-shrink: 0; /* Prevent actions from shrinking */
 }
-
 .upload-button {
   border-radius: 23px;
   background-color: rgba(130, 132, 255, 0.86);
@@ -377,7 +369,7 @@
   font-size: 16px;
   margin: 15px 0;
   flex-direction: column;
-  overflow: hidden;
+  /* overflow: hidden; */
   justify-content: start;
 }
 
@@ -420,20 +412,33 @@
 }
 
 .room-buttons {
-  font-size: 24px;
+  margin-top: auto; /* Push to bottom */
   padding: 15px;
   gap: 20px;
   display: flex;
-  margin-top: 26px;
   align-items: center;
-  overflow: hidden;
-  white-space: nowrap;
-  letter-spacing: -0.08px;
   justify-content: space-between;
   flex-wrap: wrap;
-  padding: 20px 23px;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+/* Scrollbar styles */
+.schedule-table::-webkit-scrollbar {
+  width: 8px;
 }
 
+.schedule-table::-webkit-scrollbar-track {
+  background: rgba(240, 240, 240, 0.8);
+  border-radius: 4px;
+}
+
+.schedule-table::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.schedule-table::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
 .room-button {
   padding: 15px;
   width: auto;
@@ -571,21 +576,19 @@
     max-width: 100%;
     padding: 0 20px;
   }
-  /* 
-  .content-wrapper {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-  } */
+
   .content-wrapper {
     display: flex;
-    gap: 30px;
-    margin: 0 20px;
+    gap: 20px;
+    padding: 15px;
+    max-height: 100vh;
+    overflow: hidden;
   }
 
   .left-column {
-    width: 30%;
+    max-width: 100%;
     min-width: 300px;
+    flex: 0 1 auto;
   }
 
   .right-column {
@@ -594,13 +597,20 @@
   }
 
   .header-section {
-    max-width: 100%;
-    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    padding: 15px;
   }
 
   .date-wrapper,
   .welcome-text {
-    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    margin-top: 0;
   }
 
   .welcome-message {
