@@ -275,60 +275,46 @@ function processExcelFile(file) {
   });
 }
 
-// Điều chỉnh hàm formatDate để xử lý nhiều kiểu dữ liệu hơn
 function formatDate(dateInput) {
   console.log("formatDate input:", dateInput, "type:", typeof dateInput);
 
   if (!dateInput) return "";
 
   try {
-    // Xử lý Date object
+    // Xử lý Date object từ Excel (do cellDates: true)
     if (dateInput instanceof Date) {
-      // Kiểm tra date hợp lệ
       if (!isNaN(dateInput.getTime())) {
-        return `${String(dateInput.getDate()).padStart(2, "0")}/${String(
-          dateInput.getMonth() + 1
-        ).padStart(2, "0")}/${dateInput.getFullYear()}`;
+        const day = dateInput.getDate() + 1 ;
+        const month = dateInput.getMonth() + 1;
+        const year = dateInput.getFullYear();
+        return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
       }
     }
 
-    // Chuyển đổi string date thành Date object nếu có thể
-    if (typeof dateInput === 'string' && dateInput.includes('GMT')) {
-      const date = new Date(dateInput);
-      if (!isNaN(date.getTime())) {
-        return `${String(date.getDate()).padStart(2, "0")}/${String(
-          date.getMonth() + 1
-        ).padStart(2, "0")}/${date.getFullYear()}`;
+    // Xử lý chuỗi ngày đã được format sẵn dd/mm/yyyy
+    if (typeof dateInput === 'string') {
+      const dateStr = dateInput.trim();
+      const match = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (match) {
+        const [_, day, month, year] = match;
+        return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
       }
     }
 
-    // Xử lý số serial từ Excel
+    // Xử lý số serial từ Excel (nếu không dùng cellDates: true)
     if (typeof dateInput === 'number' || !isNaN(Number(dateInput))) {
       const numDate = Number(dateInput);
-      const excelDate = new Date(Date.UTC(1900, 0, numDate - 1));
-      if (!isNaN(excelDate.getTime())) {
-        return `${String(excelDate.getUTCDate()).padStart(2, "0")}/${String(
-          excelDate.getUTCMonth() + 1
-        ).padStart(2, "0")}/${excelDate.getUTCFullYear()}`;
-      }
-    }
+      // Excel bắt đầu từ 1/1/1900, và trừ đi 2 để điều chỉnh lỗi năm nhuận
+      const excelEpoch = new Date(1900, 0, -1);
+      const offsetDays = numDate - 1;
+      const resultDate = new Date(excelEpoch);
+      resultDate.setDate(resultDate.getDate() + offsetDays);
 
-    // Xử lý chuỗi ngày thông thường
-    const dateStr = String(dateInput).trim();
-    const formats = [
-      /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, // dd/mm/yyyy
-      /^(\d{1,2})-(\d{1,2})-(\d{4})$/, // dd-mm-yyyy
-      /^(\d{4})-(\d{1,2})-(\d{1,2})$/, // yyyy-mm-dd
-    ];
-
-    for (let format of formats) {
-      const match = dateStr.match(format);
-      if (match) {
-        const [_, part1, part2, part3] = match;
-        if (format === formats[2]) {
-          return `${part3.padStart(2, "0")}/${part2.padStart(2, "0")}/${part1}`;
-        }
-        return `${part1.padStart(2, "0")}/${part2.padStart(2, "0")}/${part3}`;
+      if (!isNaN(resultDate.getTime())) {
+        const day = resultDate.getDate();
+        const month = resultDate.getMonth() + 1;
+        const year = resultDate.getFullYear();
+        return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
       }
     }
 
@@ -339,6 +325,7 @@ function formatDate(dateInput) {
     return "";
   }
 }
+
 
 function parseMeetingInfo(cellContent) {
   if (!cellContent) return { purpose: "", content: "" };

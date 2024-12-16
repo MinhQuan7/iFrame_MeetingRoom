@@ -26,9 +26,8 @@
   display: flex;
   flex-direction: column;
   line-height: normal;
-  width: 35%;
+  width: 40%;
   margin-left: 0;
-  /* margin-left: -220px; */
   height: fit-content;
   padding-right: 40px;
 }
