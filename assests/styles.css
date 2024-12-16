@@ -113,6 +113,8 @@
   display: flex;
   width: 100%;
   flex-direction: column;
+  overflow: hidden; /* Thêm overflow: hidden */
+  border-radius: 16px; /* Thêm border-radius */
 }
 
 .room-number {
@@ -126,6 +128,7 @@
   text-align: center;
   transition: all 0.3s ease;
 }
+
 .room-details {
   display: flex;
   align-items: center;
@@ -135,38 +138,22 @@
   color: #000;
   font-weight: 400;
   justify-content: start;
-  padding: 10px 22px 10px 0;
+  padding: 2px 22px 10px 0;
+  border-radius: 16px; /* Thêm border-radius */
 }
-
-/* .meeting-info {
+.meeting-info {
   margin: 15px 0;
   margin-left: 0;
-  max-width: 600px;
   max-width: 100%;
-  flex-direction: column;
-  gap: 10px;
   border-radius: 16px;
+  padding: 10px;
   background-color: rgba(255, 255, 255, 0.85);
   align-self: stretch;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex: 1;
-  flex-basis: 0%;
-  margin: auto 0;
-} */
-.meeting-info {
-  margin: 10px 0; /* Giảm margin */
-  max-width: 700px;
-  max-height: 170px;
-  padding: 12px 15px; /* Giảm padding */
-  border-radius: 12px; /* Giảm border radius cho phù hợp */
-  background-color: rgba(255, 255, 255, 0.85);
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
+  overflow: hidden; /* Thêm overflow: hidden */
 }
 
 .meeting-header {
@@ -188,30 +175,59 @@
 .meeting-time {
   display: flex;
   font-size: 14px;
-  /* margin-top: 6px; */
   align-items: center;
-  /* overflow: hidden; */
   letter-spacing: -0.1px;
   line-height: 1;
   justify-content: start;
   flex-wrap: wrap;
 }
 
-.time-spacer {
+/* .time-spacer {
   align-self: stretch;
   display: flex;
   min-width: 240px;
   width: 255px;
   height: 20px;
   margin: auto 0;
-}
+} */
 
 .start-time,
 .end-time {
-  align-self: stretch;
-  margin: auto 0;
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  min-width: 100px;
+  justify-content: center;
+}
+/* Thêm icon đồng hồ trước thời gian */
+.start-time::before,
+.end-time::before {
+  content: "⌚";
+  margin-right: 6px;
+  font-size: 12px;
+  opacity: 0.7;
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+  .meeting-time {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .start-time,
+  .end-time {
+    min-width: 90px;
+    padding: 3px 8px;
+    font-size: 13px;
+  }
+
+  .time-separator {
+    font-size: 14px;
+  }
+}
 .meeting-stats {
   display: flex;
   margin-top: 12px;
@@ -251,23 +267,16 @@
 
 .status-indicator {
   display: flex;
-  margin-top: 10px;
-  height: 25px;
-  width: 300px;
-  max-width: 100%;
   align-items: center;
-  gap: 10px;
-  color: #8f8f8f;
-  justify-content: start;
+  gap: 8px;
+  margin-top: auto; /* Đẩy xuống dưới cùng */
+  padding-top: 12px; /* Tạo khoảng cách với content phía trên */
 }
 
 .indicator-dot {
-  border-radius: 50%;
-  align-self: stretch;
-  display: flex;
   width: 12px;
   height: 12px;
-  margin: auto 0;
+  border-radius: 50%;
 }
 /* Responsive adjustments */
 @media (max-width: 991px) {
@@ -292,7 +301,7 @@
 }
 
 .indicator-dot.available {
-  background-color: #00ff00;
+  background-color: #228522;
 }
 
 .status-text {
@@ -584,12 +593,26 @@
 
 /* Indicator dot pulse animation for busy status */
 .indicator-dot.busy {
-  animation: pulse 2s infinite;
+  animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+.indicator-dot.available {
+  animation: pulseAvail 1s infinite;
+}
+@keyframes pulseAvail {
+  0% {
+    box-shadow: 0 0 0 0 rgba(32, 255, 2, 0.4);
   }
   70% {
     box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
