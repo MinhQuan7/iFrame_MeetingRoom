@@ -138,7 +138,7 @@
   padding: 10px 22px 10px 0;
 }
 
-.meeting-info {
+/* .meeting-info {
   margin: 15px 0;
   margin-left: 0;
   max-width: 600px;
@@ -154,12 +154,25 @@
   flex: 1;
   flex-basis: 0%;
   margin: auto 0;
+} */
+.meeting-info {
+  margin: 10px 0; /* Giảm margin */
+  max-width: 700px;
+  max-height: 170px;
+  padding: 12px 15px; /* Giảm padding */
+  border-radius: 12px; /* Giảm border radius cho phù hợp */
+  background-color: rgba(255, 255, 255, 0.85);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
 }
 
 .meeting-header {
   display: flex;
   width: 100%;
-  gap: 8px;
+  gap: 4px;
   flex-direction: column;
   overflow: hidden;
   justify-content: center;
@@ -167,17 +180,17 @@
 }
 
 .meeting-title {
-  font-size: 24px;
-  line-height: 1;
+  font-size: 18px;
+  line-height: 1.2;
   letter-spacing: -0.15px;
 }
 
 .meeting-time {
   display: flex;
-  font-size: 16px;
-  margin-top: 10px;
+  font-size: 14px;
+  /* margin-top: 6px; */
   align-items: center;
-  overflow: hidden;
+  /* overflow: hidden; */
   letter-spacing: -0.1px;
   line-height: 1;
   justify-content: start;
@@ -201,10 +214,10 @@
 
 .meeting-stats {
   display: flex;
-  margin-top: 20px;
+  margin-top: 12px;
   width: 100%;
-  flex-direction: column;
-  font-size: 20px;
+  flex-direction: row;
+  font-size: 14px;
   letter-spacing: -0.1px;
   line-height: 1;
   justify-content: center;
@@ -214,7 +227,7 @@
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
   overflow: hidden;
   justify-content: start;
   flex-wrap: wrap;
@@ -223,8 +236,8 @@
 .temperature,
 .humidity {
   align-self: stretch;
-  width: 200px;
-  margin: auto 0;
+  width: 150px;
+  /* margin: auto 0; */
 }
 
 .current,
@@ -238,9 +251,9 @@
 
 .status-indicator {
   display: flex;
-  margin-top: 15px;
-  height: 31px;
-  width: 360px;
+  margin-top: 10px;
+  height: 25px;
+  width: 300px;
   max-width: 100%;
   align-items: center;
   gap: 10px;
@@ -252,11 +265,28 @@
   border-radius: 50%;
   align-self: stretch;
   display: flex;
-  width: 15px;
-  height: 15px;
+  width: 12px;
+  height: 12px;
   margin: auto 0;
 }
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .meeting-title {
+    font-size: 16px;
+  }
 
+  .meeting-time,
+  .meeting-stats {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .meeting-info {
+    min-height: 150px; /* Giảm từ 180px */
+    padding: 10px;
+  }
+}
 .indicator-dot.busy {
   background-color: #ff0000;
 }
@@ -275,11 +305,29 @@
   display: flex;
   flex-direction: column;
   line-height: normal;
-  width: 70%;
+  width: 67%; /* Tăng từ 70% lên 67% */
   margin-right: 0;
   height: fit-content;
 }
 
+/* Cập nhật media queries để duy trì tỷ lệ mới trên các màn hình lớn */
+@media (max-width: 1200px) {
+  .left-column {
+    width: 33%;
+  }
+
+  .right-column {
+    width: 67%;
+  }
+}
+
+/* Giữ nguyên layout dọc trên màn hình nhỏ */
+@media (max-width: 991px) {
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+}
 .schedule-content {
   max-width: 100%;
   height: 100%; /* Added to ensure content takes full height */
@@ -288,14 +336,14 @@
   background-color: rgba(255, 255, 255, 0.85);
   display: flex;
   flex-direction: column;
-  font-weight: 510;
+  font-weight: 520;
   text-align: center;
   overflow: hidden; /* Prevent content overflow */
 }
 
 .schedule-section {
   display: flex;
-  width: 90%;
+  width: 100%;
   height: 95vh; /* Changed from 95vh to use full viewport height */
   flex-direction: column;
   font-family: SF Pro, sans-serif;
