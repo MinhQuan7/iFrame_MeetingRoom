@@ -76,8 +76,6 @@
   font-weight: 500;
   padding: 15px 0;
   display: flex;
-  margin-top: -120px;
-  margin-left: 250px;
   align-items: center;
   gap: 40px 50px;
   overflow: hidden;
@@ -106,7 +104,6 @@
   flex-direction: column;
   overflow: hidden;
   justify-content: space-between;
-  padding: 0 10px;
 }
 
 .room-section {
@@ -114,21 +111,35 @@
   width: 100%;
   flex-direction: column;
   overflow: hidden; /* Thêm overflow: hidden */
-  border-radius: 16px; /* Thêm border-radius */
 }
 
 .room-number {
+  width: 93%;
   font-size: 1.25rem;
   font-weight: 600;
   color: #ffffff;
-  padding: 8px 16px;
-  background: rgba(69, 255, 218, 0.1);
+  padding: 8px 8px;
+  background: linear-gradient(
+    135deg,
+    rgba(69, 255, 218, 0.2),
+    rgba(69, 255, 218, 0.1)
+  );
+  border-radius: 12px; /* Tăng border-radius để bo tròn góc nhiều hơn */
+  border: 1px solid rgba(69, 255, 218, 0.3); /* Thêm border nhẹ */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Thêm shadow để tạo chiều sâu */
   border-radius: 8px;
   min-width: 120px;
   text-align: center;
   transition: all 0.3s ease;
 }
-
+.room-number:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Tăng shadow khi hover */
+  background: linear-gradient(
+    135deg,
+    rgba(69, 255, 218, 0.3),
+    rgba(69, 255, 218, 0.2)
+  );
+}
 .room-details {
   display: flex;
   align-items: center;
@@ -138,7 +149,7 @@
   color: #000;
   font-weight: 400;
   justify-content: start;
-  padding: 2px 22px 10px 0;
+  padding: 8px 22px 10px 0;
   border-radius: 16px; /* Thêm border-radius */
 }
 .meeting-info {
