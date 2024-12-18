@@ -420,68 +420,130 @@ function updateScheduleTable(data) {
   });
 }
 
-// Cập nhật trạng thái phòng
+// // Cập nhật trạng thái phòng
+// function updateRoomStatus(data) {
+//   const currentDate = formatDate(new Date());
+//   const currentTime = getCurrentTime();
+
+//   const roomMapping = {
+//     "Phòng Lotus": "P.1",
+//     "Phòng Lavender 1": "P.2",
+//     "Phòng Lavender 2": "P.3",
+//   };
+
+//   const todayMeetings = data.filter((meeting) => meeting.date === currentDate);
+
+//   Object.entries(roomMapping).forEach(([fullName, shortName]) => {
+//     const roomMeeting = todayMeetings.find(
+//       (meeting) => meeting.room === fullName
+//     );
+//     updateSingleRoomStatus(shortName, roomMeeting, currentTime);
+//   });
+// }
+// Cập nhật hàm updateRoomStatus
 function updateRoomStatus(data) {
+  console.log("Updating room status with data:", data);
+  
   const currentDate = formatDate(new Date());
   const currentTime = getCurrentTime();
 
-  const roomMapping = {
-    "Phòng Lotus": "P.1",
-    "Phòng Lavender 1": "P.2",
-    "Phòng Lavender 2": "P.3",
-  };
+  console.log("Current date:", currentDate);
+  console.log("Current time:", currentTime);
 
-  const todayMeetings = data.filter((meeting) => meeting.date === currentDate);
+  const todayMeetings = data.filter((meeting) => {
+    const isToday = meeting.date === currentDate;
+    console.log(`Meeting date: ${meeting.date}, Is today: ${isToday}`);
+    return isToday;
+  });
 
-  Object.entries(roomMapping).forEach(([fullName, shortName]) => {
-    const roomMeeting = todayMeetings.find(
-      (meeting) => meeting.room === fullName
-    );
-    updateSingleRoomStatus(shortName, roomMeeting, currentTime);
+  console.log("Today's meetings:", todayMeetings);
+
+  // Danh sách phòng để update
+  const roomsToUpdate = ["Lotus", "Lavender 1", "Lavender 2"];
+
+  roomsToUpdate.forEach(roomName => {
+    updateSingleRoomStatus(roomName, todayMeetings, currentTime);
   });
 }
 
-// Cập nhật trạng thái từng phòng
-function updateSingleRoomStatus(roomCode, meeting, currentTime) {
-  // Find the room section by iterating through room sections
-  const roomSections = document.querySelectorAll(".room-section");
-  const roomSection = Array.from(roomSections).find((section) => {
-    const roomNumberElement = section.querySelector(".room-number");
-    return (
-      roomNumberElement && roomNumberElement.textContent.trim() === roomCode
-    );
-  });
+function updateSingleRoomStatus(roomCode, meetings, currentTime) {
+  console.log("Updating room status for:", roomCode);
+  console.log("Current time:", currentTime);
+  console.log("All meetings:", meetings);
 
-  if (!roomSection) return;
+  // Find the room section
+  const roomSection = document.querySelector(
+    `.room-section .room-number:contains("${roomCode}")`.closest('.room-section')
+  );
+
+  if (!roomSection) {
+    console.warn(`No room section found for room code: ${roomCode}`);
+    return;
+  }
 
   const titleElement = roomSection.querySelector(".meeting-title");
   const startTimeElement = roomSection.querySelector(".start-time");
   const endTimeElement = roomSection.querySelector(".end-time");
   const statusIndicator = roomSection.querySelector(".status-indicator");
 
-  if (
-    meeting &&
+  // Lọc các cuộc họp của phòng hiện tại
+  const roomMeetings = meetings.filter(meeting => {
+    console.log(`Checking meeting: ${meeting.room}, Looking for: ${roomCode}`);
+    return meeting.room === roomCode;
+  });
+
+  console.log("Filtered room meetings:", roomMeetings);
+
+  // Kiểm tra xem có cuộc họp nào đang diễn ra không
+  const activeMeeting = roomMeetings.find(meeting => 
     isTimeInRange(currentTime, meeting.startTime, meeting.endTime)
-  ) {
+  );
+
+  console.log("Active meeting:", activeMeeting);
+
+  if (activeMeeting) {
     // Phòng đang có cuộc họp
-    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span>${meeting.content}`;
-    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span>${meeting.startTime}`;
-    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span>${meeting.endTime}`;
+    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span>${activeMeeting.content}`;
+    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span>${activeMeeting.startTime}`;
+    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span>${activeMeeting.endTime}`;
     statusIndicator.innerHTML = `
-            <div class="indicator-dot busy"></div>
-            <div class="status-text">Đang họp</div>
-        `;
+      <div class="indicator-dot busy"></div>
+      <div class="status-text">Đang họp</div>
+    `;
   } else {
-    // Phòng trống
-    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span>Trống`;
-    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span>--:--`;
-    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span>--:--`;
+    // Lấy 3 cuộc họp đầu tiên trong danh sách
+    const firstThreeMeetings = roomMeetings.slice(0, 3);
+
+    // Hiển thị thông tin 3 cuộc họp đầu tiên
+    const meetingContents = firstThreeMeetings.map(meeting => meeting.content).join(" | ");
+    const meetingStartTimes = firstThreeMeetings.map(meeting => meeting.startTime).join(" | ");
+    const meetingEndTimes = firstThreeMeetings.map(meeting => meeting.endTime).join(" | ");
+
+    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span>${meetingContents}`;
+    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span>${meetingStartTimes}`;
+    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span>${meetingEndTimes}`;
     statusIndicator.innerHTML = `
-            <div class="indicator-dot available"></div>
-            <div class="status-text">Trống</div>
-        `;
+      <div class="indicator-dot available"></div>
+      <div class="status-text">Trống</div>
+    `;
   }
 }
+
+// Thêm polyfill cho contains nếu trình duyệt không hỗ trợ
+if (!Element.prototype.contains) {
+  Element.prototype.contains = function(text) {
+    return this.textContent.trim().includes(text);
+  };
+}
+
+
+// Hàm hỗ trợ chuyển đổi thời gian sang phút
+function timeToMinutes(timeStr) {
+  if (!timeStr) return 0;
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
 // Xử lý tải file
 function handleFileUpload(file) {
   processExcelFile(file)
