@@ -423,7 +423,7 @@ function updateRoomStatus(data) {
   console.log("Updating room status with data:", data);
 
   // Cố định ngày để test
-  const testDate = new Date(2024, 9, 28); // Tháng 10 là tháng 11
+  const testDate = new Date(2024, 10, 7); // Tháng 10 là tháng 11
   const currentDate = formatDate(testDate);
   const currentTime = getCurrentTime();
 
