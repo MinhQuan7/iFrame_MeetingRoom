@@ -420,34 +420,15 @@ function updateScheduleTable(data) {
   });
 }
 
-// // Cập nhật trạng thái phòng
-// function updateRoomStatus(data) {
-//   const currentDate = formatDate(new Date());
-//   const currentTime = getCurrentTime();
-
-//   const roomMapping = {
-//     "Phòng Lotus": "P.1",
-//     "Phòng Lavender 1": "P.2",
-//     "Phòng Lavender 2": "P.3",
-//   };
-
-//   const todayMeetings = data.filter((meeting) => meeting.date === currentDate);
-
-//   Object.entries(roomMapping).forEach(([fullName, shortName]) => {
-//     const roomMeeting = todayMeetings.find(
-//       (meeting) => meeting.room === fullName
-//     );
-//     updateSingleRoomStatus(shortName, roomMeeting, currentTime);
-//   });
-// }
-// Cập nhật hàm updateRoomStatus
 function updateRoomStatus(data) {
   console.log("Updating room status with data:", data);
   
-  const currentDate = formatDate(new Date());
+  // Cố định ngày để test
+  const testDate = new Date(2024, 9, 28); // Tháng 10 là tháng 11
+  const currentDate = formatDate(testDate);
   const currentTime = getCurrentTime();
 
-  console.log("Current date:", currentDate);
+  console.log("Test date:", currentDate);
   console.log("Current time:", currentTime);
 
   const todayMeetings = data.filter((meeting) => {
@@ -457,9 +438,10 @@ function updateRoomStatus(data) {
   });
 
   console.log("Today's meetings:", todayMeetings);
+  console.log("Number of today's meetings:", todayMeetings.length);
 
   // Danh sách phòng để update
-  const roomsToUpdate = ["Lotus", "Lavender 1", "Lavender 2"];
+  const roomsToUpdate = ["Lotus", "P. LAVENDER 1", "P. LAVENDER 2"];
 
   roomsToUpdate.forEach(roomName => {
     updateSingleRoomStatus(roomName, todayMeetings, currentTime);
@@ -471,9 +453,10 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
   console.log("Current time:", currentTime);
   console.log("All meetings:", meetings);
 
-  // Find the room section
-  const roomSection = document.querySelector(
-    `.room-section .room-number:contains("${roomCode}")`.closest('.room-section')
+  // Tìm room section bằng cách lặp qua tất cả các phòng và kiểm tra text content
+  const roomSections = document.querySelectorAll('.room-section');
+  const roomSection = Array.from(roomSections).find(section => 
+    section.querySelector('.room-number').textContent.trim() === roomCode
   );
 
   if (!roomSection) {
@@ -484,7 +467,8 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
   const titleElement = roomSection.querySelector(".meeting-title");
   const startTimeElement = roomSection.querySelector(".start-time");
   const endTimeElement = roomSection.querySelector(".end-time");
-  const statusIndicator = roomSection.querySelector(".status-indicator");
+  const statusIndicator = roomSection.querySelector(".status-indicator .status-text");
+  const indicatorDot = roomSection.querySelector(".status-indicator .indicator-dot");
 
   // Lọc các cuộc họp của phòng hiện tại
   const roomMeetings = meetings.filter(meeting => {
@@ -503,32 +487,36 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
 
   if (activeMeeting) {
     // Phòng đang có cuộc họp
-    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span>${activeMeeting.content}`;
-    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span>${activeMeeting.startTime}`;
-    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span>${activeMeeting.endTime}`;
-    statusIndicator.innerHTML = `
-      <div class="indicator-dot busy"></div>
-      <div class="status-text">Đang họp</div>
-    `;
+    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${activeMeeting.content}`;
+    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${activeMeeting.startTime}`;
+    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${activeMeeting.endTime}`;
+    statusIndicator.textContent = 'Đang họp';
+    indicatorDot.classList.remove('available');
+    indicatorDot.classList.add('busy');
   } else {
     // Lấy 3 cuộc họp đầu tiên trong danh sách
     const firstThreeMeetings = roomMeetings.slice(0, 3);
 
-    // Hiển thị thông tin 3 cuộc họp đầu tiên
-    const meetingContents = firstThreeMeetings.map(meeting => meeting.content).join(" | ");
-    const meetingStartTimes = firstThreeMeetings.map(meeting => meeting.startTime).join(" | ");
-    const meetingEndTimes = firstThreeMeetings.map(meeting => meeting.endTime).join(" | ");
+    if (firstThreeMeetings.length > 0) {
+      // Hiển thị thông tin 3 cuộc họp đầu tiên
+      const meetingContents = firstThreeMeetings.map(meeting => meeting.content).join(" | ");
+      const meetingStartTimes = firstThreeMeetings.map(meeting => meeting.startTime).join(" | ");
+      const meetingEndTimes = firstThreeMeetings.map(meeting => meeting.endTime).join(" | ");
 
-    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span>${meetingContents}`;
-    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span>${meetingStartTimes}`;
-    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span>${meetingEndTimes}`;
-    statusIndicator.innerHTML = `
-      <div class="indicator-dot available"></div>
-      <div class="status-text">Trống</div>
-    `;
+      titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${meetingContents}`;
+      startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${meetingStartTimes}`;
+      endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${meetingEndTimes}`;
+    } else {
+      titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> Trống`;
+      startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
+      endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
+    }
+    
+    statusIndicator.textContent = 'Trống';
+    indicatorDot.classList.remove('busy');
+    indicatorDot.classList.add('available');
   }
 }
-
 // Thêm polyfill cho contains nếu trình duyệt không hỗ trợ
 if (!Element.prototype.contains) {
   Element.prototype.contains = function(text) {
