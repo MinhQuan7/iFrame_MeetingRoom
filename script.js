@@ -619,37 +619,37 @@ function updateClock() {
     const seconds = padZero(now.getSeconds());
     const time = `${hours}:${minutes}:${seconds}`;
 
-    // Lấy ngày và thứ
     const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
     const dayName = days[now.getDay()];
     const date = padZero(now.getDate());
     const month = padZero(now.getMonth() + 1);
     const year = now.getFullYear();
-
-    // Tạo chuỗi định dạng ngày tháng
     const dateStr = `${dayName}, ${date}/${month}/${year}`;
 
-    // Cập nhật class logo và current-date
     const logoElement = document.querySelector('.logo');
     const currentDateElement = document.querySelector('.current-date');
 
-    // Tạo và cập nhật HTML cho đồng hồ
-    const clockHTML = `
-        <div class="clock-container" style="  width: 30px; 
-  height: auto;
-  object-fit: contain;
-  aspect-ratio: 2.21;
-  object-position: center;
-  align-self: stretch;
-  min-width: 150px;
-  margin-top: -20px;color: #ffffff;">
+    // Kiểm tra xem các phần tử có tồn tại không
+    if (logoElement) {
+        const clockHTML = `
+            <div class="clock-container" style="width: 30px; 
+            height: auto;
+            object-fit: contain;
+            aspect-ratio: 2.21;
+            object-position: center;
+            align-self: stretch;
+            min-width: 150px;
+            margin-top: -20px;
+            color: #ffffff;">
                 ${time}
             </div>
-        </div>
-    `;
+        `;
+        logoElement.outerHTML = clockHTML;
+    }
 
-    logoElement.outerHTML = clockHTML;
-    currentDateElement.textContent = dateStr;
+    if (currentDateElement) {
+        currentDateElement.textContent = dateStr;
+    }
 }
 
 // Khởi tạo đồng hồ và cập nhật mỗi giây
