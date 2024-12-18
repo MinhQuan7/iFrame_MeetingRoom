@@ -397,6 +397,9 @@
   flex-shrink: 0; /* Prevent actions from shrinking */
 }
 .upload-button {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  transition: border-color 0.3s ease; /* Hiệu ứng chuyển màu viền */
+  border: 2px #fff;
   border-radius: 23px;
   background-color: rgba(130, 132, 255, 0.86);
   align-self: stretch;
@@ -408,6 +411,7 @@
   justify-content: center;
   margin: auto 0;
   padding: 6px 6px;
+  color: #fff;
 }
 
 .upload-icon {
@@ -419,7 +423,14 @@
   align-self: stretch;
   margin: auto 0;
 }
-
+upload-icon-date {
+  object-fit: contain;
+  object-position: center;
+  width: 70px;
+  margin-left: 60px;
+  align-self: stretch;
+  margin: auto 0;
+}
 .schedule-table {
   min-height: auto;
   max-height: 70vh;
@@ -433,7 +444,7 @@
 
 .table-header,
 .table-row {
-  border-bottom: 1px solid #000; /* Đổi màu border thành đen và thêm solid */
+  border-bottom: 1px solid #000000; /* Đổi màu border thành đen và thêm solid */
   display: flex;
   width: 100%;
   align-items: center;
@@ -528,22 +539,11 @@
 .room-button:active {
   transform: scale(0.98);
 }
-
-/* Upload button hover effects */
-.upload-button {
-  width: 40px;
-  margin-left: 40px;
-  transition: all 0.3s ease-out;
-  cursor: pointer;
-  border: 2px solid transparent;
-  position: relative;
-  overflow: hidden;
-}
-
 .upload-button:hover {
   background-color: rgba(130, 132, 255, 1);
   box-shadow: 0 5px 15px rgba(130, 132, 255, 0.6);
   transform: translateY(-2px);
+  border: 2px #fff;
 }
 
 .upload-button:active {
@@ -798,4 +798,34 @@
     min-width: 120px;
     padding: 10px;
   }
+}
+
+/*//=======New update : Selection when user pick any date=====*/
+.date-picker {
+  margin-left: 10px; /* Khoảng cách với nút upload */
+  padding: 10px; /* Khoảng đệm bên trong */
+  font-size: 16px; /* Kích thước chữ */
+  border: 2px solid #ffffffc4; /* Viền màu xanh */
+  border-radius: 23px; /* Bo góc */
+  background-color: #ffffff; /* Nền trắng */
+  color: #ffffff; /* Màu chữ tối */
+  transition: border-color 0.3s ease; /* Hiệu ứng chuyển màu viền */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  background-color: rgba(130, 132, 255, 0.86);
+  text-align: center;
+  justify-content: center;
+  margin-left: 30%;
+}
+
+.date-picker:hover {
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(130, 132, 255, 0.7);
+}
+.upload-button:active {
+  transform: translateY(1px);
+}
+.date-picker::placeholder {
+  /* Định dạng placeholder */
+  color: #999999; /* Màu chữ placeholder */
 }

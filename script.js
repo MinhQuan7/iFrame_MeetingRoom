@@ -654,3 +654,30 @@ function initClock() {
 
 // Gọi hàm khởi tạo khi trang đã load
 document.addEventListener('DOMContentLoaded', initClock);
+
+
+
+//==========================New update : Selection when user pick any date=====
+document.addEventListener('DOMContentLoaded', function() {
+    const datePicker = document.getElementById('meetingDate');
+    
+    datePicker.addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        filterMeetingsByDate(selectedDate);
+    });
+});
+
+function filterMeetingsByDate(selectedDate) {
+    const rows = document.querySelectorAll('.schedule-table .table-row');
+
+    rows.forEach(row => {
+        const meetingDateText = row.children[1].textContent; // Cột ngày
+        const meetingDate = new Date(meetingDateText.split('/').reverse().join('-')); // Chuyển đổi định dạng ngày
+        
+        if (meetingDate.toDateString() === selectedDate.toDateString()) {
+            row.style.display = ''; // Hiển thị nếu trùng khớp
+        } else {
+            row.style.display = 'none'; // Ẩn nếu không trùng khớp
+        }
+    });
+}
