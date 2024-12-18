@@ -38,7 +38,7 @@
   flex-direction: column;
   overflow: hidden;
   justify-content: start;
-  padding: 51px 0 16px 7px;
+  padding: 0 16px 7px;
 }
 
 .date-wrapper {
@@ -47,27 +47,24 @@
   white-space: nowrap; /* Prevent text wrapping */
 }
 
-/* .logo {
-  width: 30px; 
-  height: auto;
-  object-fit: contain;
-  aspect-ratio: 2.21;
-  object-position: center;
-  align-self: stretch;
-  min-width: 150px;
-  margin-top: -20px;
-} */
-
-.current-date {
-  font-size: 16px; /* Reduced font size */
-  color: #ffffff;
-  white-space: nowrap;
-  align-self: stretch;
-  margin: auto 0;
-  margin-top: -30px;
-  margin-left: 300px;
+.logo {
+  display: flex;
+  justify-content: flex-start; /* Căn logo sang bên trái */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  margin: 20px 20px 20px 0; /* Khoảng cách với phần còn lại */
 }
 
+.current-date {
+  font-size: 8px; /* Giảm kích thước chữ cho ngày giờ */
+  color: #ffffff; /* Màu chữ trắng */
+  white-space: nowrap; /* Không xuống dòng */
+  align-self: stretch; /* Kéo dài toàn bộ chiều cao */
+  margin: auto 0; /* Căn giữa theo chiều dọc */
+  margin-top: -60px; /* Khoảng cách phía trên */
+  text-align: right; /* Căn phải */
+  right: 20px; /* Cách bên phải */
+  top: 20px; /* Cách bên trên */
+}
 .welcome-message {
   align-self: stretch;
   flex: 1;

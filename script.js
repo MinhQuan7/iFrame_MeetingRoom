@@ -629,18 +629,9 @@ function updateClock() {
     const logoElement = document.querySelector('.logo');
     const currentDateElement = document.querySelector('.current-date');
 
-    // Kiểm tra xem các phần tử có tồn tại không
     if (logoElement) {
         logoElement.innerHTML = `
-            <div class="clock-container" style="width: 30px; 
-            height: auto;
-            object-fit: contain;
-            aspect-ratio: 2.21;
-            object-position: center;
-            align-self: stretch;
-            min-width: 150px;
-            margin-top: -20px;
-            color: #ffffff;">
+            <div class="clock-container" style="font-size: 100px; color: #ffffff;justify-content: right;">
                 ${time}
             </div>
         `;
@@ -648,6 +639,10 @@ function updateClock() {
 
     if (currentDateElement) {
         currentDateElement.textContent = dateStr;
+        currentDateElement.style.fontSize = "17px"; // Thay đổi kích thước font
+        currentDateElement.style.color = "#ffffff"; // Thay đổi màu chữ
+        currentDateElement.style.fontWeight = "bold"; // Đậm chữ
+        currentDateElement.style.paddingRight = "25px";
     }
 }
 
