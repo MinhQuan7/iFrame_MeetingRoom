@@ -631,7 +631,7 @@ function updateClock() {
 
     // Kiểm tra xem các phần tử có tồn tại không
     if (logoElement) {
-        const clockHTML = `
+        logoElement.innerHTML = `
             <div class="clock-container" style="width: 30px; 
             height: auto;
             object-fit: contain;
@@ -644,7 +644,6 @@ function updateClock() {
                 ${time}
             </div>
         `;
-        logoElement.outerHTML = clockHTML;
     }
 
     if (currentDateElement) {
