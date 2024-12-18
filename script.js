@@ -419,35 +419,6 @@ function updateScheduleTable(data) {
     tableBody.appendChild(row);
   });
 }
-
-// function updateRoomStatus(data) {
-//   console.log("Updating room status with data:", data);
-  
-//   // Cố định ngày để test
-//   const testDate = new Date(2024, 9, 28); // Tháng 10 là tháng 11
-//   const currentDate = formatDate(testDate);
-//   const currentTime = getCurrentTime();
-
-//   console.log("Test date:", currentDate);
-//   console.log("Current time:", currentTime);
-
-//   const todayMeetings = data.filter((meeting) => {
-//     const isToday = meeting.date === currentDate;
-//     console.log(`Meeting date: ${meeting.date}, Is today: ${isToday}`);
-//     return isToday;
-//   });
-
-//   console.log("Today's meetings:", todayMeetings);
-//   console.log("Number of today's meetings:", todayMeetings.length);
-
-//   // Danh sách phòng để update
-//   const roomsToUpdate = ["Lotus", "P. LAVENDER 1", "P. LAVENDER 2"];
-
-//   roomsToUpdate.forEach(roomName => {
-//     updateSingleRoomStatus(roomName, todayMeetings, currentTime);
-//   });
-// }
-
 function updateRoomStatus(data) {
   console.log("Updating room status with data:", data);
 
@@ -479,78 +450,6 @@ function updateRoomStatus(data) {
     updateSingleRoomStatus(roomName, todayMeetings, currentTime);
   });
 }
-
-// function updateSingleRoomStatus(roomCode, meetings, currentTime) {
-//   console.log("Updating room status for:", roomCode);
-//   console.log("Current time:", currentTime);
-//   console.log("All meetings:", meetings);
-
-//   // Tìm room section bằng cách lặp qua tất cả các phòng và kiểm tra text content
-//   const roomSections = document.querySelectorAll('.room-section');
-//   const roomSection = Array.from(roomSections).find(section => 
-//     section.querySelector('.room-number').textContent.trim() === roomCode
-//   );
-
-//   if (!roomSection) {
-//     console.warn(`No room section found for room code: ${roomCode}`);
-//     return;
-//   }
-
-//   const titleElement = roomSection.querySelector(".meeting-title");
-//   const startTimeElement = roomSection.querySelector(".start-time");
-//   const endTimeElement = roomSection.querySelector(".end-time");
-//   const statusIndicator = roomSection.querySelector(".status-indicator .status-text");
-//   const indicatorDot = roomSection.querySelector(".status-indicator .indicator-dot");
-
-//   // Lọc các cuộc họp của phòng hiện tại
-//   const roomMeetings = meetings.filter(meeting => {
-//     console.log(`Checking meeting: ${meeting.room}, Looking for: ${roomCode}`);
-//     return meeting.room === roomCode;
-//   });
-
-//   console.log("Filtered room meetings:", roomMeetings);
-
-//   // Kiểm tra xem có cuộc họp nào đang diễn ra không
-//   const activeMeeting = roomMeetings.find(meeting => 
-//     isTimeInRange(currentTime, meeting.startTime, meeting.endTime)
-//   );
-
-//   console.log("Active meeting:", activeMeeting);
-
-//   if (activeMeeting) {
-//     // Phòng đang có cuộc họp
-//     titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${activeMeeting.content}`;
-//     startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${activeMeeting.startTime}`;
-//     endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${activeMeeting.endTime}`;
-//     statusIndicator.textContent = 'Đang họp';
-//     indicatorDot.classList.remove('available');
-//     indicatorDot.classList.add('busy');
-//   } else {
-//     // Lấy 3 cuộc họp đầu tiên trong danh sách
-//     const firstThreeMeetings = roomMeetings.slice(0, 3);
-
-//     if (firstThreeMeetings.length > 0) {
-//       // Hiển thị thông tin 3 cuộc họp đầu tiên
-//       const meetingContents = firstThreeMeetings.map(meeting => meeting.content).join(" | ");
-//       const meetingStartTimes = firstThreeMeetings.map(meeting => meeting.startTime).join(" | ");
-//       const meetingEndTimes = firstThreeMeetings.map(meeting => meeting.endTime).join(" | ");
-
-//       titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${meetingContents}`;
-//       startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${meetingStartTimes}`;
-//       endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${meetingEndTimes}`;
-//     } else {
-//       titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> Trống`;
-//       startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
-//       endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
-//     }
-    
-//     statusIndicator.textContent = 'Trống';
-//     indicatorDot.classList.remove('busy');
-//     indicatorDot.classList.add('available');
-//   }
-// }
-// Thêm polyfill cho contains nếu trình duyệt không hỗ trợ
-
 function normalizeRoomName(roomName) {
   // Loại bỏ "P. " và chuẩn hóa tên phòng
   return roomName.replace(/^P\.\s*/i, '').trim().toLowerCase();
