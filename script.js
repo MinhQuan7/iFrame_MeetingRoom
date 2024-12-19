@@ -483,7 +483,7 @@ function normalizeRoomName(roomName) {
     .toLowerCase();
 }
 
-//===New version : Update thểm cả giây vì nếu so sánh mỗi phút thì sẽ sau 1 phút thì mới nhảy kết quả 
+//===New version : Update thểm cả giây vì nếu so sánh mỗi phút thì sẽ sau 1 phút thì mới nhảy kết quả
 function getCurrentTime() {
   const now = new Date();
   return `${String(now.getHours()).padStart(2, "0")}:${String(
@@ -495,12 +495,15 @@ function getCurrentTime() {
 function isTimeOverdue(endTime, currentTime) {
   const endTimeParts = endTime.split(":");
   const endTimeWithSeconds = `${endTimeParts[0]}:${endTimeParts[1]}:00`;
-  const isOverdue = timeToMinutes(currentTime) > timeToMinutes(endTimeWithSeconds);
-  
+  const isOverdue =
+    timeToMinutes(currentTime) > timeToMinutes(endTimeWithSeconds);
+
   if (isOverdue) {
-    console.log(`Meeting overdue check at ${currentTime} for end time ${endTime}`);
+    console.log(
+      `Meeting overdue check at ${currentTime} for end time ${endTime}`
+    );
   }
-  
+
   return isOverdue;
 }
 
@@ -637,21 +640,122 @@ function timeToMinutes(timeStr) {
   const seconds = parts.length > 2 ? parseInt(parts[2]) : 0;
   return hours * 3600 + minutes * 60 + seconds;
 }
-// Xử lý tải file
-function handleFileUpload(file) {
-  processExcelFile(file)
-    .then((data) => {
-      // Cập nhật bảng lịch
+
+
+let fileHandle = null;
+let lastFileData = null;
+let fileCache = {
+  data: null,
+  lastModified: null,
+  reader: new FileReader()
+};
+
+// Hàm kiểm tra thay đổi từ input element
+async function checkFileChanges() {
+  if (!fileHandle) return;
+
+  try {
+    const file = await fileHandle.getFile();
+    const fileData = await file.text(); // hoặc arrayBuffer() nếu cần
+    
+    // Kiểm tra nếu lastFileData chưa được khởi tạo
+    if (lastFileData === null) {
+      lastFileData = fileData;
+      return;
+    }
+
+    // So sánh với dữ liệu cũ
+    if (fileData !== lastFileData) {
+      console.log("File đã thay đổi, đang cập nhật...");
+      const data = await processExcelFile(file);
       updateScheduleTable(data);
-      // Cập nhật trạng thái phòng
       startAutoUpdate(data);
-      console.log("Xử lý file thành công:", data);
-    })
-    .catch((error) => {
-      console.error("Lỗi khi xử lý file:", error);
-      alert("Có lỗi xảy ra khi xử lý file. Vui lòng thử lại.");
-    });
+      lastFileData = fileData;
+      
+      // Cập nhật cache
+      fileCache.data = data;
+      fileCache.lastModified = new Date().getTime();
+      
+      // Lưu vào localStorage
+      try {
+        localStorage.setItem('fileCache', JSON.stringify({
+          data: fileCache.data,
+          lastModified: fileCache.lastModified
+        }));
+      } catch (e) {
+        console.error("Không thể lưu vào localStorage:", e);
+      }
+    }
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra file:", error);
+    // Nếu mất quyền truy cập, dừng checking
+    if (error.name === 'NotAllowedError') {
+      clearInterval(window.fileCheckInterval);
+      fileHandle = null;
+    }
+  }
 }
+
+async function handleFileUpload(file) {
+  try {
+    // Lấy file handle thông qua File System Access API
+    try {
+      const handles = await window.showOpenFilePicker({
+        multiple: false,
+        types: [
+          {
+            description: 'Excel Files',
+            accept: {
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+              'application/vnd.ms-excel': ['.xls']
+            }
+          }
+        ]
+      });
+      fileHandle = handles[0];
+      
+      // Đọc dữ liệu ban đầu của file
+      const initialFile = await fileHandle.getFile();
+      lastFileData = await initialFile.text();
+    } catch (error) {
+      console.error("Không thể lấy file handle:", error);
+    }
+
+    // Process file as normal
+    const data = await processExcelFile(file);
+    updateScheduleTable(data);
+    startAutoUpdate(data);
+    
+    // Cập nhật cache
+    fileCache.data = data;
+    fileCache.lastModified = new Date().getTime();
+    
+    // Lưu vào localStorage
+    try {
+      localStorage.setItem('fileCache', JSON.stringify({
+        data: fileCache.data,
+        lastModified: fileCache.lastModified
+      }));
+    } catch (e) {
+      console.error("Không thể lưu vào localStorage:", e);
+    }
+
+    // Bắt đầu monitoring nếu có file handle
+    if (fileHandle) {
+      if (window.fileCheckInterval) {
+        clearInterval(window.fileCheckInterval);
+      }
+      window.fileCheckInterval = setInterval(checkFileChanges, 5000);
+    }
+
+  } catch (error) {
+    console.error("Error processing file:", error);
+    alert("Error processing file. Please try again.");
+  }
+}
+
+
+
 // Tải file lên server
 async function uploadToServer(file, processedData) {
   const formData = new FormData();
@@ -677,22 +781,38 @@ async function uploadToServer(file, processedData) {
   }
 }
 
-// Sự kiện tải trang
-document.addEventListener("DOMContentLoaded", function () {
-  const uploadButton = document.querySelector(".upload-button");
 
-  uploadButton.addEventListener("click", function (event) {
+
+// Sự kiện tải trang
+
+// Event listener for file upload
+document.addEventListener('DOMContentLoaded', function() {
+  const uploadButton = document.querySelector('.upload-button');
+
+  uploadButton.addEventListener('click', async function(event) {
     event.preventDefault();
 
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = ".xlsx, .xls";
-    fileInput.style.display = "none";
+    try {
+      // Thử dùng file handle đã có
+      if (fileHandle) {
+        const file = await fileHandle.getFile();
+        await handleFileUpload(file);
+        return;
+      }
+    } catch (error) {
+      console.error("Không thể sử dụng file handle cũ:", error);
+      fileHandle = null;
+    }
 
-    fileInput.addEventListener("change", function (e) {
+    // Nếu không có file handle hoặc có lỗi, tạo input mới
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.xlsx, .xls';
+    fileInput.style.display = 'none';
+
+    fileInput.addEventListener('change', function(e) {
       if (e.target.files.length > 0) {
         const file = e.target.files[0];
-        console.log("File đã chọn:", file.name);
         handleFileUpload(file);
       }
     });
@@ -700,6 +820,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fileInput.click();
   });
 });
+
 
 //========================Update Time ====================
 function padZero(num) {
