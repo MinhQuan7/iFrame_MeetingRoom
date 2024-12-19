@@ -533,17 +533,23 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
 
   console.log("Filtered room meetings:", roomMeetings);
 
+  // Lọc các cuộc họp chưa kết thúc (endTime > currentTime)
+  const upcomingMeetings = roomMeetings.filter(meeting => 
+    timeToMinutes(meeting.endTime) > timeToMinutes(currentTime)
+  );
+
   // Kiểm tra xem có cuộc họp nào đang diễn ra không
-  const activeMeeting = roomMeetings.find((meeting) =>
+  const activeMeeting = upcomingMeetings.find((meeting) =>
     isTimeInRange(currentTime, meeting.startTime, meeting.endTime)
   );
 
   console.log("Active meeting:", activeMeeting);
+  console.log("Upcoming meetings:", upcomingMeetings);
 
   if (activeMeeting) {
     // Phòng đang có cuộc họp
     titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${
-      activeMeeting.content || activeMeeting.content
+      activeMeeting.content || activeMeeting.purpose
     }`;
     startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${activeMeeting.startTime}`;
     endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${activeMeeting.endTime}`;
@@ -551,21 +557,19 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
     indicatorDot.classList.remove("available");
     indicatorDot.classList.add("busy");
   } else {
-    // Lấy 3 cuộc họp đầu tiên trong danh sách
-    const firstThreeMeetings = roomMeetings.slice(0, 3);
+    // Chỉ hiển thị các cuộc họp sắp diễn ra
+    const nextThreeMeetings = upcomingMeetings
+      .sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime))
+      .slice(0, 3);
 
-    if (firstThreeMeetings.length > 0) {
-      const sortedMeetings = firstThreeMeetings.sort(
-        (a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime)
-      );
-
-      const meetingContents = sortedMeetings
-        .map((meeting) => meeting.content)
+    if (nextThreeMeetings.length > 0) {
+      const meetingContents = nextThreeMeetings
+        .map((meeting) => meeting.content || meeting.purpose)
         .join(" | ");
-      const meetingStartTimes = sortedMeetings
+      const meetingStartTimes = nextThreeMeetings
         .map((meeting) => meeting.startTime)
         .join(" | ");
-      const meetingEndTimes = sortedMeetings
+      const meetingEndTimes = nextThreeMeetings
         .map((meeting) => meeting.endTime)
         .join(" | ");
 
@@ -573,13 +577,13 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
       startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${meetingStartTimes}`;
       endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${meetingEndTimes}`;
 
-      // Thêm log để kiểm tra
-      console.log("Displaying meetings:", {
+      console.log("Displaying upcoming meetings:", {
         contents: meetingContents,
         startTimes: meetingStartTimes,
         endTimes: meetingEndTimes,
       });
     } else {
+      // Không có cuộc họp nào sắp diễn ra
       titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> Trống`;
       startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
       endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
