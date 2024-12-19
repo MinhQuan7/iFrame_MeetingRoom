@@ -1,9 +1,3 @@
-function getCurrentTime() {
-  const now = new Date();
-  return `${String(now.getHours()).padStart(2, "0")}:${String(
-    now.getMinutes()
-  ).padStart(2, "0")}`;
-}
 function getCurrentDate() {
   const now = new Date();
   const date = String(now.getDate()).padStart(2, "0");
@@ -461,12 +455,10 @@ function updateScheduleTable(data) {
     tableBody.appendChild(row);
   });
 }
+//==========Function Update info from Excel file to MeetingInfo Section========
 function updateRoomStatus(data) {
-  console.log("Updating room status with data:", data);
+  console.log("Updating room status with data at:", getCurrentTime());
 
-  // Cố định ngày để test
-  // const testDate = new Date(2024, 10, 28);
-  // const currentDate = formatDate(testDate);
   const currentDate = getCurrentDate();
   const currentTime = getCurrentTime();
 
@@ -480,21 +472,47 @@ function updateRoomStatus(data) {
   });
 
   console.log("Today's meetings:", todayMeetings);
-  console.log("Number of today's meetings:", todayMeetings.length);
 
-  // Danh sách phòng để update - sử dụng tên phòng từ data
-  const roomsToUpdate = ["P. LAVENDER 1", "P. LAVENDER 2", "P. LOTUS"];
-
+  const roomsToUpdate = ["Phòng Lavender 1", "Phòng Lavender 2", "Phòng Lotus"];
   roomsToUpdate.forEach((roomName) => {
     updateSingleRoomStatus(roomName, todayMeetings, currentTime);
   });
 }
+
 function normalizeRoomName(roomName) {
   // Loại bỏ "P. " và chuẩn hóa tên phòng
   return roomName
     .replace(/^(P\.|Phòng)\s*/i, "")
     .trim()
     .toLowerCase();
+}
+
+function getCurrentTime() {
+  const now = new Date();
+  return `${String(now.getHours()).padStart(2, "0")}:${String(
+    now.getMinutes()
+  ).padStart(2, "0")}`;
+}
+
+// Thêm hàm để kiểm tra thời gian kết thúc
+function isTimeOverdue(endTime, currentTime) {
+  return timeToMinutes(currentTime) > timeToMinutes(endTime);
+}
+
+// Hàm để tự động cập nhật thời gian và trạng thái
+function startAutoUpdate(data) {
+  // Cập nhật ngay lập tức khi khởi động
+  updateRoomStatus(data);
+
+  // Thiết lập interval để cập nhật mỗi phút
+  const intervalId = setInterval(() => {
+    const currentMinute = getCurrentTime();
+    console.log("Auto updating at:", currentMinute);
+    updateRoomStatus(data);
+  }, 1000);
+
+  // Lưu intervalId để có thể clear nếu cần
+  window.autoUpdateInterval = intervalId;
 }
 
 function updateSingleRoomStatus(roomCode, meetings, currentTime) {
@@ -533,16 +551,13 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
 
   console.log("Filtered room meetings:", roomMeetings);
 
-  // Lọc các cuộc họp chưa kết thúc (endTime > currentTime)
-  const upcomingMeetings = roomMeetings.filter(meeting => 
-    timeToMinutes(meeting.endTime) > timeToMinutes(currentTime)
+  const upcomingMeetings = roomMeetings.filter(
+    (meeting) => !isTimeOverdue(meeting.endTime, currentTime)
   );
 
-  // Kiểm tra xem có cuộc họp nào đang diễn ra không
   const activeMeeting = upcomingMeetings.find((meeting) =>
     isTimeInRange(currentTime, meeting.startTime, meeting.endTime)
   );
-
   console.log("Active meeting:", activeMeeting);
   console.log("Upcoming meetings:", upcomingMeetings);
 
@@ -614,10 +629,8 @@ function handleFileUpload(file) {
     .then((data) => {
       // Cập nhật bảng lịch
       updateScheduleTable(data);
-
       // Cập nhật trạng thái phòng
-      updateRoomStatus(data);
-
+      startAutoUpdate(data);
       console.log("Xử lý file thành công:", data);
     })
     .catch((error) => {
