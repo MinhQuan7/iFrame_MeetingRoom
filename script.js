@@ -616,7 +616,6 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
       startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
       endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
     }
-
     statusIndicator.textContent = "Trống";
     indicatorDot.classList.remove("busy");
     indicatorDot.classList.add("available");
