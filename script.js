@@ -69,17 +69,13 @@ function formatTime(timeStr) {
   return "";
 }
 
-function isTimeInRange(current, start, end) {
-  // So sánh thời gian dạng HH:MM
-  const [currentHour, currentMin] = current.split(":").map(Number);
-  const [startHour, startMin] = start.split(":").map(Number);
-  const [endHour, endMin] = end.split(":").map(Number);
-
-  const currentTime = currentHour * 60 + currentMin;
-  const startTime = startHour * 60 + startMin;
-  const endTime = endHour * 60 + endMin;
-
-  return currentTime >= startTime && currentTime <= endTime;
+// Cập nhật hàm isTimeInRange để xử lý giây
+function isTimeInRange(currentTime, startTime, endTime) {
+  const current = timeToMinutes(currentTime);
+  // Thêm :00 cho giây
+  const start = timeToMinutes(`${startTime}:00`);
+  const end = timeToMinutes(`${endTime}:00`);
+  return current >= start && current <= end;
 }
 
 function formatDayOfWeek(day) {
@@ -487,16 +483,25 @@ function normalizeRoomName(roomName) {
     .toLowerCase();
 }
 
+//===New version : Update thểm cả giây vì nếu so sánh mỗi phút thì sẽ sau 1 phút thì mới nhảy kết quả 
 function getCurrentTime() {
   const now = new Date();
   return `${String(now.getHours()).padStart(2, "0")}:${String(
     now.getMinutes()
-  ).padStart(2, "0")}`;
+  ).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
 }
 
-// Thêm hàm để kiểm tra thời gian kết thúc
+// Sửa hàm isTimeOverdue để có độ chính xác cao hơn
 function isTimeOverdue(endTime, currentTime) {
-  return timeToMinutes(currentTime) > timeToMinutes(endTime);
+  const endTimeParts = endTime.split(":");
+  const endTimeWithSeconds = `${endTimeParts[0]}:${endTimeParts[1]}:00`;
+  const isOverdue = timeToMinutes(currentTime) > timeToMinutes(endTimeWithSeconds);
+  
+  if (isOverdue) {
+    console.log(`Meeting overdue check at ${currentTime} for end time ${endTime}`);
+  }
+  
+  return isOverdue;
 }
 
 // Hàm để tự động cập nhật thời gian và trạng thái
@@ -504,15 +509,23 @@ function startAutoUpdate(data) {
   // Cập nhật ngay lập tức khi khởi động
   updateRoomStatus(data);
 
-  // Thiết lập interval để cập nhật mỗi phút
+  // Thiết lập interval để cập nhật mỗi giây
   const intervalId = setInterval(() => {
-    const currentMinute = getCurrentTime();
-    console.log("Auto updating at:", currentMinute);
+    const currentTime = getCurrentTime();
+    // Chỉ log khi thay đổi phút để tránh spam console
+    if (currentTime.endsWith(":00")) {
+      console.log("Auto updating at:", currentTime);
+    }
     updateRoomStatus(data);
-  }, 1000);
+  }, 1000); // Cập nhật mỗi 1 giây
 
   // Lưu intervalId để có thể clear nếu cần
   window.autoUpdateInterval = intervalId;
+
+  // Thêm cleanup khi cần
+  return () => {
+    clearInterval(intervalId);
+  };
 }
 
 function updateSingleRoomStatus(roomCode, meetings, currentTime) {
@@ -616,13 +629,15 @@ if (!Element.prototype.contains) {
   };
 }
 
-// Hàm hỗ trợ chuyển đổi thời gian sang phút
+// Sửa hàm timeToMinutes để xử lý giây
 function timeToMinutes(timeStr) {
   if (!timeStr) return 0;
-  const [hours, minutes] = timeStr.split(":").map(Number);
-  return hours * 60 + minutes;
+  const parts = timeStr.split(":");
+  const hours = parseInt(parts[0]);
+  const minutes = parseInt(parts[1]);
+  const seconds = parts.length > 2 ? parseInt(parts[2]) : 0;
+  return hours * 3600 + minutes * 60 + seconds;
 }
-
 // Xử lý tải file
 function handleFileUpload(file) {
   processExcelFile(file)
