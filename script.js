@@ -4,7 +4,13 @@ function getCurrentTime() {
     now.getMinutes()
   ).padStart(2, "0")}`;
 }
-
+function getCurrentDate() {
+  const now = new Date();
+  const date = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // +1 vì tháng bắt đầu từ 0
+  const year = now.getFullYear();
+  return `${date}/${month}/${year}`;
+}
 function formatTime(timeStr) {
   if (!timeStr) return "";
 
@@ -14,31 +20,39 @@ function formatTime(timeStr) {
   if (timeStr instanceof Date) {
     const hours = timeStr.getHours();
     const minutes = timeStr.getMinutes();
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}`;
   }
 
   // Handle Excel time values (numbers between 0 and 1)
-  if (typeof timeStr === 'number' || !isNaN(timeStr)) {
+  if (typeof timeStr === "number" || !isNaN(timeStr)) {
     const floatTime = parseFloat(timeStr);
     if (floatTime >= 0 && floatTime <= 1) {
       const totalMinutes = Math.round(floatTime * 24 * 60);
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
-      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+        2,
+        "0"
+      )}`;
     }
   }
 
   // Handle string format
-  if (typeof timeStr === 'string') {
-    const normalizedTime = timeStr.toLowerCase().trim()
-      .replace(/[^0-9h:\.]/g, '')
-      .replace(/\s+/g, '');
+  if (typeof timeStr === "string") {
+    const normalizedTime = timeStr
+      .toLowerCase()
+      .trim()
+      .replace(/[^0-9h:\.]/g, "")
+      .replace(/\s+/g, "");
 
     const timeFormats = {
-      colon: /^(\d{1,2}):(\d{2})$/,         // 13:30
-      hourMinute: /^(\d{1,2})h(\d{2})$/,    // 13h30
-      decimal: /^(\d{1,2})\.(\d{2})$/,      // 13.30
-      simple: /^(\d{1,2})(\d{2})$/          // 1330
+      colon: /^(\d{1,2}):(\d{2})$/, // 13:30
+      hourMinute: /^(\d{1,2})h(\d{2})$/, // 13h30
+      decimal: /^(\d{1,2})\.(\d{2})$/, // 13.30
+      simple: /^(\d{1,2})(\d{2})$/, // 1330
     };
 
     for (const [format, regex] of Object.entries(timeFormats)) {
@@ -47,9 +61,12 @@ function formatTime(timeStr) {
         const [_, hours, minutes] = match;
         const hrs = parseInt(hours, 10);
         const mins = parseInt(minutes, 10);
-        
+
         if (hrs >= 0 && hrs < 24 && mins >= 0 && mins < 60) {
-          return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+          return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(
+            2,
+            "0"
+          )}`;
         }
       }
     }
@@ -73,22 +90,22 @@ function isTimeInRange(current, start, end) {
 
 function formatDayOfWeek(day) {
   if (!day) return "";
-  
+
   const dayMap = {
-    "2": "Thứ Hai",
-    "3": "Thứ Ba",
-    "4": "Thứ Tư",
-    "5": "Thứ Năm",
-    "6": "Thứ Sáu",
-    "7": "Thứ Bảy",
-    "CN": "Chủ Nhật",
+    2: "Thứ Hai",
+    3: "Thứ Ba",
+    4: "Thứ Tư",
+    5: "Thứ Năm",
+    6: "Thứ Sáu",
+    7: "Thứ Bảy",
+    CN: "Chủ Nhật",
     "THỨ 2": "Thứ Hai",
     "THỨ 3": "Thứ Ba",
     "THỨ 4": "Thứ Tư",
     "THỨ 5": "Thứ Năm",
     "THỨ 6": "Thứ Sáu",
     "THỨ 7": "Thứ Bảy",
-    "CHỦ NHẬT": "Chủ Nhật"
+    "CHỦ NHẬT": "Chủ Nhật",
   };
 
   const normalizedDay = String(day).trim().toUpperCase();
@@ -104,14 +121,13 @@ function formatRoomName(room) {
     "P.LOTUS": "Phòng Lotus",
     "P.LAVENDER 1": "Phòng Lavender 1",
     "PHÒNG LAVENDER 1": "Phòng Lavender 1",
-    "P.LAVENDER 2": "Phòng Lavender 2", 
-    "PHÒNG LAVENDER 2": "Phòng Lavender 2"
+    "P.LAVENDER 2": "Phòng Lavender 2",
+    "PHÒNG LAVENDER 2": "Phòng Lavender 2",
   };
 
   const normalizedRoom = String(room).trim().toUpperCase();
   return roomMap[normalizedRoom] || room;
 }
-
 
 // Hàm format thời gian sử dụng
 function formatDuration(duration) {
@@ -123,26 +139,32 @@ function formatDuration(duration) {
   if (duration instanceof Date) {
     const hours = duration.getHours();
     const minutes = duration.getMinutes();
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}`;
   }
 
   // Handle string format "HH:MM"
-  if (typeof duration === 'string') {
+  if (typeof duration === "string") {
     const match = duration.trim().match(/^(\d{1,2}):(\d{2})$/);
     if (match) {
       const [_, hours, minutes] = match;
-      return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+      return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
     }
   }
 
   // Handle numeric values (Excel time)
-  if (typeof duration === 'number' || !isNaN(duration)) {
+  if (typeof duration === "number" || !isNaN(duration)) {
     const floatDuration = parseFloat(duration);
     if (floatDuration > 0) {
       const totalMinutes = Math.round(floatDuration * 24 * 60);
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
-      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+        2,
+        "0"
+      )}`;
     }
   }
 
@@ -154,11 +176,12 @@ function determinePurpose(content) {
   if (!content) return "Khác";
 
   const contentLower = String(content).toLowerCase();
-  
+
   if (contentLower.includes("họp")) return "Họp";
   if (contentLower.includes("đào tạo")) return "Đào tạo";
-  if (contentLower.includes("phỏng vấn") || contentLower.includes("pv")) return "Phỏng vấn";
-  
+  if (contentLower.includes("phỏng vấn") || contentLower.includes("pv"))
+    return "Phỏng vấn";
+
   return "Khác";
 }
 
@@ -166,29 +189,31 @@ function processExcelFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       try {
         const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { 
+        const workbook = XLSX.read(data, {
           type: "array",
           cellDates: true,
-          dateNF: 'dd/mm/yyyy'
+          dateNF: "dd/mm/yyyy",
         });
 
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         const rawData = XLSX.utils.sheet_to_json(firstSheet, {
           raw: true,
           defval: "",
-          header: 1
+          header: 1,
         });
 
         // Debug: Print raw data
         console.log("Raw Excel Data:", rawData);
 
         // Find header row with more flexible matching
-        const headerRowIndex = rawData.findIndex(row => 
-          row.some(cell => 
-            String(cell).toLowerCase().match(/giờ|thời gian|start|end|duration/i)
+        const headerRowIndex = rawData.findIndex((row) =>
+          row.some((cell) =>
+            String(cell)
+              .toLowerCase()
+              .match(/giờ|thời gian|start|end|duration/i)
           )
         );
 
@@ -198,54 +223,63 @@ function processExcelFile(file) {
         }
 
         // Get header row and find column indices
-        const headers = rawData[headerRowIndex].map(h => String(h).toLowerCase().trim());
+        const headers = rawData[headerRowIndex].map((h) =>
+          String(h).toLowerCase().trim()
+        );
         console.log("Headers found:", headers);
 
         // More flexible column matching
         const columnIndices = {
-          startTime: headers.findIndex(h => 
-            h.includes('GIỜ BẮT ĐẦU') || 
-            h.includes('start') || 
-            h.includes('bắt đầu') ||
-            h === 'start time'
+          startTime: headers.findIndex(
+            (h) =>
+              h.includes("GIỜ BẮT ĐẦU") ||
+              h.includes("start") ||
+              h.includes("bắt đầu") ||
+              h === "start time"
           ),
-          endTime: headers.findIndex(h => 
-            h.includes('GIỜ KẾT THÚC') || 
-            h.includes('end') || 
-            h.includes('kết thúc') ||
-            h === 'end time'
+          endTime: headers.findIndex(
+            (h) =>
+              h.includes("GIỜ KẾT THÚC") ||
+              h.includes("end") ||
+              h.includes("kết thúc") ||
+              h === "end time"
           ),
-          duration: headers.findIndex(h => 
-            h.includes('THỜI GIAN SỬ DỤNG') || 
-            h.includes('duration') || 
-            h.includes('thời gian') ||
-            h === 'duration time'
-          )
+          duration: headers.findIndex(
+            (h) =>
+              h.includes("THỜI GIAN SỬ DỤNG") ||
+              h.includes("duration") ||
+              h.includes("thời gian") ||
+              h === "duration time"
+          ),
         };
 
         console.log("Column indices found:", columnIndices);
 
         // Validate column indices
-        if (columnIndices.startTime === -1 || columnIndices.endTime === -1 || columnIndices.duration === -1) {
+        if (
+          columnIndices.startTime === -1 ||
+          columnIndices.endTime === -1 ||
+          columnIndices.duration === -1
+        ) {
           console.warn("Warning: Some columns not found", columnIndices);
         }
 
         const meetings = [];
         for (let i = headerRowIndex + 1; i < rawData.length; i++) {
           const row = rawData[i];
-          if (!row.some(cell => cell)) continue; // Skip empty rows
+          if (!row.some((cell) => cell)) continue; // Skip empty rows
 
           // Log raw values for debugging
           console.log(`Processing row ${i}:`, {
             rawStartTime: row[columnIndices.startTime],
             rawEndTime: row[columnIndices.endTime],
-            rawDuration: row[columnIndices.duration]
+            rawDuration: row[columnIndices.duration],
           });
 
           // Extract time values with fallback to specific columns if needed
           const startTimeValue = row[columnIndices.startTime] || row[3]; // Fallback to column D
-          const endTimeValue = row[columnIndices.endTime] || row[4];     // Fallback to column E
-          const durationValue = row[columnIndices.duration] || row[5];    // Fallback to column F
+          const endTimeValue = row[columnIndices.endTime] || row[4]; // Fallback to column E
+          const durationValue = row[columnIndices.duration] || row[5]; // Fallback to column F
 
           const meeting = {
             id: meetings.length + 1,
@@ -256,7 +290,7 @@ function processExcelFile(file) {
             endTime: formatTime(endTimeValue),
             duration: formatDuration(durationValue),
             content: row[7] || "",
-            purpose: determinePurpose(row[7])
+            purpose: determinePurpose(row[7]),
           };
 
           console.log(`Processed meeting data:`, meeting);
@@ -284,25 +318,31 @@ function formatDate(dateInput) {
     // Xử lý Date object từ Excel (do cellDates: true)
     if (dateInput instanceof Date) {
       if (!isNaN(dateInput.getTime())) {
-        const day = dateInput.getDate() + 1 ;
+        const day = dateInput.getDate() + 1;
         const month = dateInput.getMonth() + 1;
         const year = dateInput.getFullYear();
-        return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
+        return `${String(day).padStart(2, "0")}/${String(month).padStart(
+          2,
+          "0"
+        )}/${year}`;
       }
     }
 
     // Xử lý chuỗi ngày đã được format sẵn dd/mm/yyyy
-    if (typeof dateInput === 'string') {
+    if (typeof dateInput === "string") {
       const dateStr = dateInput.trim();
       const match = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
       if (match) {
         const [_, day, month, year] = match;
-        return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
+        return `${String(day).padStart(2, "0")}/${String(month).padStart(
+          2,
+          "0"
+        )}/${year}`;
       }
     }
 
     // Xử lý số serial từ Excel (nếu không dùng cellDates: true)
-    if (typeof dateInput === 'number' || !isNaN(Number(dateInput))) {
+    if (typeof dateInput === "number" || !isNaN(Number(dateInput))) {
       const numDate = Number(dateInput);
       // Excel bắt đầu từ 1/1/1900, và trừ đi 2 để điều chỉnh lỗi năm nhuận
       const excelEpoch = new Date(1900, 0, -1);
@@ -314,7 +354,10 @@ function formatDate(dateInput) {
         const day = resultDate.getDate();
         const month = resultDate.getMonth() + 1;
         const year = resultDate.getFullYear();
-        return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
+        return `${String(day).padStart(2, "0")}/${String(month).padStart(
+          2,
+          "0"
+        )}/${year}`;
       }
     }
 
@@ -325,7 +368,6 @@ function formatDate(dateInput) {
     return "";
   }
 }
-
 
 function parseMeetingInfo(cellContent) {
   if (!cellContent) return { purpose: "", content: "" };
@@ -423,11 +465,12 @@ function updateRoomStatus(data) {
   console.log("Updating room status with data:", data);
 
   // Cố định ngày để test
-  const testDate = new Date(2024, 10, 7); // Tháng 10 là tháng 11
-  const currentDate = formatDate(testDate);
+  // const testDate = new Date(2024, 10, 28);
+  // const currentDate = formatDate(testDate);
+  const currentDate = getCurrentDate();
   const currentTime = getCurrentTime();
 
-  console.log("Test date:", currentDate);
+  console.log("Current date:", currentDate);
   console.log("Current time:", currentTime);
 
   const todayMeetings = data.filter((meeting) => {
@@ -440,21 +483,19 @@ function updateRoomStatus(data) {
   console.log("Number of today's meetings:", todayMeetings.length);
 
   // Danh sách phòng để update - sử dụng tên phòng từ data
-  const roomsToUpdate = [
-    "P. LAVENDER 1",
-    "P. LAVENDER 2",
-    "P. LOTUS"
-  ];
+  const roomsToUpdate = ["P. LAVENDER 1", "P. LAVENDER 2", "P. LOTUS"];
 
-  roomsToUpdate.forEach(roomName => {
+  roomsToUpdate.forEach((roomName) => {
     updateSingleRoomStatus(roomName, todayMeetings, currentTime);
   });
 }
 function normalizeRoomName(roomName) {
   // Loại bỏ "P. " và chuẩn hóa tên phòng
-  return roomName.replace(/^P\.\s*/i, '').trim().toLowerCase();
+  return roomName
+    .replace(/^(P\.|Phòng)\s*/i, "")
+    .trim()
+    .toLowerCase();
 }
-
 
 function updateSingleRoomStatus(roomCode, meetings, currentTime) {
   console.log("Updating room status for:", roomCode);
@@ -462,9 +503,11 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
   console.log("All meetings:", meetings);
 
   // Tìm phòng trong DOM dựa trên tên hiển thị
-  const roomSections = document.querySelectorAll('.room-section');
-  const roomSection = Array.from(roomSections).find(section => 
-    normalizeRoomName(section.querySelector('.room-number').textContent) === normalizeRoomName(roomCode)
+  const roomSections = document.querySelectorAll(".room-section");
+  const roomSection = Array.from(roomSections).find(
+    (section) =>
+      normalizeRoomName(section.querySelector(".room-number").textContent) ===
+      normalizeRoomName(roomCode)
   );
 
   if (!roomSection) {
@@ -475,11 +518,15 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
   const titleElement = roomSection.querySelector(".meeting-title");
   const startTimeElement = roomSection.querySelector(".start-time");
   const endTimeElement = roomSection.querySelector(".end-time");
-  const statusIndicator = roomSection.querySelector(".status-indicator .status-text");
-  const indicatorDot = roomSection.querySelector(".status-indicator .indicator-dot");
+  const statusIndicator = roomSection.querySelector(
+    ".status-indicator .status-text"
+  );
+  const indicatorDot = roomSection.querySelector(
+    ".status-indicator .indicator-dot"
+  );
 
   // Tìm các cuộc họp cho phòng hiện tại
-  const roomMeetings = meetings.filter(meeting => {
+  const roomMeetings = meetings.filter((meeting) => {
     console.log(`Checking meeting: ${meeting.room}, Looking for: ${roomCode}`);
     return normalizeRoomName(meeting.room) === normalizeRoomName(roomCode);
   });
@@ -487,7 +534,7 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
   console.log("Filtered room meetings:", roomMeetings);
 
   // Kiểm tra xem có cuộc họp nào đang diễn ra không
-  const activeMeeting = roomMeetings.find(meeting => 
+  const activeMeeting = roomMeetings.find((meeting) =>
     isTimeInRange(currentTime, meeting.startTime, meeting.endTime)
   );
 
@@ -495,48 +542,65 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
 
   if (activeMeeting) {
     // Phòng đang có cuộc họp
-    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${activeMeeting.purpose || activeMeeting.content}`;
+    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${
+      activeMeeting.purpose || activeMeeting.content
+    }`;
     startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${activeMeeting.startTime}`;
     endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${activeMeeting.endTime}`;
-    statusIndicator.textContent = 'Đang họp';
-    indicatorDot.classList.remove('available');
-    indicatorDot.classList.add('busy');
+    statusIndicator.textContent = "Đang họp";
+    indicatorDot.classList.remove("available");
+    indicatorDot.classList.add("busy");
   } else {
     // Lấy 3 cuộc họp đầu tiên trong danh sách
     const firstThreeMeetings = roomMeetings.slice(0, 3);
 
     if (firstThreeMeetings.length > 0) {
-      // Hiển thị thông tin 3 cuộc họp đầu tiên
-      const meetingContents = firstThreeMeetings.map(meeting => meeting.purpose || meeting.content).join(" | ");
-      const meetingStartTimes = firstThreeMeetings.map(meeting => meeting.startTime).join(" | ");
-      const meetingEndTimes = firstThreeMeetings.map(meeting => meeting.endTime).join(" | ");
+      const sortedMeetings = firstThreeMeetings.sort(
+        (a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime)
+      );
+
+      const meetingContents = sortedMeetings
+        .map((meeting) => meeting.content)
+        .join(" | ");
+      const meetingStartTimes = sortedMeetings
+        .map((meeting) => meeting.startTime)
+        .join(" | ");
+      const meetingEndTimes = sortedMeetings
+        .map((meeting) => meeting.endTime)
+        .join(" | ");
 
       titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${meetingContents}`;
       startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${meetingStartTimes}`;
       endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${meetingEndTimes}`;
+
+      // Thêm log để kiểm tra
+      console.log("Displaying meetings:", {
+        contents: meetingContents,
+        startTimes: meetingStartTimes,
+        endTimes: meetingEndTimes,
+      });
     } else {
       titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> Trống`;
       startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
       endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
     }
-    
-    statusIndicator.textContent = 'Trống';
-    indicatorDot.classList.remove('busy');
-    indicatorDot.classList.add('available');
+
+    statusIndicator.textContent = "Trống";
+    indicatorDot.classList.remove("busy");
+    indicatorDot.classList.add("available");
   }
 }
 
 if (!Element.prototype.contains) {
-  Element.prototype.contains = function(text) {
+  Element.prototype.contains = function (text) {
     return this.textContent.trim().includes(text);
   };
 }
 
-
 // Hàm hỗ trợ chuyển đổi thời gian sang phút
 function timeToMinutes(timeStr) {
   if (!timeStr) return 0;
-  const [hours, minutes] = timeStr.split(':').map(Number);
+  const [hours, minutes] = timeStr.split(":").map(Number);
   return hours * 60 + minutes;
 }
 
@@ -606,78 +670,85 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
 //========================Update Time ====================
 function padZero(num) {
-    return num < 10 ? `0${num}` : num;
+  return num < 10 ? `0${num}` : num;
 }
 
 function updateClock() {
-    const now = new Date();
-    const hours = padZero(now.getHours());
-    const minutes = padZero(now.getMinutes());
-    const seconds = padZero(now.getSeconds());
-    const time = `${hours}:${minutes}:${seconds}`;
+  const now = new Date();
+  const hours = padZero(now.getHours());
+  const minutes = padZero(now.getMinutes());
+  const seconds = padZero(now.getSeconds());
+  const time = `${hours}:${minutes}:${seconds}`;
 
-    const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-    const dayName = days[now.getDay()];
-    const date = padZero(now.getDate());
-    const month = padZero(now.getMonth() + 1);
-    const year = now.getFullYear();
-    const dateStr = `${dayName}, ${date}/${month}/${year}`;
+  const days = [
+    "Chủ Nhật",
+    "Thứ Hai",
+    "Thứ Ba",
+    "Thứ Tư",
+    "Thứ Năm",
+    "Thứ Sáu",
+    "Thứ Bảy",
+  ];
+  const dayName = days[now.getDay()];
+  const date = padZero(now.getDate());
+  const month = padZero(now.getMonth() + 1);
+  const year = now.getFullYear();
+  const dateStr = `${dayName}, ${date}/${month}/${year}`;
 
-    const logoElement = document.querySelector('.logo');
-    const currentDateElement = document.querySelector('.current-date');
+  const logoElement = document.querySelector(".logo");
+  const currentDateElement = document.querySelector(".current-date");
 
-    if (logoElement) {
-        logoElement.innerHTML = `
+  if (logoElement) {
+    logoElement.innerHTML = `
             <div class="clock-container" style="font-size: 100px; color: #ffffff;justify-content: right;">
                 ${time}
             </div>
         `;
-    }
+  }
 
-    if (currentDateElement) {
-        currentDateElement.textContent = dateStr;
-        currentDateElement.style.fontSize = "17px"; // Thay đổi kích thước font
-        currentDateElement.style.color = "#ffffff"; // Thay đổi màu chữ
-        currentDateElement.style.fontWeight = "bold"; // Đậm chữ
-        currentDateElement.style.paddingRight = "25px";
-    }
+  if (currentDateElement) {
+    currentDateElement.textContent = dateStr;
+    currentDateElement.style.fontSize = "17px"; // Thay đổi kích thước font
+    currentDateElement.style.color = "#ffffff"; // Thay đổi màu chữ
+    currentDateElement.style.fontWeight = "bold"; // Đậm chữ
+    currentDateElement.style.paddingRight = "25px";
+  }
 }
 
 // Khởi tạo đồng hồ và cập nhật mỗi giây
 function initClock() {
-    updateClock(); // Cập nhật ngay lập tức
-    setInterval(updateClock, 1000); // Cập nhật mỗi giây
+  updateClock(); // Cập nhật ngay lập tức
+  setInterval(updateClock, 1000); // Cập nhật mỗi giây
 }
 
 // Gọi hàm khởi tạo khi trang đã load
-document.addEventListener('DOMContentLoaded', initClock);
-
-
+document.addEventListener("DOMContentLoaded", initClock);
 
 //==========================New update : Selection when user pick any date=====
-document.addEventListener('DOMContentLoaded', function() {
-    const datePicker = document.getElementById('meetingDate');
-    
-    datePicker.addEventListener('change', function() {
-        const selectedDate = new Date(this.value);
-        filterMeetingsByDate(selectedDate);
-    });
+document.addEventListener("DOMContentLoaded", function () {
+  const datePicker = document.getElementById("meetingDate");
+
+  datePicker.addEventListener("change", function () {
+    const selectedDate = new Date(this.value);
+    filterMeetingsByDate(selectedDate);
+  });
 });
 
 function filterMeetingsByDate(selectedDate) {
-    const rows = document.querySelectorAll('.schedule-table .table-row');
+  const rows = document.querySelectorAll(".schedule-table .table-row");
 
-    rows.forEach(row => {
-        const meetingDateText = row.children[1].textContent; // Cột ngày
-        const meetingDate = new Date(meetingDateText.split('/').reverse().join('-')); // Chuyển đổi định dạng ngày
-        
-        if (meetingDate.toDateString() === selectedDate.toDateString()) {
-            row.style.display = ''; // Hiển thị nếu trùng khớp
-        } else {
-            row.style.display = 'none'; // Ẩn nếu không trùng khớp
-        }
-    });
+  rows.forEach((row) => {
+    const meetingDateText = row.children[1].textContent; // Cột ngày
+    const meetingDate = new Date(
+      meetingDateText.split("/").reverse().join("-")
+    ); // Chuyển đổi định dạng ngày
+
+    if (meetingDate.toDateString() === selectedDate.toDateString()) {
+      row.style.display = ""; // Hiển thị nếu trùng khớp
+    } else {
+      row.style.display = "none"; // Ẩn nếu không trùng khớp
+    }
+  });
 }
