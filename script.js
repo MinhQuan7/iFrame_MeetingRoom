@@ -543,7 +543,7 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
   if (activeMeeting) {
     // Phòng đang có cuộc họp
     titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${
-      activeMeeting.purpose || activeMeeting.content
+      activeMeeting.content || activeMeeting.content
     }`;
     startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${activeMeeting.startTime}`;
     endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${activeMeeting.endTime}`;
