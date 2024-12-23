@@ -179,7 +179,7 @@ function processExcelFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onload = function (e) {
+    reader.onload = async function (e) {
       try {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, {
@@ -195,10 +195,7 @@ function processExcelFile(file) {
           header: 1,
         });
 
-        // Debug: Print raw data
-        console.log("Raw Excel Data:", rawData);
-
-        // Find header row with more flexible matching
+        // Tìm và xử lý header
         const headerRowIndex = rawData.findIndex((row) =>
           row.some((cell) =>
             String(cell)
@@ -285,6 +282,18 @@ function processExcelFile(file) {
 
           console.log(`Processed meeting data:`, meeting);
           meetings.push(meeting);
+        }
+        const conflicts = await validateMeetings(meetings);
+
+        if (conflicts.length > 0) {
+          let errorMessage = "Phát hiện xung đột trong lịch họp:\n\n";
+          conflicts.forEach((conflict) => {
+            errorMessage += `${conflict.message}\n\n`;
+          });
+
+          showErrorModal(errorMessage);
+          reject(new Error("CONFLICT_ERROR"));
+          return;
         }
 
         resolve(meetings);
@@ -699,7 +708,7 @@ async function checkFileChanges() {
 
 async function handleFileUpload(file) {
   try {
-    // Lấy file handle thông qua File System Access API
+    // Xử lý File System Access API
     try {
       const handles = await window.showOpenFilePicker({
         multiple: false,
@@ -715,16 +724,16 @@ async function handleFileUpload(file) {
         ],
       });
       fileHandle = handles[0];
-
-      // Đọc dữ liệu ban đầu của file
       const initialFile = await fileHandle.getFile();
       lastFileData = await initialFile.text();
     } catch (error) {
       console.error("Không thể lấy file handle:", error);
     }
 
-    // Process file as normal
+    // Xử lý file và kiểm tra xung đột
     const data = await processExcelFile(file);
+
+    // Nếu không có xung đột, tiếp tục xử lý
     updateScheduleTable(data);
     startAutoUpdate(data);
 
@@ -745,7 +754,7 @@ async function handleFileUpload(file) {
       console.error("Không thể lưu vào localStorage:", e);
     }
 
-    // Bắt đầu monitoring nếu có file handle
+    // Thiết lập monitoring
     if (fileHandle) {
       if (window.fileCheckInterval) {
         clearInterval(window.fileCheckInterval);
@@ -753,8 +762,12 @@ async function handleFileUpload(file) {
       window.fileCheckInterval = setInterval(checkFileChanges, 5000);
     }
   } catch (error) {
-    console.error("Error processing file:", error);
-    alert("Error processing file. Please try again.");
+    console.error("Lỗi xử lý file:", error);
+    if (error.message === "CONFLICT_ERROR") {
+      // Xung đột đã được xử lý và hiển thị trong modal
+      return;
+    }
+    alert("Lỗi khi xử lý file. Vui lòng thử lại.");
   }
 }
 
@@ -902,4 +915,166 @@ function filterMeetingsByDate(selectedDate) {
       row.style.display = "none"; // Ẩn nếu không trùng khớp
     }
   });
+}
+//=======New Update : Kiểm tra thông tin nhập vào từ người dùng - Cảnh báo nếu nhập trùng phòng họp=======
+// Hàm kiểm tra xung đột thời gian giữa các cuộc họp
+// Hàm kiểm tra xung đột thời gian
+function checkTimeConflict(meeting1, meeting2) {
+  const start1 = timeToMinutes(meeting1.startTime);
+  const end1 = timeToMinutes(meeting1.endTime);
+  const start2 = timeToMinutes(meeting2.startTime);
+  const end2 = timeToMinutes(meeting2.endTime);
+  return start1 < end2 && start2 < end1;
+}
+
+// Hàm kiểm tra xung đột lịch họp
+async function validateMeetings(meetings) {
+  const conflicts = [];
+  const processedMeetings = new Set();
+
+  for (let i = 0; i < meetings.length; i++) {
+    const currentMeeting = meetings[i];
+    const key = `${currentMeeting.date}_${currentMeeting.room}`;
+
+    // Kiểm tra với các cuộc họp khác cùng ngày và cùng phòng
+    for (let j = 0; j < meetings.length; j++) {
+      if (i === j) continue;
+      const otherMeeting = meetings[j];
+
+      if (
+        currentMeeting.date === otherMeeting.date &&
+        normalizeRoomName(currentMeeting.room) ===
+          normalizeRoomName(otherMeeting.room)
+      ) {
+        if (checkTimeConflict(currentMeeting, otherMeeting)) {
+          const conflictKey = [i, j].sort().join("_");
+          if (!processedMeetings.has(conflictKey)) {
+            conflicts.push({
+              meeting1: currentMeeting,
+              meeting2: otherMeeting,
+              message:
+                `Xung đột lịch họp tại phòng ${currentMeeting.room} ngày ${currentMeeting.date}:\n` +
+                `- Cuộc họp 1: "${
+                  currentMeeting.content || currentMeeting.purpose
+                }" (${currentMeeting.startTime} - ${
+                  currentMeeting.endTime
+                })\n` +
+                `- Cuộc họp 2: "${
+                  otherMeeting.content || otherMeeting.purpose
+                }" (${otherMeeting.startTime} - ${otherMeeting.endTime})`,
+            });
+            processedMeetings.add(conflictKey);
+          }
+        }
+      }
+    }
+  }
+
+  return conflicts;
+}
+
+function checkTimeConflict(meeting1, meeting2) {
+  const start1 = timeToMinutes(meeting1.startTime);
+  const end1 = timeToMinutes(meeting1.endTime);
+  const start2 = timeToMinutes(meeting2.startTime);
+  const end2 = timeToMinutes(meeting2.endTime);
+
+  // Kiểm tra xem hai khoảng thời gian có giao nhau không
+  return start1 < end2 && start2 < end1;
+}
+
+// Hàm kiểm tra xung đột cho một cuộc họp mới
+function validateNewMeeting(newMeeting, existingMeetings) {
+  const conflicts = [];
+
+  // Chỉ kiểm tra các cuộc họp cùng ngày và cùng phòng
+  const relevantMeetings = existingMeetings.filter(
+    (meeting) =>
+      meeting.date === newMeeting.date &&
+      normalizeRoomName(meeting.room) === normalizeRoomName(newMeeting.room)
+  );
+
+  for (const existingMeeting of relevantMeetings) {
+    if (checkTimeConflict(newMeeting, existingMeeting)) {
+      conflicts.push({
+        conflictWith: existingMeeting,
+        type: "TIME_OVERLAP",
+        message: `Xung đột với cuộc họp "${
+          existingMeeting.content || existingMeeting.purpose
+        }" 
+                 từ ${existingMeeting.startTime} đến ${
+          existingMeeting.endTime
+        }`,
+      });
+    }
+  }
+
+  return {
+    isValid: conflicts.length === 0,
+    conflicts,
+  };
+}
+
+// Hàm hiển thị modal thông báo lỗi
+function showErrorModal(message) {
+  // Tạo modal container
+  const modalContainer = document.createElement("div");
+  modalContainer.className = "error-modal-container";
+  modalContainer.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  `;
+
+  // Tạo modal content
+  const modalContent = document.createElement("div");
+  modalContent.className = "error-modal-content";
+  modalContent.style.cssText = `
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+    position: relative;
+  `;
+
+  // Tạo tiêu đề
+  const title = document.createElement("h3");
+  title.textContent = "Lỗi Xung Đột Lịch Họp";
+  title.style.color = "#dc3545";
+
+  // Tạo nội dung
+  const content = document.createElement("pre");
+  content.textContent = message;
+  content.style.whiteSpace = "pre-wrap";
+  content.style.marginTop = "10px";
+
+  // Tạo nút đóng
+  const closeButton = document.createElement("button");
+  closeButton.textContent = "Đóng";
+  closeButton.style.cssText = `
+    margin-top: 15px;
+    padding: 8px 16px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  `;
+  closeButton.onclick = () => modalContainer.remove();
+
+  // Ghép các phần tử
+  modalContent.appendChild(title);
+  modalContent.appendChild(content);
+  modalContent.appendChild(closeButton);
+  modalContainer.appendChild(modalContent);
+  document.body.appendChild(modalContainer);
 }
