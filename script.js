@@ -918,7 +918,6 @@ function filterMeetingsByDate(selectedDate) {
 }
 //=======New Update : Kiểm tra thông tin nhập vào từ người dùng - Cảnh báo nếu nhập trùng phòng họp=======
 // Hàm kiểm tra xung đột thời gian giữa các cuộc họp
-// Hàm kiểm tra xung đột thời gian
 function checkTimeConflict(meeting1, meeting2) {
   const start1 = timeToMinutes(meeting1.startTime);
   const end1 = timeToMinutes(meeting1.endTime);
@@ -1078,3 +1077,43 @@ function showErrorModal(message) {
   modalContainer.appendChild(modalContent);
   document.body.appendChild(modalContainer);
 }
+
+//===================E-Ra Services=============================
+const eraWidget = new EraWidget();
+const currentId = "Current"; // ID chuỗi cho dòng điện
+const voltageId = "Voltage"; // ID chuỗi cho điện áp
+const pwId = "Power"; // ID số cho công suất tiêu thụ
+
+let configCurrent = null,
+  configVol = null,
+  configPower = null;
+
+eraWidget.init({
+  onConfiguration: (configuration) => {
+    // Lưu các cấu hình khi nhận được từ widget
+    configCurrent = configuration.realtime_configs[0]; // Lưu cấu hình dòng điện
+    configVol = configuration.realtime_configs[1]; // Lưu cấu hình điện áp
+    configPower = configuration.realtime_configs[2]; // Lưu cấu hình power
+    actions = configuration.actions; // Lưu các hành động điều khiển
+  },
+
+  // Hàm lấy giá trị từ các ID và cập nhật giao diện
+  onValues: (values) => {
+    if (configVol && values[configVol.id]) {
+      const voltageVal = values[configVol.id].value;
+      document.getElementById("voltageId").textContent = voltageVal;
+    }
+
+    if (configCurrent && values[configCurrent.id]) {
+      const currentVal = values[configCurrent.id].value;
+      document.getElementById("currentId").textContent = currentVal; // Cập nhật giá trị nhiệt độ
+    }
+
+    if (configPower && values[configPower.id]) {
+      const powerVal = values[configPower.id].value;
+      document.getElementById("power").textContent = powerVal; // Cập nhật giá trị công suất tiêu thụ
+    } else {
+      console.error("Không tìm thấy cấu hình hoặc giá trị cho Power.");
+    }
+  },
+});
