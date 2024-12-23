@@ -1,0 +1,831 @@
+.meeting-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.meeting-screen {
+  background-image: url(imgs/background.jpg);
+  background-size: cover;
+  flex: 1;
+  padding: 20px;
+}
+
+.meeting-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px 40px;
+}
+
+.content-wrapper {
+  gap: 20px;
+  display: flex;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 40%;
+  margin-left: 0;
+  height: fit-content;
+  padding-right: 40px;
+}
+
+.header-section {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: start;
+  padding: 0 16px 7px;
+}
+
+.date-wrapper {
+  color: #000;
+  font: 510 15px SF Pro, sans-serif; /* Simplified font declaration */
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.logo {
+  display: flex;
+  justify-content: flex-start; /* Căn logo sang bên trái */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  margin: 20px 20px 20px 0; /* Khoảng cách với phần còn lại */
+}
+
+.current-date {
+  font-size: 8px; /* Giảm kích thước chữ cho ngày giờ */
+  color: #ffffff; /* Màu chữ trắng */
+  white-space: nowrap; /* Không xuống dòng */
+  align-self: stretch; /* Kéo dài toàn bộ chiều cao */
+  margin: auto 0; /* Căn giữa theo chiều dọc */
+  margin-top: -60px; /* Khoảng cách phía trên */
+  text-align: right; /* Căn phải */
+  right: 20px; /* Cách bên phải */
+  top: 20px; /* Cách bên trên */
+}
+.welcome-message {
+  align-self: stretch;
+  flex: 1;
+  min-width: 240px;
+  width: 100%;
+  gap: 10px;
+  overflow: hidden;
+  margin: auto 0;
+  padding: 15px;
+  transition: all 0.3s ease;
+}
+
+.welcome-text {
+  max-width: 300px;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  text-align: left;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+}
+.rooms-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  margin-top: 2px;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: space-between;
+}
+
+.room-section {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden; /* Thêm overflow: hidden */
+}
+
+.room-number {
+  width: 93%;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+  padding: 8px 8px;
+  background: linear-gradient(
+    135deg,
+    rgba(69, 255, 218, 0.2),
+    rgba(69, 255, 218, 0.1)
+  );
+  border-radius: 12px; /* Tăng border-radius để bo tròn góc nhiều hơn */
+  border: 1px solid rgba(69, 255, 218, 0.3); /* Thêm border nhẹ */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Thêm shadow để tạo chiều sâu */
+  border-radius: 8px;
+  min-width: 120px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+.room-number:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Tăng shadow khi hover */
+  background: linear-gradient(
+    135deg,
+    rgba(69, 255, 218, 0.3),
+    rgba(69, 255, 218, 0.2)
+  );
+}
+.room-details {
+  display: flex;
+  align-items: center;
+  gap: 39px;
+  overflow: hidden;
+  font-family: Inter, sans-serif;
+  color: #000;
+  font-weight: 400;
+  justify-content: start;
+  padding: 8px 22px 10px 0;
+  border-radius: 16px; /* Thêm border-radius */
+}
+.meeting-info {
+  margin: 15px 0;
+  margin-left: 0;
+  max-width: 100%;
+  border-radius: 16px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.85);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  overflow: hidden; /* Thêm overflow: hidden */
+}
+
+.meeting-header {
+  display: flex;
+  width: 100%;
+  gap: 4px;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  padding: 3px 0;
+}
+
+.meeting-title {
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: -0.15px;
+}
+
+.meeting-time {
+  display: flex;
+  font-size: 14px;
+  align-items: center;
+  letter-spacing: -0.1px;
+  line-height: 1;
+  justify-content: start;
+  flex-wrap: wrap;
+}
+.start-time,
+.end-time {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  min-width: 100px;
+  justify-content: center;
+}
+/* Thêm icon đồng hồ trước thời gian */
+.start-time::before,
+.end-time::before {
+  content: "⌚";
+  /* margin-right: 4px; */
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .meeting-time {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .start-time,
+  .end-time {
+    min-width: 90px;
+    padding: 3px 8px;
+    font-size: 13px;
+  }
+
+  .time-separator {
+    font-size: 14px;
+  }
+}
+.meeting-stats {
+  display: flex;
+  margin-top: 12px;
+  width: 100%;
+  flex-direction: row;
+  font-size: 14px;
+  letter-spacing: -0.1px;
+  line-height: 1;
+  justify-content: center;
+}
+
+.stats-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 20px;
+  overflow: hidden;
+  justify-content: start;
+  flex-wrap: wrap;
+}
+
+.temperature,
+.humidity {
+  align-self: stretch;
+  width: 150px;
+  /* margin: auto 0; */
+}
+
+.current,
+.power {
+  align-self: stretch;
+  min-width: 240px;
+  flex: 1;
+  margin: auto 0;
+  padding: 3px 0;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto; /* Đẩy xuống dưới cùng */
+  padding-top: 12px; /* Tạo khoảng cách với content phía trên */
+}
+
+.indicator-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .meeting-title {
+    font-size: 16px;
+  }
+
+  .meeting-time,
+  .meeting-stats {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .meeting-info {
+    min-height: 150px; /* Giảm từ 180px */
+    padding: 10px;
+  }
+}
+.indicator-dot.busy {
+  background-color: #ff0000;
+}
+
+.indicator-dot.available {
+  background-color: #228522;
+}
+
+.status-text {
+  align-self: stretch;
+  width: 211px;
+  margin: auto 0;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 67%; /* Tăng từ 70% lên 67% */
+  margin-right: 0;
+  height: fit-content;
+}
+
+/* Cập nhật media queries để duy trì tỷ lệ mới trên các màn hình lớn */
+@media (max-width: 1200px) {
+  .left-column {
+    width: 33%;
+  }
+
+  .right-column {
+    width: 67%;
+  }
+}
+
+/* Giữ nguyên layout dọc trên màn hình nhỏ */
+@media (max-width: 991px) {
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+}
+.schedule-content {
+  max-width: 100%;
+  height: 100%; /* Added to ensure content takes full height */
+  padding: 20px 20px 20px 20px; /* Adjusted padding */
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  font-weight: 520;
+  text-align: center;
+  overflow: hidden; /* Prevent content overflow */
+}
+
+.schedule-section {
+  display: flex;
+  width: 100%;
+  height: 95vh; /* Changed from 95vh to use full viewport height */
+  flex-direction: column;
+  font-family: SF Pro, sans-serif;
+  color: #000;
+  overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbars */
+}
+
+/* Custom Scrollbar Styles */
+.schedule-section::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+.schedule-section::-webkit-scrollbar-track {
+  background: rgba(240, 240, 240, 0.8); /* Background of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the track */
+}
+
+.schedule-section::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the draggable part (thumb) */
+  border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+.schedule-section::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Darker color on hover */
+}
+
+.schedule-section::-webkit-scrollbar-corner {
+  background: transparent; /* Corner where both scrollbars meet */
+}
+
+.schedule-title {
+  font-size: 32px;
+  margin-bottom: 20px;
+  align-self: center;
+}
+
+.schedule-actions {
+  display: flex;
+  margin-top: 20px; /* Reduced from 42px */
+  margin-bottom: 20px;
+  width: 100%;
+  align-items: center;
+  gap: 20px;
+  font-size: 24px;
+  color: #fff;
+  justify-content: space-between;
+  flex-shrink: 0; /* Prevent actions from shrinking */
+}
+.upload-button {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  transition: border-color 0.3s ease; /* Hiệu ứng chuyển màu viền */
+  border: 2px #fff;
+  border-radius: 23px;
+  background-color: rgba(130, 132, 255, 0.86);
+  align-self: stretch;
+  display: flex;
+  min-width: 240px;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  justify-content: center;
+  margin: auto 0;
+  padding: 6px 6px;
+  color: #fff;
+}
+
+.upload-icon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  width: 30px;
+  margin-left: 60px;
+  align-self: stretch;
+  margin: auto 0;
+}
+upload-icon-date {
+  object-fit: contain;
+  object-position: center;
+  width: 70px;
+  margin-left: 60px;
+  align-self: stretch;
+  margin: auto 0;
+}
+.schedule-table {
+  min-height: auto;
+  max-height: 70vh;
+  overflow-y: auto;
+  font-size: 16px;
+  margin: 15px 0;
+  flex-direction: column;
+  /* overflow: hidden; */
+  justify-content: start;
+}
+
+.table-header,
+.table-row {
+  border-bottom: 1px solid #000000; /* Đổi màu border thành đen và thêm solid */
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  justify-content: start;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+/* Thêm hover effect cho row */
+.table-row:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Tạo style riêng cho header */
+.table-header {
+  font-weight: bold;
+  border-bottom: 2px solid #000; /* Border dày hơn cho header */
+}
+
+/* Thêm border cho cell để tách biệt các cột */
+.table-header > div,
+.table-row > div {
+  padding: 0 10px;
+  flex: 1;
+  text-align: left;
+}
+
+/* Điều chỉnh width cho từng cột cụ thể nếu cần */
+.table-header > div:nth-child(1),
+.table-row > div:nth-child(1) {
+  flex: 0 0 50px; /* Cột TT */
+}
+
+.room-buttons {
+  margin-top: auto; /* Push to bottom */
+  padding: 15px;
+  gap: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+/* Scrollbar styles */
+.schedule-table::-webkit-scrollbar {
+  width: 8px;
+}
+
+.schedule-table::-webkit-scrollbar-track {
+  background: rgba(240, 240, 240, 0.8);
+  border-radius: 4px;
+}
+
+.schedule-table::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.schedule-table::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+.room-button {
+  padding: 15px;
+  width: auto;
+  min-width: 150px;
+  background-color: rgba(69, 255, 218, 0.6);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  margin: auto 0;
+  border-radius: 20px;
+}
+/* New update - Room button hover effects */
+.room-button {
+  border-radius: 23px;
+  background-color: rgba(69, 255, 218, 0.6);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.room-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(69, 255, 218, 0.4);
+  background-color: rgba(69, 255, 218, 0.8);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.room-button:active {
+  transform: scale(0.98);
+}
+.upload-button:hover {
+  background-color: rgba(130, 132, 255, 1);
+  box-shadow: 0 5px 15px rgba(130, 132, 255, 0.6);
+  transform: translateY(-2px);
+  border: 2px #fff;
+}
+
+.upload-button:active {
+  transform: translateY(1px);
+}
+
+/* Table row hover effects */
+.table-row {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.table-row:hover {
+  background-color: rgba(69, 255, 218, 0.1);
+  transform: translateX(5px);
+  box-shadow: -5px 0 0 rgba(69, 255, 218, 0.5);
+}
+
+/* Meeting info card hover effects */
+.meeting-info {
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.meeting-info:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(69, 255, 218, 0.3);
+}
+
+/* Status indicator hover effect */
+.status-indicator {
+  transition: all 0.2s ease;
+}
+
+.status-indicator:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+
+/* Indicator dot pulse animation for busy status */
+.indicator-dot.busy {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+.indicator-dot.available {
+  animation: pulseAvail 1s infinite;
+}
+@keyframes pulseAvail {
+  0% {
+    box-shadow: 0 0 0 0 rgba(32, 255, 2, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+
+/* Smooth transition for all interactive elements */
+* {
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.button-content {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  justify-content: start;
+}
+
+.button-text {
+  align-self: stretch;
+  min-width: 240px;
+  width: 100%;
+  flex: 1;
+  margin: auto 0;
+  padding: 0 2px;
+}
+
+@media (max-width: 991px) {
+  .meeting-screen {
+    max-width: 100%;
+  }
+
+  .meeting-container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  .content-wrapper {
+    display: flex;
+    gap: 20px;
+    padding: 15px;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+
+  .left-column {
+    max-width: 100%;
+    min-width: 300px;
+    flex: 0 1 auto;
+  }
+
+  .right-column {
+    width: 70%;
+    flex-grow: 1;
+  }
+
+  .header-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    padding: 15px;
+  }
+
+  .date-wrapper,
+  .welcome-text {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    margin-top: 0;
+  }
+
+  .welcome-message {
+    max-width: 100%;
+    font-size: 40px;
+  }
+
+  .schedule-title {
+    max-width: 100%;
+    font-size: 40px;
+  }
+
+  .schedule-actions {
+    max-width: 100%;
+    margin-top: 40px;
+  }
+
+  .schedule-table {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .room-buttons {
+    max-width: 100%;
+    margin-right: 9px;
+    white-space: initial;
+    padding: 0 20px;
+  }
+
+  .room-button {
+    white-space: initial;
+    padding: 0 20px;
+  }
+
+  .button-content,
+  .button-text {
+    white-space: initial;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .content-wrapper {
+    gap: 15px;
+  }
+
+  .left-column {
+    width: 40%;
+  }
+
+  .right-column {
+    width: 60%;
+  }
+}
+
+@media (max-width: 991px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+
+  .date-wrapper {
+    font-size: 20px;
+  }
+
+  .welcome-text {
+    font-size: 32px;
+  }
+
+  .meeting-title {
+    font-size: 20px;
+  }
+
+  .schedule-title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .meeting-container {
+    padding: 10px;
+  }
+
+  .logo {
+    width: 150px;
+  }
+
+  .date-wrapper,
+  .welcome-text {
+    font-size: 18px;
+  }
+
+  .room-buttons {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .meeting-info {
+    min-height: 180px;
+  }
+
+  .meeting-time,
+  .meeting-stats,
+  .schedule-table {
+    font-size: 14px;
+  }
+
+  .room-button {
+    min-width: 120px;
+    padding: 10px;
+  }
+}
+
+/*//=======New update : Selection when user pick any date=====*/
+.date-picker {
+  margin-left: 10px; /* Khoảng cách với nút upload */
+  padding: 10px; /* Khoảng đệm bên trong */
+  font-size: 16px; /* Kích thước chữ */
+  border: 2px solid #ffffffc4; /* Viền màu xanh */
+  border-radius: 23px; /* Bo góc */
+  background-color: #ffffff; /* Nền trắng */
+  color: #ffffff; /* Màu chữ tối */
+  transition: border-color 0.3s ease; /* Hiệu ứng chuyển màu viền */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  background-color: rgba(130, 132, 255, 0.86);
+  text-align: center;
+  justify-content: center;
+  margin-left: 30%;
+}
+
+.date-picker:hover {
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(130, 132, 255, 0.7);
+}
+.upload-button:active {
+  transform: translateY(1px);
+}
+.date-picker::placeholder {
+  /* Định dạng placeholder */
+  color: #999999; /* Màu chữ placeholder */
+}
