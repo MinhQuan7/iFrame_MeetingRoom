@@ -56,15 +56,11 @@
 }
 
 .current-date {
-  font-size: 8px; /* Giảm kích thước chữ cho ngày giờ */
-  color: #ffffff; /* Màu chữ trắng */
-  white-space: nowrap; /* Không xuống dòng */
-  align-self: stretch; /* Kéo dài toàn bộ chiều cao */
-  margin: auto 0; /* Căn giữa theo chiều dọc */
-  margin-top: -60px; /* Khoảng cách phía trên */
-  text-align: right; /* Căn phải */
-  right: 20px; /* Cách bên phải */
-  top: 20px; /* Cách bên trên */
+  font-size: 8px;
+  color: #ffffff;
+  white-space: nowrap;
+  padding-top: 20px;
+  text-align: right;
 }
 .welcome-message {
   align-self: stretch;
@@ -144,7 +140,7 @@
   color: #000;
   font-weight: 400;
   justify-content: start;
-  padding: 8px 22px 10px 0;
+  /* padding: 0px 22px 0px 0; */
   border-radius: 16px; /* Thêm border-radius */
 }
 .meeting-info {
@@ -162,19 +158,9 @@
   overflow: hidden; /* Thêm overflow: hidden */
 }
 
-.meeting-header {
-  display: flex;
-  width: 100%;
-  gap: 4px;
-  flex-direction: column;
-  overflow: hidden;
-  justify-content: center;
-  padding: 3px 0;
-}
-
 .meeting-title {
-  font-size: 18px;
-  line-height: 1.2;
+  font-size: 15px;
+  line-height: 1;
   letter-spacing: -0.15px;
 }
 
@@ -224,30 +210,11 @@
     font-size: 14px;
   }
 }
-/* .meeting-stats {
-  display: flex;
-  margin-top: 12px;
-  width: 100%;
-  flex-direction: row;
-  font-size: 14px;
-  letter-spacing: -0.1px;
-  line-height: 1;
-  justify-content: center;
-}
 
-.stats-row {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 20px;
-  overflow: hidden;
-} */
 .meeting-stats {
-  display: flex;
-  margin-top: 12px;
   width: 100%;
   flex-direction: row;
-  font-size: 14px; /* Giảm kích thước font */
+  font-size: 12px; /* Giảm kích thước font */
   letter-spacing: -0.1px;
   line-height: 1;
   justify-content: space-between; /* Sử dụng space-between để phân bố đều */
@@ -337,42 +304,27 @@
 }
 
 .logo {
-  /* Set display to flex and justify content to flex start */
   display: flex;
   justify-content: flex-start;
-  /* Set align items to center */
   align-items: center;
-  /* Add margin for spacing */
   margin: 20px 20px 20px 0;
 }
 
 .current-date {
-  /* Set font size to 8px */
   font-size: 8px;
-  /* Set color to white */
   color: #ffffff;
-  /* Set white space to nowrap */
   white-space: nowrap;
-  /* Set align self to stretch */
   align-self: stretch;
-  /* Add margin for spacing */
   margin: auto 0;
-  /* Set margin top to -60px */
   margin-top: -60px;
-  /* Set text align to right */
   text-align: right;
-  /* Set right to 20px */
   right: 20px;
-  /* Set top to 20px */
   top: 20px;
 }
 
 .welcome-message {
-  /* Set align self to stretch */
   align-self: stretch;
-  /* Set flex to 1 */
   flex: 1;
-  /* Set minimum width to 240px */
   min-width: 240px;
   /* Set width to 100% */
   width: 100%;
@@ -505,64 +457,42 @@
 }
 
 .meeting-info {
-  /* Set margin to 15px 0 */
   margin: 15px 0;
-  /* Set margin left to 0 */
-  margin-left: 0;
-  /* Set maximum width to 100% */
   max-width: 100%;
-  /* Set border radius to 16px */
   border-radius: 16px;
-  /* Add padding for spacing */
   padding: 10px;
-  /* Set background color to rgba(255, 255, 255, 0.85) */
   background-color: rgba(255, 255, 255, 0.85);
-  /* Set align self to stretch */
   align-self: stretch;
-  /* Set display to flex and direction to column */
   display: flex;
   flex-direction: column;
-  /* Set justify content to space between */
   justify-content: space-between;
-  /* Set flex to 1 */
   flex: 1;
-  /* Set overflow to hidden */
   overflow: hidden;
 }
 
 .meeting-header {
-  /* Set display to flex and direction to column */
   display: flex;
   width: 100%;
-  /* Set gap for spacing */
   gap: 4px;
-  /* Set flex direction to column */
+  margin-bottom: 3px;
   flex-direction: column;
-  /* Set overflow to hidden */
   overflow: hidden;
-  /* Set justify content to center */
   justify-content: center;
-  /* Add padding for spacing */
   padding: 3px 0;
 }
 
 .meeting-title {
-  /* Set font size to 18px */
-  font-size: 18px;
-  /* Set line height to 1.2 */
-  line-height: 1.2;
-  /* Set letter spacing to -0.15px */
+  font-size: 15px;
+  line-height: 1;
   letter-spacing: -0.15px;
 }
 
 .meeting-time {
-  /* Set display to flex and align items to center */
   display: flex;
   align-items: center;
   justify-content: start;
   flex-wrap: wrap;
 }
-
 .temperature,
 .humidity {
   align-self: stretch;
@@ -570,12 +500,18 @@
   /* margin: auto 0; */
 }
 
-.current,
+.curren {
+  align-self: stretch;
+  /* flex: 1; */
+  padding-left: 30px;
+  margin: auto 0;
+  padding: 3px 0;
+}
 .power {
   align-self: stretch;
-  /* min-width: 240px; */
-  flex: 1;
-  margin: auto 0;
+  /* flex: 1; */
+  padding-left: 30px;
+  margin-left: 60px;
   padding: 3px 0;
 }
 
