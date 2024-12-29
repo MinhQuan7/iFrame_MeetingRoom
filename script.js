@@ -1108,7 +1108,7 @@ eraWidget.init({
       const currentVal = values[configCurrent.id].value;
       document.getElementById("currentId").textContent = currentVal; // Cập nhật giá trị nhiệt độ
     }
-
+    
     if (configPower && values[configPower.id]) {
       const powerVal = values[configPower.id].value;
       document.getElementById("power").textContent = powerVal; // Cập nhật giá trị công suất tiêu thụ
