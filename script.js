@@ -1080,40 +1080,36 @@ function showErrorModal(message) {
 
 //===================E-Ra Services=============================
 const eraWidget = new EraWidget();
-const currentId = "Current"; // ID chuỗi cho dòng điện
-const voltageId = "Voltage"; // ID chuỗi cho điện áp
-const pwId = "Power"; // ID số cho công suất tiêu thụ
+// Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
+const temp = document.getElementById("temperature");
+const humi = document.getElementById("humidity");
+const currentIndex = document.getElementById("current");
+const powerIndex = document.getElementById("power");
 
-let configCurrent = null,
-  configVol = null,
+let configTemp = null,
+  configHumi = null,
+  configCurrent = null,
   configPower = null;
 
 eraWidget.init({
   onConfiguration: (configuration) => {
     // Lưu các cấu hình khi nhận được từ widget
-    configCurrent = configuration.realtime_configs[0]; // Lưu cấu hình dòng điện
-    configVol = configuration.realtime_configs[1]; // Lưu cấu hình điện áp
-    configPower = configuration.realtime_configs[2]; // Lưu cấu hình power
-    actions = configuration.actions; // Lưu các hành động điều khiển
+    configTemp = configuration.realtime_configs[0]; // Lưu cấu hình nhiệt độ
+    configHumi = configuration.realtime_configs[1]; // Lưu cấu hình độ ẩm
+    configCurrent = configuration.realtime_configs[2]; // Lưu cấu hình power
+    configPower = configuration.realtime_configs[3]; // Lưu cấu hình toggle light
   },
 
   // Hàm lấy giá trị từ các ID và cập nhật giao diện
   onValues: (values) => {
-    if (configVol && values[configVol.id]) {
-      const voltageVal = values[configVol.id].value;
-      document.getElementById("voltageId").textContent = voltageVal;
-    }
+    const tempValue = values[configTemp.id].value;
+    const humidValue = values[configHumi.id].value;
+    const currentValue = values[configCurrent.id].value;
+    const powerValue = values[configPower.id].value;
 
-    if (configCurrent && values[configCurrent.id]) {
-      const currentVal = values[configCurrent.id].value;
-      document.getElementById("currentId").textContent = currentVal; // Cập nhật giá trị nhiệt độ
-    }
-    
-    if (configPower && values[configPower.id]) {
-      const powerVal = values[configPower.id].value;
-      document.getElementById("power").textContent = powerVal; // Cập nhật giá trị công suất tiêu thụ
-    } else {
-      console.error("Không tìm thấy cấu hình hoặc giá trị cho Power.");
-    }
+    humi.textContent = humidValue; // Cập nhật giá trị độ ẩm
+    temp.textContent = tempValue; // Cập nhật giá trị nhiệt độ
+    currentIndex.textContent = currentValue;
+    powerIndex.textContent = powerValue; // Cập nhật giá trị công suất tiêu thụ
   },
 });
