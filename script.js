@@ -1077,14 +1077,24 @@ function showErrorModal(message) {
   modalContainer.appendChild(modalContent);
   document.body.appendChild(modalContainer);
 }
-
 //===================E-Ra Services=============================
 const eraWidget = new EraWidget();
-// Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
-const temp = document.getElementById("temperature");
-const humi = document.getElementById("humidity");
-const currentIndex = document.getElementById("current");
-const powerIndex = document.getElementById("power");
+
+// Validate DOM elements before using them
+function getValidElement(id) {
+  const element = document.getElementById(id);
+  if (!element) {
+    console.error(`Element with id '${id}' not found in the DOM`);
+    return null;
+  }
+  return element;
+}
+
+// Initialize DOM elements with validation
+const temp = getValidElement("temperature");
+const humi = getValidElement("humidity");
+const currentIndex = getValidElement("current");
+const powerIndex = getValidElement("power");
 
 let configTemp = null,
   configHumi = null,
@@ -1093,23 +1103,53 @@ let configTemp = null,
 
 eraWidget.init({
   onConfiguration: (configuration) => {
-    // Lưu các cấu hình khi nhận được từ widget
-    configTemp = configuration.realtime_configs[0]; // Lưu cấu hình nhiệt độ
-    configHumi = configuration.realtime_configs[1]; // Lưu cấu hình độ ẩm
-    configCurrent = configuration.realtime_configs[2]; // Lưu cấu hình power
-    configPower = configuration.realtime_configs[3]; // Lưu cấu hình toggle light
+    if (!configuration?.realtime_configs) {
+      console.error("Invalid configuration received:", configuration);
+      return;
+    }
+
+    // Safely assign configurations with validation
+    const [tempConfig, humiConfig, currentConfig, powerConfig] =
+      configuration.realtime_configs;
+    configTemp = tempConfig;
+    configHumi = humiConfig;
+    configCurrent = currentConfig;
+    configPower = powerConfig;
+
+    console.log("Configuration loaded successfully");
   },
 
-  // Hàm lấy giá trị từ các ID và cập nhật giao diện
   onValues: (values) => {
-    const tempValue = values[configTemp.id].value;
-    const humidValue = values[configHumi.id].value;
-    const currentValue = values[configCurrent.id].value;
-    const powerValue = values[configPower.id].value;
+    try {
+      // Validate that we have configurations before processing values
+      if (
+        !configTemp?.id ||
+        !configHumi?.id ||
+        !configCurrent?.id ||
+        !configPower?.id
+      ) {
+        console.error("Configurations not properly initialized");
+        return;
+      }
 
-    humi.innerHTML = humidValue; // Cập nhật giá trị độ ẩm
-    temp.innerHTML = tempValue; // Cập nhật giá trị nhiệt độ
-    currentIndex.innerHTML = currentValue;
-    powerIndex.innerHTML = powerValue; // Cập nhật giá trị công suất tiêu thụ
+      // Safely update DOM elements if they exist
+      if (temp && values[configTemp.id]) {
+        temp.innerHTML = values[configTemp.id].value;
+      }
+
+      if (humi && values[configHumi.id]) {
+        humi.innerHTML = values[configHumi.id].value;
+      }
+
+      if (currentIndex && values[configCurrent.id]) {
+        currentIndex.innerHTML = values[configCurrent.id].value;
+      }
+
+      if (powerIndex && values[configPower.id]) {
+        powerIndex.innerHTML = values[configPower.id].value;
+      }
+    } catch (error) {
+      console.error("Error updating values:", error);
+    }
   },
 });
