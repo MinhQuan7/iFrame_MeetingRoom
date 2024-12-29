@@ -1078,78 +1078,144 @@ function showErrorModal(message) {
   document.body.appendChild(modalContainer);
 }
 //===================E-Ra Services=============================
-const eraWidget = new EraWidget();
-
-// Validate DOM elements before using them
-function getValidElement(id) {
-  const element = document.getElementById(id);
-  if (!element) {
-    console.error(`Element with id '${id}' not found in the DOM`);
-    return null;
+// WebSocket connection handling
+class ConnectionManager {
+  constructor(brokerUrl) {
+    this.brokerUrl = brokerUrl;
+    this.maxRetries = 5;
+    this.retryCount = 0;
+    this.retryDelay = 3000; // 3 seconds
   }
-  return element;
+
+  connect() {
+    return new Promise((resolve, reject) => {
+      try {
+        const ws = new WebSocket(this.brokerUrl);
+
+        ws.onopen = () => {
+          console.log("Connection established successfully");
+          this.retryCount = 0;
+          resolve(ws);
+        };
+
+        ws.onerror = (error) => {
+          console.error("WebSocket error:", error);
+          this.handleConnectionError(reject);
+        };
+
+        ws.onclose = () => {
+          console.log("Connection closed");
+          this.handleConnectionError(reject);
+        };
+      } catch (error) {
+        this.handleConnectionError(reject);
+      }
+    });
+  }
+
+  handleConnectionError(reject) {
+    if (this.retryCount < this.maxRetries) {
+      this.retryCount++;
+      console.log(
+        `Retrying connection (${this.retryCount}/${this.maxRetries})...`
+      );
+      setTimeout(() => this.connect(), this.retryDelay);
+    } else {
+      reject(new Error("Failed to establish connection after maximum retries"));
+    }
+  }
 }
 
-// Initialize DOM elements with validation
-const temp = getValidElement("temperature");
-const humi = getValidElement("humidity");
-const currentIndex = getValidElement("current");
-const powerIndex = getValidElement("power");
+// ERA Widget implementation with improved error handling
+class EraWidgetHandler {
+  constructor() {
+    this.connectionManager = new ConnectionManager("wss://mqtt1.eoh.io:8084/");
+    this.elements = {};
+  }
 
-let configTemp = null,
-  configHumi = null,
-  configCurrent = null,
-  configPower = null;
+  initializeElements() {
+    const elementIds = ["temperature", "humidity", "current", "power"];
 
-eraWidget.init({
-  onConfiguration: (configuration) => {
-    if (!configuration?.realtime_configs) {
-      console.error("Invalid configuration received:", configuration);
-      return;
+    elementIds.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) {
+        this.elements[id] = element;
+      } else {
+        console.warn(`Element with id '${id}' not found`);
+      }
+    });
+  }
+
+  validateSvgDimensions(value) {
+    if (typeof value === "number" && !isNaN(value)) {
+      return `${value}px`;
     }
+    return "100%"; // Default fallback value
+  }
 
-    // Safely assign configurations with validation
-    const [tempConfig, humiConfig, currentConfig, powerConfig] =
-      configuration.realtime_configs;
-    configTemp = tempConfig;
-    configHumi = humiConfig;
-    configCurrent = currentConfig;
-    configPower = powerConfig;
+  setupVideoElements() {
+    const videos = document.getElementsByTagName("video");
+    Array.from(videos).forEach((video) => {
+      video.addEventListener("error", (e) => {
+        console.error("Video error:", e);
+        // Implement fallback content or retry logic
+      });
+    });
+  }
 
-    console.log("Configuration loaded successfully");
-  },
+  updateElement(id, value) {
+    if (this.elements[id]) {
+      try {
+        this.elements[id].innerHTML = value;
+      } catch (error) {
+        console.error(`Error updating ${id}:`, error);
+      }
+    }
+  }
 
-  onValues: (values) => {
+  async init() {
+    this.initializeElements();
+    this.setupVideoElements();
+
     try {
-      // Validate that we have configurations before processing values
-      if (
-        !configTemp?.id ||
-        !configHumi?.id ||
-        !configCurrent?.id ||
-        !configPower?.id
-      ) {
-        console.error("Configurations not properly initialized");
-        return;
-      }
+      const connection = await this.connectionManager.connect();
 
-      // Safely update DOM elements if they exist
-      if (temp && values[configTemp.id]) {
-        temp.innerHTML = values[configTemp.id].value;
-      }
+      // Initialize ERA Widget with proper error handling
+      const eraWidget = new EraWidget();
 
-      if (humi && values[configHumi.id]) {
-        humi.innerHTML = values[configHumi.id].value;
-      }
+      eraWidget.init({
+        onConfiguration: (configuration) => {
+          if (!configuration?.realtime_configs) {
+            throw new Error("Invalid configuration received");
+          }
 
-      if (currentIndex && values[configCurrent.id]) {
-        currentIndex.innerHTML = values[configCurrent.id].value;
-      }
+          // Store configurations safely
+          this.configs = configuration.realtime_configs;
+        },
 
-      if (powerIndex && values[configPower.id]) {
-        powerIndex.innerHTML = values[configPower.id].value;
-      }
+        onValues: (values) => {
+          if (!this.configs) return;
+
+          this.configs.forEach((config, index) => {
+            if (values[config.id]) {
+              const value = values[config.id].value;
+              const elementId = ["temperature", "humidity", "current", "power"][
+                index
+              ];
+              this.updateElement(elementId, value);
+            }
+          });
+        },
+      });
     } catch (error) {
-      console.error("Error updating values:", error);
+      console.error("Initialization error:", error);
+      // Implement user notification or fallback behavior
     }
-  },
+  }
+}
+
+// Initialize the handler
+document.addEventListener("DOMContentLoaded", () => {
+  const handler = new EraWidgetHandler();
+  handler.init().catch(console.error);
 });
