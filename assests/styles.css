@@ -12,9 +12,10 @@
 }
 
 .meeting-container {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 20px 40px;
+  max-width: 1200px;
+  /* margin: 0 auto;
+  padding: 20px 40px; */
+  padding: 20px;
 }
 
 .content-wrapper {
@@ -26,7 +27,7 @@
   display: flex;
   flex-direction: column;
   line-height: normal;
-  width: 40%;
+  width: 30%;
   margin-left: 0;
   height: fit-content;
   padding-right: 40px;
@@ -68,8 +69,8 @@
 .welcome-message {
   align-self: stretch;
   flex: 1;
-  min-width: 240px;
-  width: 100%;
+  /* min-width: 240px;
+  width: 100%; */
   gap: 10px;
   overflow: hidden;
   margin: auto 0;
@@ -223,7 +224,7 @@
     font-size: 14px;
   }
 }
-.meeting-stats {
+/* .meeting-stats {
   display: flex;
   margin-top: 12px;
   width: 100%;
@@ -239,868 +240,898 @@
   width: 100%;
   align-items: center;
   gap: 20px;
-  overflow: hidden; /* Improved code with added comments and minor adjustments for better readability */
+  overflow: hidden;
+} */
+.meeting-stats {
+  display: flex;
+  margin-top: 12px;
+  width: 100%;
+  flex-direction: row;
+  font-size: 14px; /* Giảm kích thước font */
+  letter-spacing: -0.1px;
+  line-height: 1;
+  justify-content: space-between; /* Sử dụng space-between để phân bố đều */
+  flex-wrap: wrap; /* Cho phép các phần tử xuống dòng nếu không đủ chỗ */
 }
-  .meeting-page {
-    /* Set display to flex and direction to column */
-    display: flex;
-    flex-direction: column;
-    /* Set minimum height to full viewport height */
-    min-height: 100vh;
-  }
 
-  .meeting-screen {
-    /* Set background image and size */
-    background-image: url(imgs/background.jpg);
-    background-size: cover;
-    /* Set flex to 1 to take up remaining space */
-    flex: 1;
-    /* Add padding for spacing */
-    padding: 20px;
-  }
+.stats-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden; /* Giữ cho nội dung không bị tràn */
+  color: #000;
+  justify-content: start;
+  flex: 1; /* Cho phép các phần tử co giãn */
+}
 
-  .meeting-container {
-    /* Set maximum width and center horizontally */
-    max-width: 1600px;
-    margin: 0 auto;
-    /* Add padding for spacing */
-    padding: 20px 40px;
-  }
+.meeting-page {
+  /* Set display to flex and direction to column */
+  display: flex;
+  flex-direction: column;
+  /* Set minimum height to full viewport height */
+  min-height: 100vh;
+}
 
-  .content-wrapper {
-    /* Set gap for spacing between columns */
-    gap: 20px;
-    /* Set display to flex */
-    display: flex;
-  }
+.meeting-screen {
+  /* Set background image and size */
+  background-image: url(imgs/background.jpg);
+  background-size: cover;
+  /* Set flex to 1 to take up remaining space */
+  flex: 1;
+  /* Add padding for spacing */
+  padding: 20px;
+}
 
-  .left-column {
-    /* Set display to flex and direction to column */
-    display: flex;
-    flex-direction: column;
-    /* Set line height to normal */
-    line-height: normal;
-    /* Set width to 40% */
-    width: 40%;
-    /* Set margin left to 0 */
-    margin-left: 0;
-    /* Set height to fit content */
-    height: fit-content;
-    /* Add padding right for spacing */
-    padding-right: 40px;
-  }
+.meeting-container {
+  /* Set maximum width and center horizontally */
+  max-width: 1600px;
+  margin: 0 auto;
+  /* Add padding for spacing */
+  padding: 20px 40px;
+}
 
-  .header-section {
-    /* Set display to flex and direction to column */
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    /* Set overflow to hidden */
-    overflow: hidden;
-    /* Set justify content to start */
-    justify-content: start;
-    /* Add padding for spacing */
-    padding: 0 16px 7px;
-  }
+.content-wrapper {
+  /* Set gap for spacing between columns */
+  gap: 20px;
+  /* Set display to flex */
+  display: flex;
+}
 
-  .date-wrapper {
-    /* Set color to black */
-    color: #000;
-    /* Set font family and size */
-    font: 510 15px SF Pro, sans-serif;
-    /* Set white space to nowrap */
-    white-space: nowrap;
-  }
+.left-column {
+  /* Set display to flex and direction to column */
+  display: flex;
+  flex-direction: column;
+  /* Set line height to normal */
+  line-height: normal;
+  /* Set width to 40% */
+  width: 40%;
+  /* Set margin left to 0 */
+  margin-left: 0;
+  /* Set height to fit content */
+  height: fit-content;
+  /* Add padding right for spacing */
+  padding-right: 40px;
+}
 
-  .logo {
-    /* Set display to flex and justify content to flex start */
-    display: flex;
-    justify-content: flex-start;
-    /* Set align items to center */
-    align-items: center;
-    /* Add margin for spacing */
-    margin: 20px 20px 20px 0;
-  }
+.header-section {
+  /* Set display to flex and direction to column */
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  /* Set overflow to hidden */
+  overflow: hidden;
+  /* Set justify content to start */
+  justify-content: start;
+  /* Add padding for spacing */
+  padding: 0 16px 7px;
+}
 
-  .current-date {
-    /* Set font size to 8px */
-    font-size: 8px;
-    /* Set color to white */
-    color: #ffffff;
-    /* Set white space to nowrap */
-    white-space: nowrap;
-    /* Set align self to stretch */
-    align-self: stretch;
-    /* Add margin for spacing */
-    margin: auto 0;
-    /* Set margin top to -60px */
-    margin-top: -60px;
-    /* Set text align to right */
-    text-align: right;
-    /* Set right to 20px */
-    right: 20px;
-    /* Set top to 20px */
-    top: 20px;
-  }
+.date-wrapper {
+  /* Set color to black */
+  color: #000;
+  /* Set font family and size */
+  font: 510 15px SF Pro, sans-serif;
+  /* Set white space to nowrap */
+  white-space: nowrap;
+}
 
-  .welcome-message {
-    /* Set align self to stretch */
-    align-self: stretch;
-    /* Set flex to 1 */
-    flex: 1;
-    /* Set minimum width to 240px */
-    min-width: 240px;
-    /* Set width to 100% */
-    width: 100%;
-    /* Set gap for spacing */
-    gap: 10px;
-    /* Set overflow to hidden */
-    overflow: hidden;
-    /* Add margin for spacing */
-    margin: auto 0;
-    /* Add padding for spacing */
-    padding: 15px;
-    /* Set transition for smooth animation */
-    transition: all 0.3s ease;
-  }
+.logo {
+  /* Set display to flex and justify content to flex start */
+  display: flex;
+  justify-content: flex-start;
+  /* Set align items to center */
+  align-items: center;
+  /* Add margin for spacing */
+  margin: 20px 20px 20px 0;
+}
 
-  .welcome-text {
-    /* Set maximum width to 300px */
-    max-width: 300px;
-    /* Set font size to 18px */
-    font-size: 18px;
-    /* Set font weight to 500 */
-    font-weight: 500;
-    /* Set padding to 0 */
-    padding: 0;
-    /* Set display to flex */
-    display: flex;
-    /* Set align items to center */
-    align-items: center;
-    /* Set color to white */
-    color: #fff;
-    /* Set text align to left */
-    text-align: left;
-    /* Set line height to 1.5 */
-    line-height: 1.5;
-    /* Set letter spacing to 0.5px */
-    letter-spacing: 0.5px;
-  }
+.current-date {
+  /* Set font size to 8px */
+  font-size: 8px;
+  /* Set color to white */
+  color: #ffffff;
+  /* Set white space to nowrap */
+  white-space: nowrap;
+  /* Set align self to stretch */
+  align-self: stretch;
+  /* Add margin for spacing */
+  margin: auto 0;
+  /* Set margin top to -60px */
+  margin-top: -60px;
+  /* Set text align to right */
+  text-align: right;
+  /* Set right to 20px */
+  right: 20px;
+  /* Set top to 20px */
+  top: 20px;
+}
 
-  .rooms-container {
-    /* Set display to flex and direction to column */
-    display: flex;
-    flex-direction: column;
-    /* Set gap for spacing */
-    gap: 15px;
-    /* Set width to 100% */
-    width: 100%;
-    /* Set margin top to 2px */
-    margin-top: 2px;
-    /* Set flex direction to column */
-    flex-direction: column;
-    /* Set overflow to hidden */
-    overflow: hidden;
-    /* Set justify content to space between */
-    justify-content: space-between;
-  }
+.welcome-message {
+  /* Set align self to stretch */
+  align-self: stretch;
+  /* Set flex to 1 */
+  flex: 1;
+  /* Set minimum width to 240px */
+  min-width: 240px;
+  /* Set width to 100% */
+  width: 100%;
+  /* Set gap for spacing */
+  gap: 10px;
+  /* Set overflow to hidden */
+  overflow: hidden;
+  /* Add margin for spacing */
+  margin: auto 0;
+  /* Add padding for spacing */
+  padding: 15px;
+  /* Set transition for smooth animation */
+  transition: all 0.3s ease;
+}
 
-  .room-section {
-    /* Set display to flex and direction to column */
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    /* Set overflow to hidden */
-    overflow: hidden;
-  }
+.welcome-text {
+  /* Set maximum width to 300px */
+  max-width: 300px;
+  /* Set font size to 18px */
+  font-size: 18px;
+  /* Set font weight to 500 */
+  font-weight: 500;
+  /* Set padding to 0 */
+  padding: 0;
+  /* Set display to flex */
+  display: flex;
+  /* Set align items to center */
+  align-items: center;
+  /* Set color to white */
+  color: #fff;
+  /* Set text align to left */
+  text-align: left;
+  /* Set line height to 1.5 */
+  line-height: 1.5;
+  /* Set letter spacing to 0.5px */
+  letter-spacing: 0.5px;
+}
 
-  .room-number {
-    /* Set width to 93% */
-    width: 93%;
-    /* Set font size to 1.25rem */
-    font-size: 1.25rem;
-    /* Set font weight to 600 */
-    font-weight: 600;
-    /* Set color to white */
-    color: #ffffff;
-    /* Set padding for spacing */
-    padding: 8px 8px;
-    /* Set background to linear gradient */
-    background: linear-gradient(
-      135deg,
-      rgba(69, 255, 218, 0.2),
-      rgba(69, 255, 218, 0.1)
-    );
-    /* Set border radius to 12px */
-    border-radius: 12px;
-    /* Set border to 1px solid rgba(69, 255, 218, 0.3) */
-    border: 1px solid rgba(69, 255, 218, 0.3);
-    /* Set box shadow for depth effect */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    /* Set border radius to 8px */
-    border-radius: 8px;
-    /* Set minimum width to 120px */
-    min-width: 120px;
-    /* Set text align to center */
-    text-align: center;
-    /* Set transition for smooth animation */
-    transition: all 0.3s ease;
-  }
+.rooms-container {
+  /* Set display to flex and direction to column */
+  display: flex;
+  flex-direction: column;
+  /* Set gap for spacing */
+  gap: 15px;
+  /* Set width to 100% */
+  width: 100%;
+  /* Set margin top to 2px */
+  margin-top: 2px;
+  /* Set flex direction to column */
+  flex-direction: column;
+  /* Set overflow to hidden */
+  overflow: hidden;
+  /* Set justify content to space between */
+  justify-content: space-between;
+}
 
-  .room-number:hover {
-    /* Set box shadow for depth effect on hover */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-    /* Set background to linear gradient on hover */
-    background: linear-gradient(
-      135deg,
-      rgba(69, 255, 218, 0.3),
-      rgba(69, 255, 218, 0.2)
-    );
-  }
+.room-section {
+  /* Set display to flex and direction to column */
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  /* Set overflow to hidden */
+  overflow: hidden;
+}
 
-  .room-details {
-    /* Set display to flex and align items to center */
-    display: flex;
-    align-items: center;
-    /* Set gap for spacing */
-    gap: 39px;
-    /* Set overflow to hidden */
-    overflow: hidden;
-    /* Set font family to Inter, sans-serif */
-    font-family: Inter, sans-serif;
-    /* Set color to black */
-    color: #000;
-    /* Set font weight to 400 */
-    font-weight: 400;
-    /* Set justify content to start */
-    justify-content: start;
-    /* Add padding for spacing */
-    padding: 8px 22px 10px 0;
-    /* Set border radius to 16px */
-    border-radius: 16px;
-  }
+.room-number {
+  /* Set width to 93% */
+  width: 93%;
+  /* Set font size to 1.25rem */
+  font-size: 1.25rem;
+  /* Set font weight to 600 */
+  font-weight: 600;
+  /* Set color to white */
+  color: #ffffff;
+  /* Set padding for spacing */
+  padding: 8px 8px;
+  /* Set background to linear gradient */
+  background: linear-gradient(
+    135deg,
+    rgba(69, 255, 218, 0.2),
+    rgba(69, 255, 218, 0.1)
+  );
+  /* Set border radius to 12px */
+  border-radius: 12px;
+  /* Set border to 1px solid rgba(69, 255, 218, 0.3) */
+  border: 1px solid rgba(69, 255, 218, 0.3);
+  /* Set box shadow for depth effect */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Set border radius to 8px */
+  border-radius: 8px;
+  /* Set minimum width to 120px */
+  min-width: 120px;
+  /* Set text align to center */
+  text-align: center;
+  /* Set transition for smooth animation */
+  transition: all 0.3s ease;
+}
 
-  .meeting-info {
-    /* Set margin to 15px 0 */
-    margin: 15px 0;
-    /* Set margin left to 0 */
-    margin-left: 0;
-    /* Set maximum width to 100% */
-    max-width: 100%;
-    /* Set border radius to 16px */
-    border-radius: 16px;
-    /* Add padding for spacing */
-    padding: 10px;
-    /* Set background color to rgba(255, 255, 255, 0.85) */
-    background-color: rgba(255, 255, 255, 0.85);
-    /* Set align self to stretch */
-    align-self: stretch;
-    /* Set display to flex and direction to column */
-    display: flex;
-    flex-direction: column;
-    /* Set justify content to space between */
-    justify-content: space-between;
-    /* Set flex to 1 */
-    flex: 1;
-    /* Set overflow to hidden */
-    overflow: hidden;
-  }
+.room-number:hover {
+  /* Set box shadow for depth effect on hover */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  /* Set background to linear gradient on hover */
+  background: linear-gradient(
+    135deg,
+    rgba(69, 255, 218, 0.3),
+    rgba(69, 255, 218, 0.2)
+  );
+}
 
-  .meeting-header {
-    /* Set display to flex and direction to column */
-    display: flex;
-    width: 100%;
-    /* Set gap for spacing */
-    gap: 4px;
-    /* Set flex direction to column */
-    flex-direction: column;
-    /* Set overflow to hidden */
-    overflow: hidden;
-    /* Set justify content to center */
-    justify-content: center;
-    /* Add padding for spacing */
-    padding: 3px 0;
-  }
+.room-details {
+  /* Set display to flex and align items to center */
+  display: flex;
+  align-items: center;
+  /* Set gap for spacing */
+  gap: 39px;
+  /* Set overflow to hidden */
+  overflow: hidden;
+  /* Set font family to Inter, sans-serif */
+  font-family: Inter, sans-serif;
+  /* Set color to black */
+  color: #000;
+  /* Set font weight to 400 */
+  font-weight: 400;
+  /* Set justify content to start */
+  justify-content: start;
+  /* Add padding for spacing */
+  padding: 8px 22px 10px 0;
+  /* Set border radius to 16px */
+  border-radius: 16px;
+}
 
+.meeting-info {
+  /* Set margin to 15px 0 */
+  margin: 15px 0;
+  /* Set margin left to 0 */
+  margin-left: 0;
+  /* Set maximum width to 100% */
+  max-width: 100%;
+  /* Set border radius to 16px */
+  border-radius: 16px;
+  /* Add padding for spacing */
+  padding: 10px;
+  /* Set background color to rgba(255, 255, 255, 0.85) */
+  background-color: rgba(255, 255, 255, 0.85);
+  /* Set align self to stretch */
+  align-self: stretch;
+  /* Set display to flex and direction to column */
+  display: flex;
+  flex-direction: column;
+  /* Set justify content to space between */
+  justify-content: space-between;
+  /* Set flex to 1 */
+  flex: 1;
+  /* Set overflow to hidden */
+  overflow: hidden;
+}
+
+.meeting-header {
+  /* Set display to flex and direction to column */
+  display: flex;
+  width: 100%;
+  /* Set gap for spacing */
+  gap: 4px;
+  /* Set flex direction to column */
+  flex-direction: column;
+  /* Set overflow to hidden */
+  overflow: hidden;
+  /* Set justify content to center */
+  justify-content: center;
+  /* Add padding for spacing */
+  padding: 3px 0;
+}
+
+.meeting-title {
+  /* Set font size to 18px */
+  font-size: 18px;
+  /* Set line height to 1.2 */
+  line-height: 1.2;
+  /* Set letter spacing to -0.15px */
+  letter-spacing: -0.15px;
+}
+
+.meeting-time {
+  /* Set display to flex and align items to center */
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  flex-wrap: wrap;
+}
+
+.temperature,
+.humidity {
+  align-self: stretch;
+  width: 150px;
+  /* margin: auto 0; */
+}
+
+.current,
+.power {
+  align-self: stretch;
+  /* min-width: 240px; */
+  flex: 1;
+  margin: auto 0;
+  padding: 3px 0;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto; /* Đẩy xuống dưới cùng */
+  padding-top: 12px; /* Tạo khoảng cách với content phía trên */
+}
+
+.indicator-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+/* Responsive adjustments */
+@media (max-width: 991px) {
   .meeting-title {
-    /* Set font size to 18px */
-    font-size: 18px;
-    /* Set line height to 1.2 */
-    line-height: 1.2;
-    /* Set letter spacing to -0.15px */
-    letter-spacing: -0.15px;
+    font-size: 16px;
   }
 
-  .meeting-time {
-    /* Set display to flex and align items to center */
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    flex-wrap: wrap;
+  .meeting-time,
+  .meeting-stats {
+    font-size: 13px;
   }
+}
 
-  .temperature,
-  .humidity {
-    align-self: stretch;
-    width: 150px;
-    /* margin: auto 0; */
+@media (max-width: 480px) {
+  .meeting-info {
+    min-height: 150px; /* Giảm từ 180px */
+    padding: 10px;
   }
+}
+.indicator-dot.busy {
+  background-color: #ff0000;
+}
 
-  .current,
-  .power {
-    align-self: stretch;
-    min-width: 240px;
-    flex: 1;
-    margin: auto 0;
-    padding: 3px 0;
-  }
+.indicator-dot.available {
+  background-color: #228522;
+}
 
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: auto; /* Đẩy xuống dưới cùng */
-    padding-top: 12px; /* Tạo khoảng cách với content phía trên */
-  }
+.status-text {
+  align-self: stretch;
+  width: 211px;
+  margin: auto 0;
+}
 
-  .indicator-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-  }
-  /* Responsive adjustments */
-  @media (max-width: 991px) {
-    .meeting-title {
-      font-size: 16px;
-    }
+.right-column {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 70%; /* Tăng từ 70% lên 67% */
+  margin-right: 0;
+  height: fit-content;
+}
 
-    .meeting-time,
-    .meeting-stats {
-      font-size: 13px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .meeting-info {
-      min-height: 150px; /* Giảm từ 180px */
-      padding: 10px;
-    }
-  }
-  .indicator-dot.busy {
-    background-color: #ff0000;
-  }
-
-  .indicator-dot.available {
-    background-color: #228522;
-  }
-
-  .status-text {
-    align-self: stretch;
-    width: 211px;
-    margin: auto 0;
+/* Cập nhật media queries để duy trì tỷ lệ mới trên các màn hình lớn */
+/* @media (max-width: 1200px) {
+  .left-column {
+    width: 33%;
   }
 
   .right-column {
-    display: flex;
-    flex-direction: column;
-    line-height: normal;
-    width: 67%; /* Tăng từ 70% lên 67% */
-    margin-right: 0;
-    height: fit-content;
+    width: 67%;
+  }
+} */
+@media (max-width: 1200px) {
+  .content-wrapper {
+    flex-direction: column; /* Đặt lại hướng cột cho màn hình nhỏ */
+    gap: 15px; /* Giảm khoảng cách giữa các phần tử */
   }
 
-  /* Cập nhật media queries để duy trì tỷ lệ mới trên các màn hình lớn */
-  @media (max-width: 1200px) {
-    .left-column {
-      width: 33%;
-    }
-
-    .right-column {
-      width: 67%;
-    }
+  .left-column,
+  .right-column {
+    width: 100%; /* Đặt lại chiều rộng cho các cột */
   }
-
-  /* Giữ nguyên layout dọc trên màn hình nhỏ */
-  @media (max-width: 991px) {
-    .left-column,
-    .right-column {
-      width: 100%;
-    }
-  }
-  .schedule-content {
-    max-width: 100%;
-    height: 100%; /* Added to ensure content takes full height */
-    padding: 20px 20px 20px 20px; /* Adjusted padding */
-    border-radius: 16px;
-    background-color: rgba(255, 255, 255, 0.85);
-    display: flex;
-    flex-direction: column;
-    font-weight: 520;
-    text-align: center;
-    overflow: hidden; /* Prevent content overflow */
-  }
-
-  .schedule-section {
-    display: flex;
+}
+/* Giữ nguyên layout dọc trên màn hình nhỏ */
+@media (max-width: 991px) {
+  .left-column,
+  .right-column {
     width: 100%;
-    height: 95vh; /* Changed from 95vh to use full viewport height */
+  }
+}
+.schedule-content {
+  max-width: 100%;
+  height: 100%; /* Added to ensure content takes full height */
+  padding: 20px 20px 20px 20px; /* Adjusted padding */
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  font-weight: 520;
+  text-align: center;
+  overflow: hidden; /* Prevent content overflow */
+}
+
+.schedule-section {
+  display: flex;
+  width: 100%;
+  height: 95vh; /* Changed from 95vh to use full viewport height */
+  flex-direction: column;
+  font-family: SF Pro, sans-serif;
+  color: #000;
+  overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbars */
+}
+
+/* Custom Scrollbar Styles */
+.schedule-section::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+.schedule-section::-webkit-scrollbar-track {
+  background: rgba(240, 240, 240, 0.8); /* Background of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the track */
+}
+
+.schedule-section::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the draggable part (thumb) */
+  border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+.schedule-section::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Darker color on hover */
+}
+
+.schedule-section::-webkit-scrollbar-corner {
+  background: transparent; /* Corner where both scrollbars meet */
+}
+
+.schedule-title {
+  font-size: 32px;
+  margin-bottom: 20px;
+  align-self: center;
+}
+
+.schedule-actions {
+  display: flex;
+  margin-top: 20px; /* Reduced from 42px */
+  margin-bottom: 20px;
+  width: 100%;
+  align-items: center;
+  gap: 20px;
+  font-size: 24px;
+  color: #fff;
+  justify-content: space-between;
+  flex-shrink: 0; /* Prevent actions from shrinking */
+}
+.upload-button {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  transition: border-color 0.3s ease; /* Hiệu ứng chuyển màu viền */
+  border: 2px #fff;
+  border-radius: 23px;
+  background-color: rgba(130, 132, 255, 0.86);
+  align-self: stretch;
+  display: flex;
+  min-width: 240px;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  justify-content: center;
+  margin: auto 0;
+  padding: 6px 6px;
+  color: #fff;
+}
+
+.upload-icon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  width: 30px;
+  margin-left: 60px;
+  align-self: stretch;
+  margin: auto 0;
+}
+upload-icon-date {
+  object-fit: contain;
+  object-position: center;
+  width: 70px;
+  margin-left: 60px;
+  align-self: stretch;
+  margin: auto 0;
+}
+.schedule-table {
+  min-height: auto;
+  max-height: 70vh;
+  overflow-y: auto;
+  font-size: 16px;
+  margin: 15px 0;
+  flex-direction: column;
+  /* overflow: hidden; */
+  justify-content: start;
+}
+
+.table-header,
+.table-row {
+  border-bottom: 1px solid #000000; /* Đổi màu border thành đen và thêm solid */
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  justify-content: start;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+/* Thêm hover effect cho row */
+.table-row:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Tạo style riêng cho header */
+.table-header {
+  font-weight: bold;
+  border-bottom: 2px solid #000; /* Border dày hơn cho header */
+}
+
+/* Thêm border cho cell để tách biệt các cột */
+.table-header > div,
+.table-row > div {
+  padding: 0 10px;
+  flex: 1;
+  text-align: left;
+}
+
+/* Điều chỉnh width cho từng cột cụ thể nếu cần */
+.table-header > div:nth-child(1),
+.table-row > div:nth-child(1) {
+  flex: 0 0 50px; /* Cột TT */
+}
+
+.room-buttons {
+  margin-top: auto; /* Push to bottom */
+  padding: 15px;
+  gap: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+/* Scrollbar styles */
+.schedule-table::-webkit-scrollbar {
+  width: 8px;
+}
+
+.schedule-table::-webkit-scrollbar-track {
+  background: rgba(240, 240, 240, 0.8);
+  border-radius: 4px;
+}
+
+.schedule-table::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.schedule-table::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+.room-button {
+  padding: 15px;
+  width: auto;
+  min-width: 150px;
+  background-color: rgba(69, 255, 218, 0.6);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  margin: auto 0;
+  border-radius: 20px;
+}
+/* New update - Room button hover effects */
+.room-button {
+  border-radius: 23px;
+  background-color: rgba(69, 255, 218, 0.6);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.room-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(69, 255, 218, 0.4);
+  background-color: rgba(69, 255, 218, 0.8);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.room-button:active {
+  transform: scale(0.98);
+}
+.upload-button:hover {
+  background-color: rgba(130, 132, 255, 1);
+  box-shadow: 0 5px 15px rgba(130, 132, 255, 0.6);
+  transform: translateY(-2px);
+  border: 2px #fff;
+}
+
+.upload-button:active {
+  transform: translateY(1px);
+}
+
+/* Table row hover effects */
+.table-row {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.table-row:hover {
+  background-color: rgba(69, 255, 218, 0.1);
+  transform: translateX(5px);
+  box-shadow: -5px 0 0 rgba(69, 255, 218, 0.5);
+}
+
+/* Meeting info card hover effects */
+.meeting-info {
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.meeting-info:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(69, 255, 218, 0.3);
+}
+
+/* Status indicator hover effect */
+.status-indicator {
+  transition: all 0.2s ease;
+}
+
+.status-indicator:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+
+/* Indicator dot pulse animation for busy status */
+.indicator-dot.busy {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+.indicator-dot.available {
+  animation: pulseAvail 1s infinite;
+}
+@keyframes pulseAvail {
+  0% {
+    box-shadow: 0 0 0 0 rgba(32, 255, 2, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+
+/* Smooth transition for all interactive elements */
+* {
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.button-content {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  justify-content: start;
+}
+
+.button-text {
+  align-self: stretch;
+  min-width: 240px;
+  width: 100%;
+  flex: 1;
+  margin: auto 0;
+  padding: 0 2px;
+}
+
+@media (max-width: 991px) {
+  .meeting-screen {
+    max-width: 100%;
+  }
+
+  .meeting-container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  .content-wrapper {
+    display: flex;
+    gap: 20px;
+    padding: 15px;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+
+  .left-column {
+    max-width: 100%;
+    min-width: 300px;
+    flex: 0 1 auto;
+  }
+
+  .right-column {
+    width: 70%;
+    flex-grow: 1;
+  }
+
+  .header-section {
+    display: flex;
     flex-direction: column;
-    font-family: SF Pro, sans-serif;
-    color: #000;
-    overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbars */
+    gap: 15px;
+    /* width: 100%;
+    padding: 15px; */
+    padding: 10px;
   }
 
-  /* Custom Scrollbar Styles */
-  .schedule-section::-webkit-scrollbar {
-    width: 12px; /* Width of the scrollbar */
+  .date-wrapper,
+  .welcome-text {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    margin-top: 0;
   }
 
-  .schedule-section::-webkit-scrollbar-track {
-    background: rgba(
-      240,
-      240,
-      240,
-      0.8
-    ); /* Background of the scrollbar track */
-    border-radius: 10px; /* Rounded corners for the track */
-  }
-
-  .schedule-section::-webkit-scrollbar-thumb {
-    background-color: #888; /* Color of the draggable part (thumb) */
-    border-radius: 10px; /* Rounded corners for the thumb */
-  }
-
-  .schedule-section::-webkit-scrollbar-thumb:hover {
-    background-color: #555; /* Darker color on hover */
-  }
-
-  .schedule-section::-webkit-scrollbar-corner {
-    background: transparent; /* Corner where both scrollbars meet */
+  .welcome-message {
+    /* max-width: 100%;
+    font-size: 40px; */
+    padding: 10px;
   }
 
   .schedule-title {
-    font-size: 32px;
-    margin-bottom: 20px;
-    align-self: center;
+    max-width: 100%;
+    font-size: 40px;
   }
 
   .schedule-actions {
-    display: flex;
-    margin-top: 20px; /* Reduced from 42px */
-    margin-bottom: 20px;
-    width: 100%;
-    align-items: center;
-    gap: 20px;
-    font-size: 24px;
-    color: #fff;
-    justify-content: space-between;
-    flex-shrink: 0; /* Prevent actions from shrinking */
-  }
-  .upload-button {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
-    transition: border-color 0.3s ease; /* Hiệu ứng chuyển màu viền */
-    border: 2px #fff;
-    border-radius: 23px;
-    background-color: rgba(130, 132, 255, 0.86);
-    align-self: stretch;
-    display: flex;
-    min-width: 240px;
-    align-items: center;
-    gap: 10px;
-    overflow: hidden;
-    justify-content: center;
-    margin: auto 0;
-    padding: 6px 6px;
-    color: #fff;
+    max-width: 100%;
+    margin-top: 40px;
   }
 
-  .upload-icon {
-    aspect-ratio: 1;
-    object-fit: contain;
-    object-position: center;
-    width: 30px;
-    margin-left: 60px;
-    align-self: stretch;
-    margin: auto 0;
-  }
-  upload-icon-date {
-    object-fit: contain;
-    object-position: center;
-    width: 70px;
-    margin-left: 60px;
-    align-self: stretch;
-    margin: auto 0;
-  }
   .schedule-table {
-    min-height: auto;
-    max-height: 70vh;
-    overflow-y: auto;
-    font-size: 16px;
-    margin: 15px 0;
-    flex-direction: column;
-    /* overflow: hidden; */
-    justify-content: start;
-  }
-
-  .table-header,
-  .table-row {
-    border-bottom: 1px solid #000000; /* Đổi màu border thành đen và thêm solid */
-    display: flex;
-    width: 100%;
-    align-items: center;
-    gap: 10px;
-    overflow: hidden;
-    justify-content: start;
-    flex-wrap: wrap;
-    padding: 20px 0;
-  }
-
-  /* Thêm hover effect cho row */
-  .table-row:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-
-  /* Tạo style riêng cho header */
-  .table-header {
-    font-weight: bold;
-    border-bottom: 2px solid #000; /* Border dày hơn cho header */
-  }
-
-  /* Thêm border cho cell để tách biệt các cột */
-  .table-header > div,
-  .table-row > div {
-    padding: 0 10px;
-    flex: 1;
-    text-align: left;
-  }
-
-  /* Điều chỉnh width cho từng cột cụ thể nếu cần */
-  .table-header > div:nth-child(1),
-  .table-row > div:nth-child(1) {
-    flex: 0 0 50px; /* Cột TT */
+    max-width: 100%;
+    margin-bottom: 10px;
   }
 
   .room-buttons {
-    margin-top: auto; /* Push to bottom */
-    padding: 15px;
-    gap: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0; /* Prevent buttons from shrinking */
-  }
-  /* Scrollbar styles */
-  .schedule-table::-webkit-scrollbar {
-    width: 8px;
+    max-width: 100%;
+    margin-right: 9px;
+    white-space: initial;
+    padding: 0 20px;
   }
 
-  .schedule-table::-webkit-scrollbar-track {
-    background: rgba(240, 240, 240, 0.8);
-    border-radius: 4px;
-  }
-
-  .schedule-table::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 4px;
-  }
-
-  .schedule-table::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
-  }
   .room-button {
-    padding: 15px;
-    width: auto;
-    min-width: 150px;
-    background-color: rgba(69, 255, 218, 0.6);
-    align-self: stretch;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    justify-content: center;
-    margin: auto 0;
-    border-radius: 20px;
-  }
-  /* New update - Room button hover effects */
-  .room-button {
-    border-radius: 23px;
-    background-color: rgba(69, 255, 218, 0.6);
-    transition: all 0.3s ease-in-out;
-    cursor: pointer;
-    border: 2px solid transparent;
+    white-space: initial;
+    padding: 0 20px;
   }
 
-  .room-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(69, 255, 218, 0.4);
-    background-color: rgba(69, 255, 218, 0.8);
-    border-color: rgba(255, 255, 255, 0.6);
-  }
-
-  .room-button:active {
-    transform: scale(0.98);
-  }
-  .upload-button:hover {
-    background-color: rgba(130, 132, 255, 1);
-    box-shadow: 0 5px 15px rgba(130, 132, 255, 0.6);
-    transform: translateY(-2px);
-    border: 2px #fff;
-  }
-
-  .upload-button:active {
-    transform: translateY(1px);
-  }
-
-  /* Table row hover effects */
-  .table-row {
-    transition: all 0.2s ease;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .table-row:hover {
-    background-color: rgba(69, 255, 218, 0.1);
-    transform: translateX(5px);
-    box-shadow: -5px 0 0 rgba(69, 255, 218, 0.5);
-  }
-
-  /* Meeting info card hover effects */
-  .meeting-info {
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-  }
-
-  .meeting-info:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    border-color: rgba(69, 255, 218, 0.3);
-  }
-
-  /* Status indicator hover effect */
-  .status-indicator {
-    transition: all 0.2s ease;
-  }
-
-  .status-indicator:hover {
-    transform: scale(1.02);
-    opacity: 0.9;
-  }
-
-  /* Indicator dot pulse animation for busy status */
-  .indicator-dot.busy {
-    animation: pulse 1s infinite;
-  }
-
-  @keyframes pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
-    }
-    70% {
-      box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
-    }
-  }
-  .indicator-dot.available {
-    animation: pulseAvail 1s infinite;
-  }
-  @keyframes pulseAvail {
-    0% {
-      box-shadow: 0 0 0 0 rgba(32, 255, 2, 0.4);
-    }
-    70% {
-      box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
-    }
-  }
-
-  /* Smooth transition for all interactive elements */
-  * {
-    transition: background-color 0.2s ease, transform 0.2s ease,
-      box-shadow 0.2s ease, border-color 0.2s ease;
-  }
-  .button-content {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    gap: 10px;
-    justify-content: start;
-  }
-
+  .button-content,
   .button-text {
-    align-self: stretch;
-    min-width: 240px;
+    white-space: initial;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .content-wrapper {
+    gap: 15px;
+  }
+
+  .left-column {
+    width: 40%;
+  }
+
+  .right-column {
+    width: 60%;
+  }
+}
+
+@media (max-width: 991px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .left-column,
+  .right-column {
     width: 100%;
-    flex: 1;
-    margin: auto 0;
-    padding: 0 2px;
   }
 
-  @media (max-width: 991px) {
-    .meeting-screen {
-      max-width: 100%;
-    }
-
-    .meeting-container {
-      max-width: 100%;
-      padding: 0 20px;
-    }
-
-    .content-wrapper {
-      display: flex;
-      gap: 20px;
-      padding: 15px;
-      max-height: 100vh;
-      overflow: hidden;
-    }
-
-    .left-column {
-      max-width: 100%;
-      min-width: 300px;
-      flex: 0 1 auto;
-    }
-
-    .right-column {
-      width: 70%;
-      flex-grow: 1;
-    }
-
-    .header-section {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      width: 100%;
-      padding: 15px;
-    }
-
-    .date-wrapper,
-    .welcome-text {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 10px;
-      margin-top: 0;
-    }
-
-    .welcome-message {
-      max-width: 100%;
-      font-size: 40px;
-    }
-
-    .schedule-title {
-      max-width: 100%;
-      font-size: 40px;
-    }
-
-    .schedule-actions {
-      max-width: 100%;
-      margin-top: 40px;
-    }
-
-    .schedule-table {
-      max-width: 100%;
-      margin-bottom: 10px;
-    }
-
-    .room-buttons {
-      max-width: 100%;
-      margin-right: 9px;
-      white-space: initial;
-      padding: 0 20px;
-    }
-
-    .room-button {
-      white-space: initial;
-      padding: 0 20px;
-    }
-
-    .button-content,
-    .button-text {
-      white-space: initial;
-    }
+  .date-wrapper {
+    font-size: 20px;
   }
 
-  /* Responsive adjustments */
-  @media (max-width: 1200px) {
-    .content-wrapper {
-      gap: 15px;
-    }
-
-    .left-column {
-      width: 40%;
-    }
-
-    .right-column {
-      width: 60%;
-    }
+  .welcome-text {
+    font-size: 32px;
   }
 
-  @media (max-width: 991px) {
-    .content-wrapper {
-      flex-direction: column;
-    }
-
-    .left-column,
-    .right-column {
-      width: 100%;
-    }
-
-    .date-wrapper {
-      font-size: 20px;
-    }
-
-    .welcome-text {
-      font-size: 32px;
-    }
-
-    .meeting-title {
-      font-size: 20px;
-    }
-
-    .schedule-title {
-      font-size: 28px;
-    }
+  .meeting-title {
+    font-size: 20px;
   }
 
-  @media (max-width: 768px) {
-    .meeting-container {
-      padding: 10px;
-    }
+  .schedule-title {
+    font-size: 28px;
+  }
+}
 
-    .logo {
-      width: 150px;
-    }
-
-    .date-wrapper,
-    .welcome-text {
-      font-size: 18px;
-    }
-
-    .room-buttons {
-      font-size: 18px;
-    }
+@media (max-width: 768px) {
+  .meeting-container {
+    padding: 10px;
   }
 
-  @media (max-width: 480px) {
-    .meeting-info {
-      min-height: 180px;
-    }
-
-    .meeting-time,
-    .meeting-stats,
-    .schedule-table {
-      font-size: 14px;
-    }
-
-    .room-button {
-      min-width: 120px;
-      padding: 10px;
-    }
+  .logo {
+    width: 150px;
   }
 
-  /*//=======New update : Selection when user pick any date=====*/
+  .date-wrapper,
+  .welcome-text {
+    font-size: 18px;
+  }
+
+  .room-buttons {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .meeting-info {
+    min-height: 180px;
+  }
+
+  .meeting-time,
+  .meeting-stats,
+  .schedule-table {
+    font-size: 14px;
+  }
+
+  .room-button {
+    min-width: 120px;
+    padding: 10px;
+  }
+}
+
+/*//=======New update : Selection when user pick any date=====*/
 .date-picker {
   margin-left: 10px; /* Khoảng cách với nút upload */
   padding: 10px; /* Khoảng đệm bên trong */
