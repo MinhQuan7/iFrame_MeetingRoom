@@ -1078,7 +1078,6 @@ function showErrorModal(message) {
   document.body.appendChild(modalContainer);
 }
 
-<script src="https://www.unpkg.com/@eohjsc/era-widget@1.1.3/src/index.js"></script>;
 //===================E-Ra Services=============================
 const eraWidget = new EraWidget();
 // Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
