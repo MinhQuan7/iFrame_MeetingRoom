@@ -1078,6 +1078,7 @@ function showErrorModal(message) {
   document.body.appendChild(modalContainer);
 }
 
+<script src="https://www.unpkg.com/@eohjsc/era-widget@1.1.3/src/index.js"></script>;
 //===================E-Ra Services=============================
 const eraWidget = new EraWidget();
 // Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
@@ -1107,9 +1108,9 @@ eraWidget.init({
     const currentValue = values[configCurrent.id].value;
     const powerValue = values[configPower.id].value;
 
-    humi.textContent = humidValue; // Cập nhật giá trị độ ẩm
-    temp.textContent = tempValue; // Cập nhật giá trị nhiệt độ
-    currentIndex.textContent = currentValue;
-    powerIndex.textContent = powerValue; // Cập nhật giá trị công suất tiêu thụ
+    humi.innerHTML = humidValue; // Cập nhật giá trị độ ẩm
+    temp.innerHTML = tempValue; // Cập nhật giá trị nhiệt độ
+    currentIndex.innerHTML = currentValue;
+    powerIndex.innerHTML = powerValue; // Cập nhật giá trị công suất tiêu thụ
   },
 });
