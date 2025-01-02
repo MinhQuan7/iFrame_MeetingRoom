@@ -38,22 +38,18 @@
                     <div class="meeting-stats">
                       <div class="stats-row">
                         <div class="temperature">
-                          <span>Nhiệt độ:</span>
-                          25.5 ℃
+                          Nhiệt độ: <span id="temperature-eRa"></span>°C
                         </div>
                         <div class="humidity">
-                          <span>Độ ẩm:</span>
-                          65.4 %
+                          Độ ẩm: <span id="humidity-eRa"></span>%
                         </div>
                       </div>
                       <div class="stats-row">
                         <div class="current">
-                          <span>Dòng điện:</span>
-                          8.5 A
+                          Dòng điện:<span id="current-eRa"></span>A
                         </div>
                         <div class="power">
-                          <span>Công suất:</span>
-                          0.56 kW
+                          Công suất: <span id="power-eRa"></span>kWh
                         </div>
                       </div>
                       <div class="status-indicator">
@@ -89,22 +85,20 @@
                     <div class="meeting-stats">
                       <div class="stats-row">
                         <div class="temperature">
-                          <span>Nhiệt độ:</span>
-                          25.5 ℃
+                          Nhiệt độ: <span id="temperature-eRa2"></span>°C
                         </div>
                         <div class="humidity">
-                          <span>Độ ẩm:</span>
-                          65.4 %
+                          Độ ẩm: <span id="humidity-eRa2"></span>%
                         </div>
                       </div>
                       <div class="stats-row">
                         <div class="current">
-                          <span>Dòng điện:</span>
-                          8.5 A
+                          Dòng điện: <span id="current-eRa2"></span>A
                         </div>
                         <div class="power">
-                          <span>Công suất:</span>
-                          0.56 kW
+                          Công suất:
+                          <span id="power-eRa2"></span>
+                          kWh
                         </div>
                       </div>
                       <div class="status-indicator">
@@ -140,22 +134,24 @@
                     <div class="meeting-stats">
                       <div class="stats-row">
                         <div class="temperature">
-                          <span>Nhiệt độ:</span>
-                          25.5 ℃
+                          Nhiệt độ:
+                          <span id="temperature-eRa3"></span>
+                          ℃
                         </div>
                         <div class="humidity">
-                          <span>Độ ẩm:</span>
-                          65.4 %
+                          Độ ẩm: <span id="humidity-eRa3"></span>%
                         </div>
                       </div>
                       <div class="stats-row">
                         <div class="current">
-                          <span>Dòng điện:</span>
-                          8.5 A
+                          Dòng điện:
+                          <span id="current-eRa3"></span>
+                          A
                         </div>
                         <div class="power">
-                          <span>Công suất:</span>
-                          0.56 kW
+                          Công suất:
+                          <span id="power-eRa3"></span>
+                          kW
                         </div>
                       </div>
                       <div class="status-indicator">
@@ -165,6 +161,55 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              <!-- Thêm phần upload background mới -->
+              <!-- Cập nhật HTML -->
+              <div class="background-management">
+                <div class="settings-icon">
+                  <i class="fas fa-cog"></i>
+                </div>
+                <div
+                  class="background-upload-container main-bg-container hidden"
+                >
+                  <input
+                    type="file"
+                    id="mainBackgroundUpload"
+                    accept="image/*"
+                    style="display: none"
+                  />
+                  <button class="background-upload-button main-background-btn">
+                    <div class="button-icon-wrapper">
+                      <i class="fas fa-desktop"></i>
+                    </div>
+                    <span>Background Chính</span>
+                  </button>
+                </div>
+
+                <div
+                  class="background-upload-container schedule-bg-container hidden"
+                >
+                  <input
+                    type="file"
+                    id="scheduleBackgroundUpload"
+                    accept="image/*"
+                    style="display: none"
+                  />
+                  <button
+                    class="background-upload-button schedule-background-btn"
+                  >
+                    <div class="button-icon-wrapper">
+                      <i class="fas fa-table"></i>
+                    </div>
+                    <span>Background Lịch</span>
+                  </button>
+                </div>
+
+                <button class="reset-background-button hidden">
+                  <div class="button-icon-wrapper">
+                    <i class="fas fa-undo"></i>
+                  </div>
+                  <span>Đặt Lại</span>
+                </button>
               </div>
             </div>
           </div>
@@ -253,5 +298,156 @@
     </div>
   </div>
 </div>
+<div class="window">
+  <div class="title-bar">
+    <div class="buttons">
+      <div class="close"></div>
+      <div class="minimize"></div>
+      <div class="maximize"></div>
+    </div>
+    <div class="title">Progress Example</div>
+  </div>
+  <div class="content">
+    <p id="progressText">Processing Images...</p>
+    <p id="progressStatus">Processing image 1 of 3</p>
+    <div id="progressContainer" class="progress-bar">
+      <div id="progressFill" class="progress"></div>
+    </div>
+    <div class="button-container">
+      <button>Stop</button>
+    </div>
+  </div>
+</div>
 <script src="https://www.unpkg.com/@eohjsc/era-widget@1.1.3/src/index.js"></script>
 <script src="script.js"></script>
+<script>
+  const eraWidget = new EraWidget();
+  // Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
+  const temp = document.getElementById("temperature-eRa");
+  const humi = document.getElementById("humidity-eRa");
+  const currentIndex = document.getElementById("current-eRa");
+  const powerIndex = document.getElementById("power-eRa");
+
+  const temp2 = document.getElementById("temperature-eRa2");
+  const humi2 = document.getElementById("humidity-eRa2");
+  const currentIndex2 = document.getElementById("current-eRa2");
+  const powerIndex2 = document.getElementById("power-eRa2");
+
+  const temp3 = document.getElementById("temperature-eRa3");
+  const humi3 = document.getElementById("humidity-eRa3");
+  const currentIndex3 = document.getElementById("current-eRa3");
+  const powerIndex3 = document.getElementById("power-eRa3");
+  let configTemp = null,
+    configHumi = null,
+    configCurrent = null,
+    configPower = null,
+    configTemp2 = null,
+    configHumi2 = null,
+    configCurrent2 = null,
+    configPower2 = null,
+    configTemp3 = null,
+    configHumi3 = null,
+    configCurrent3 = null,
+    configPower3 = null;
+  eraWidget.init({
+    onConfiguration: (configuration) => {
+      // Lưu các cấu hình khi nhận được từ widget
+      configTemp = configuration.realtime_configs[0]; // Lưu cấu hình nhiệt độ
+      configHumi = configuration.realtime_configs[1]; // Lưu cấu hình độ ẩm
+      configCurrent = configuration.realtime_configs[2]; // Lưu cấu hình power
+      configPower = configuration.realtime_configs[3]; // Lưu cấu hình toggle light
+
+      configTemp2 = configuration.realtime_configs[4]; // Lưu cấu hình nhiệt độ
+      configHumi2 = configuration.realtime_configs[5]; // Lưu cấu hình độ ẩm
+      configCurrent2 = configuration.realtime_configs[6]; // Lưu cấu hình power
+      configPower2 = configuration.realtime_configs[7]; // Lưu cấu hình toggle light
+
+      configTemp3 = configuration.realtime_configs[8]; // Lưu cấu hình nhiệt độ
+      configHumi3 = configuration.realtime_configs[9]; // Lưu cấu hình độ ẩm
+      configCurrent3 = configuration.realtime_configs[10]; // Lưu cấu hình power
+      configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
+    },
+
+    // Hàm lấy giá trị từ các ID và cập nhật giao diện
+    onValues: (values) => {
+      console.log("Configuration:", {
+        configTemp,
+        configHumi,
+        configCurrent,
+        configPower,
+
+        configTemp2,
+        configHumi2,
+        configCurrent2,
+        configPower2,
+
+        configTemp3,
+        configHumi3,
+        configCurrent3,
+        configPower3,
+      });
+
+      console.log("Current values:", values);
+
+      if (configTemp && values[configTemp.id]) {
+        const tempValue = values[configTemp.id].value;
+        if (temp) temp.textContent = tempValue;
+      }
+
+      if (configHumi && values[configHumi.id]) {
+        const humidValue = values[configHumi.id].value;
+        if (humi) humi.textContent = humidValue;
+      }
+
+      if (configCurrent && values[configCurrent.id]) {
+        const currentValue = values[configCurrent.id].value;
+        if (currentIndex) currentIndex.textContent = currentValue;
+      }
+
+      if (configPower && values[configPower.id]) {
+        const powerValue = values[configPower.id].value;
+        if (powerIndex) powerIndex.textContent = powerValue;
+      }
+
+      if (configTemp2 && values[configTemp2.id]) {
+        const tempValue2 = values[configTemp2.id].value;
+        if (temp2) temp2.textContent = tempValue2;
+      }
+
+      if (configHumi2 && values[configHumi2.id]) {
+        const humidValue2 = values[configHumi2.id].value;
+        if (humi2) humi2.textContent = humidValue2;
+      }
+
+      if (configCurrent2 && values[configCurrent2.id]) {
+        const currentValue2 = values[configCurrent2.id].value;
+        if (currentIndex2) currentIndex2.textContent = currentValue2;
+      }
+
+      if (configPower2 && values[configPower2.id]) {
+        const powerValue2 = values[configPower2.id].value;
+        if (powerIndex2) powerIndex2.textContent = powerValue2;
+      }
+
+      if (configTemp3 && values[configTemp3.id]) {
+        const tempValue3 = values[configTemp3.id].value;
+        if (temp3) temp3.textContent = tempValue3;
+      }
+
+      if (configHumi3 && values[configHumi3.id]) {
+        const humidValue3 = values[configHumi3.id].value;
+        if (humi3) humi3.textContent = humidValue3;
+      }
+
+      if (configCurrent3 && values[configCurrent3.id]) {
+        const currentValue3 = values[configCurrent3.id].value;
+        if (currentIndex3) currentIndex3.textContent = currentValue3;
+      }
+
+      if (configPower3 && values[configPower3.id]) {
+        const powerValue3 = values[configPower3.id].value;
+        if (powerIndex3) powerIndex3.textContent = powerValue3;
+      }
+    },
+  });
+</script>

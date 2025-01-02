@@ -705,11 +705,26 @@ async function checkFileChanges() {
     }
   }
 }
-
+function updateProgress(percent, statusText) {
+  const overlay = document.getElementById("overlay");
+  const progressFill = document.getElementById("progressFill");
+  const progressText = document.getElementById("progressText");
+  const progressStatus = document.getElementById("progressStatus");
+  progressFill.style.width = `${percent}%`;
+  progressText.textContent = `${percent}%`;
+  progressStatus.textContent = statusText;
+}
 async function handleFileUpload(file) {
+  const progressContainer = document.getElementById("progressContainer");
+  const progressStatus = document.getElementById("progressStatus");
+
   try {
+    // Bắt đầu hiển thị progress
+    updateProgress(10, "Đang khởi tạo...");
+    console.log("Đang khởi tạo");
     // Xử lý File System Access API
     try {
+      updateProgress(20, "Đang đọc file...");
       const handles = await window.showOpenFilePicker({
         multiple: false,
         types: [
@@ -731,13 +746,16 @@ async function handleFileUpload(file) {
     }
 
     // Xử lý file và kiểm tra xung đột
+    updateProgress(40, "Đang xử lý dữ liệu...");
     const data = await processExcelFile(file);
 
     // Nếu không có xung đột, tiếp tục xử lý
+    updateProgress(60, "Đang cập nhật bảng...");
     updateScheduleTable(data);
     startAutoUpdate(data);
 
     // Cập nhật cache
+    updateProgress(80, "Đang lưu cache...");
     fileCache.data = data;
     fileCache.lastModified = new Date().getTime();
 
@@ -755,22 +773,42 @@ async function handleFileUpload(file) {
     }
 
     // Thiết lập monitoring
+    updateProgress(90, "Đang thiết lập giám sát...");
     if (fileHandle) {
       if (window.fileCheckInterval) {
         clearInterval(window.fileCheckInterval);
       }
       window.fileCheckInterval = setInterval(checkFileChanges, 5000);
     }
+
+    // Hoàn thành
+    updateProgress(100, "Hoàn thành!");
+    progressStatus.style.color = "#4CAF50";
+    progressContainer.classList.add("upload-complete");
+
+    // Ẩn progress bar sau khi hoàn thành
+    setTimeout(() => {
+      progressContainer.style.display = "none";
+      progressContainer.classList.remove("upload-complete");
+    }, 2000);
   } catch (error) {
     console.error("Lỗi xử lý file:", error);
     if (error.message === "CONFLICT_ERROR") {
       // Xung đột đã được xử lý và hiển thị trong modal
       return;
     }
+
+    // Hiển thị lỗi trong progress bar
+    progressStatus.textContent = "Tải lên thất bại!";
+    progressStatus.style.color = "#f44336";
+
+    setTimeout(() => {
+      progressContainer.style.display = "none";
+    }, 2000);
+
     alert("Lỗi khi xử lý file. Vui lòng thử lại.");
   }
 }
-
 // Tải file lên server
 async function uploadToServer(file, processedData) {
   const formData = new FormData();
@@ -795,9 +833,6 @@ async function uploadToServer(file, processedData) {
     throw error;
   }
 }
-
-// Sự kiện tải trang
-
 // Event listener for file upload
 document.addEventListener("DOMContentLoaded", function () {
   const uploadButton = document.querySelector(".upload-button");
@@ -1077,145 +1112,250 @@ function showErrorModal(message) {
   modalContainer.appendChild(modalContent);
   document.body.appendChild(modalContainer);
 }
-//===================E-Ra Services=============================
-// WebSocket connection handling
-class ConnectionManager {
-  constructor(brokerUrl) {
-    this.brokerUrl = brokerUrl;
-    this.maxRetries = 5;
-    this.retryCount = 0;
-    this.retryDelay = 3000; // 3 seconds
+
+/*======Change Background Feature========= */
+document.addEventListener("DOMContentLoaded", function () {
+  const settingsIcon = document.querySelector(".settings-icon");
+  const mainBgContainer = document.querySelector(".main-bg-container");
+  const scheduleBgContainer = document.querySelector(".schedule-bg-container");
+  const resetBackgroundButton = document.querySelector(
+    ".reset-background-button"
+  );
+
+  settingsIcon.addEventListener("click", function (event) {
+    event.stopPropagation();
+
+    console.log("Settings icon clicked");
+
+    // Toggle active class để kích hoạt hiệu ứng
+    mainBgContainer.classList.toggle("active");
+    scheduleBgContainer.classList.toggle("active");
+    resetBackgroundButton.classList.toggle("active");
+
+    // Xoay icon răng cưa
+    settingsIcon.style.transform = mainBgContainer.classList.contains("active")
+      ? "rotate(90deg)"
+      : "rotate(0deg)";
+  });
+
+  // Đóng menu khi click ngoài
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest(".background-management")) {
+      mainBgContainer.classList.remove("active");
+      scheduleBgContainer.classList.remove("active");
+      resetBackgroundButton.classList.remove("active");
+      settingsIcon.style.transform = "rotate(0deg)";
+    }
+  });
+});
+document.addEventListener("DOMContentLoaded", function () {
+  // Lấy các phần tử cần thiết
+  const mainBackgroundUploadBtn = document.querySelector(
+    ".main-background-btn"
+  );
+  const scheduleBackgroundUploadBtn = document.querySelector(
+    ".schedule-background-btn"
+  );
+  const mainBackgroundUploadInput = document.getElementById(
+    "mainBackgroundUpload"
+  );
+  const scheduleBackgroundUploadInput = document.getElementById(
+    "scheduleBackgroundUpload"
+  );
+  const resetBackgroundButton = document.querySelector(
+    ".reset-background-button"
+  );
+
+  const meetingScreen = document.querySelector(".meeting-screen");
+  const scheduleContent = document.querySelector(".schedule-content");
+
+  // Thêm Font Awesome nếu chưa có
+  function addFontAwesome() {
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+      const fontAwesomeLink = document.createElement("link");
+      fontAwesomeLink.rel = "stylesheet";
+      fontAwesomeLink.href =
+        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css";
+      document.head.appendChild(fontAwesomeLink);
+    }
   }
+  addFontAwesome();
 
-  connect() {
-    return new Promise((resolve, reject) => {
-      try {
-        const ws = new WebSocket(this.brokerUrl);
+  // Tạo modal preview
+  function createPreviewModal(imageDataUrl, type) {
+    const modal = document.createElement("div");
+    modal.className = "background-preview-modal";
 
-        ws.onopen = () => {
-          console.log("Connection established successfully");
-          this.retryCount = 0;
-          resolve(ws);
-        };
+    modal.innerHTML = `
+      <div class="background-preview-content">
+        <img src="${imageDataUrl}" alt="Background Preview">
+        <div class="background-preview-actions">
+          <button class="background-confirm-btn">Xác Nhận</button>
+          <button class="background-cancel-btn">Hủy</button>
+        </div>
+      </div>
+    `;
 
-        ws.onerror = (error) => {
-          console.error("WebSocket error:", error);
-          this.handleConnectionError(reject);
-        };
+    document.body.appendChild(modal);
 
-        ws.onclose = () => {
-          console.log("Connection closed");
-          this.handleConnectionError(reject);
-        };
-      } catch (error) {
-        this.handleConnectionError(reject);
+    // Trigger show effect
+    setTimeout(() => {
+      modal.classList.add("show");
+    }, 10);
+
+    const confirmBtn = modal.querySelector(".background-confirm-btn");
+    const cancelBtn = modal.querySelector(".background-cancel-btn");
+
+    confirmBtn.addEventListener("click", () => {
+      if (type === "main") {
+        localStorage.setItem("customMainBackground", imageDataUrl);
+        meetingScreen.style.backgroundImage = `url(${imageDataUrl})`;
+        meetingScreen.style.backgroundSize = "cover";
+        meetingScreen.style.backgroundPosition = "center";
+      } else if (type === "schedule") {
+        localStorage.setItem("customScheduleBackground", imageDataUrl);
+        scheduleContent.style.backgroundImage = `url(${imageDataUrl})`;
+        scheduleContent.style.backgroundSize = "cover";
+        scheduleContent.style.backgroundPosition = "center";
       }
+
+      modal.classList.remove("show");
+      setTimeout(() => {
+        document.body.removeChild(modal);
+      }, 300);
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      modal.classList.remove("show");
+      setTimeout(() => {
+        document.body.removeChild(modal);
+      }, 300);
     });
   }
 
-  handleConnectionError(reject) {
-    if (this.retryCount < this.maxRetries) {
-      this.retryCount++;
-      console.log(
-        `Retrying connection (${this.retryCount}/${this.maxRetries})...`
-      );
-      setTimeout(() => this.connect(), this.retryDelay);
-    } else {
-      reject(new Error("Failed to establish connection after maximum retries"));
+  // Xử lý upload background chính
+  mainBackgroundUploadBtn.addEventListener("click", function () {
+    mainBackgroundUploadInput.click();
+  });
+
+  mainBackgroundUploadInput.addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        createPreviewModal(e.target.result, "main");
+      };
+      reader.readAsDataURL(file);
     }
-  }
-}
+  });
 
-// ERA Widget implementation with improved error handling
-class EraWidgetHandler {
-  constructor() {
-    this.connectionManager = new ConnectionManager("wss://mqtt1.eoh.io:8084/");
-    this.elements = {};
-  }
+  // Xử lý upload background lịch
+  scheduleBackgroundUploadBtn.addEventListener("click", function () {
+    scheduleBackgroundUploadInput.click();
+  });
 
-  initializeElements() {
-    const elementIds = ["temperature", "humidity", "current", "power"];
+  scheduleBackgroundUploadInput.addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        createPreviewModal(e.target.result, "schedule");
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
-    elementIds.forEach((id) => {
-      const element = document.getElementById(id);
-      if (element) {
-        this.elements[id] = element;
-      } else {
-        console.warn(`Element with id '${id}' not found`);
-      }
+  // Reset background
+  resetBackgroundButton.addEventListener("click", function () {
+    // Tạo modal xác nhận
+    const confirmModal = document.createElement("div");
+    confirmModal.className = "background-preview-modal";
+    confirmModal.innerHTML = `
+      <div class="background-preview-content">
+        <h3>Bạn muốn Reset Background nào?</h3>
+        <div class="background-preview-actions">
+          <button class="reset-main-btn">Background Chính</button>
+          <button class="reset-schedule-btn">Background Lịch</button>
+          <button class="background-cancel-btn">Hủy</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(confirmModal);
+
+    // Trigger show effect
+    setTimeout(() => {
+      confirmModal.classList.add("show");
+    }, 10);
+
+    const resetMainBtn = confirmModal.querySelector(".reset-main-btn");
+    const resetScheduleBtn = confirmModal.querySelector(".reset-schedule-btn");
+    const cancelBtn = confirmModal.querySelector(".background-cancel-btn");
+
+    resetMainBtn.addEventListener("click", () => {
+      localStorage.removeItem("customMainBackground");
+      meetingScreen.style.backgroundImage = "url(assests/imgs/background.jpg)";
+      confirmModal.classList.remove("show");
+      setTimeout(() => {
+        document.body.removeChild(confirmModal);
+      }, 300);
     });
-  }
 
-  validateSvgDimensions(value) {
-    if (typeof value === "number" && !isNaN(value)) {
-      return `${value}px`;
-    }
-    return "100%"; // Default fallback value
-  }
-
-  setupVideoElements() {
-    const videos = document.getElementsByTagName("video");
-    Array.from(videos).forEach((video) => {
-      video.addEventListener("error", (e) => {
-        console.error("Video error:", e);
-        // Implement fallback content or retry logic
-      });
+    resetScheduleBtn.addEventListener("click", () => {
+      localStorage.removeItem("customScheduleBackground");
+      scheduleContent.style.backgroundImage =
+        "url(assests/imgs/default-schedule-background.jpg)";
+      confirmModal.classList.remove("show");
+      setTimeout(() => {
+        document.body.removeChild(confirmModal);
+      }, 300);
     });
-  }
 
-  updateElement(id, value) {
-    if (this.elements[id]) {
-      try {
-        this.elements[id].innerHTML = value;
-      } catch (error) {
-        console.error(`Error updating ${id}:`, error);
-      }
+    cancelBtn.addEventListener("click", () => {
+      confirmModal.classList.remove("show");
+      setTimeout(() => {
+        document.body.removeChild(confirmModal);
+      }, 300);
+    });
+  });
+
+  // Kiểm tra và áp dụng background từ localStorage khi tải trang
+  function applyStoredBackgrounds() {
+    const savedMainBackground = localStorage.getItem("customMainBackground");
+    const savedScheduleBackground = localStorage.getItem(
+      "customScheduleBackground"
+    );
+
+    if (savedMainBackground) {
+      meetingScreen.style.backgroundImage = `url(${savedMainBackground})`;
+      meetingScreen.style.backgroundSize = "cover";
+      meetingScreen.style.backgroundPosition = "center";
+    }
+
+    if (savedScheduleBackground) {
+      scheduleContent.style.backgroundImage = `url(${savedScheduleBackground})`;
+      scheduleContent.style.backgroundSize = "cover";
+      scheduleContent.style.backgroundPosition = "center";
     }
   }
 
-  async init() {
-    this.initializeElements();
-    this.setupVideoElements();
+  // Gọi hàm áp dụng background
+  applyStoredBackgrounds();
+});
 
-    try {
-      const connection = await this.connectionManager.connect();
+document.addEventListener("DOMContentLoaded", function () {
+  const progressContainer = document.getElementById("progressContainer");
+  const progressCloseBtn = progressContainer.querySelector(
+    ".progress-close-btn"
+  );
 
-      // Initialize ERA Widget with proper error handling
-      const eraWidget = new EraWidget();
+  progressCloseBtn.addEventListener("click", function () {
+    // Hiệu ứng fade out
+    progressContainer.style.opacity = "0";
+    progressContainer.style.transform = "translate(-50%, -50%) scale(0.9)";
 
-      eraWidget.init({
-        onConfiguration: (configuration) => {
-          if (!configuration?.realtime_configs) {
-            throw new Error("Invalid configuration received");
-          }
-
-          // Store configurations safely
-          this.configs = configuration.realtime_configs;
-        },
-
-        onValues: (values) => {
-          if (!this.configs) return;
-
-          this.configs.forEach((config, index) => {
-            if (values[config.id]) {
-              const value = values[config.id].value;
-              const elementId = ["temperature", "humidity", "current", "power"][
-                index
-              ];
-              this.updateElement(elementId, value);
-            }
-          });
-        },
-      });
-    } catch (error) {
-      console.error("Initialization error:", error);
-      // Implement user notification or fallback behavior
-    }
-  }
-}
-
-// Initialize the handler
-document.addEventListener("DOMContentLoaded", () => {
-  const handler = new EraWidgetHandler();
-  handler.init().catch(console.error);
+    // Ẩn sau khi animation kết thúc
+    setTimeout(() => {
+      progressContainer.style.display = "none";
+    }, 300);
+  });
 });
