@@ -433,7 +433,6 @@ function calculateDuration(startTime, endTime) {
 function updateScheduleTable(data) {
   const tableBody = document.querySelector(".schedule-table");
   const headerRow = tableBody.querySelector(".table-header");
-
   // Xóa các hàng cũ
   Array.from(tableBody.children)
     .filter((child) => child !== headerRow)
@@ -458,6 +457,7 @@ function updateScheduleTable(data) {
         `;
 
     tableBody.appendChild(row);
+    console.log("============Called Filter Meeting By Current Date Complete!!");
   });
 }
 //==========Function Update info from Excel file to MeetingInfo Section========
@@ -649,7 +649,6 @@ function timeToMinutes(timeStr) {
   return hours * 3600 + minutes * 60 + seconds;
 }
 
-// Hàm kiểm tra thay đổi từ input element
 let fileHandle = null;
 let lastFileData = null;
 let fileCache = {
@@ -658,7 +657,6 @@ let fileCache = {
   reader: new FileReader(),
 };
 
-// Hàm kiểm tra thay đổi từ input element
 // Hàm kiểm tra thay đổi từ input element
 async function checkFileChanges() {
   if (!fileHandle) return;
@@ -699,8 +697,7 @@ async function uploadFile(file) {
     console.log("Đang upload file...");
     const data = await processExcelFile(file);
     updateScheduleTable(data);
-    startAutoUpdate(data);
-
+    console.log("*******Updating data to TABLE******");
     // Cập nhật cache
     fileCache.data = data;
     fileCache.lastModified = new Date().getTime();
@@ -725,7 +722,6 @@ async function uploadFile(file) {
     }, 2000);
   }
 }
-
 const overlay = document.createElement("div");
 overlay.style.position = "fixed";
 overlay.style.top = "0";
@@ -849,7 +845,12 @@ async function handleFileUpload(file) {
 
     // Nếu không có xung đột, tiếp tục xử lý
     updateProgress(60, "Đang cập nhật bảng...");
-    updateScheduleTable(data);
+    filterMeetingsByCurrentDate(data);
+    updateRoomStatus(data);
+    console.log("*********Add updatedRomstatus**********");
+    console.log(
+      "===========Updating data to Table =========== Line 849========="
+    );
     startAutoUpdate(data);
 
     // Cập nhật cache
@@ -1005,13 +1006,23 @@ function filterMeetingsByDate(selectedDate) {
     const meetingDate = new Date(
       meetingDateText.split("/").reverse().join("-")
     ); // Chuyển đổi định dạng ngày
-
     if (meetingDate.toDateString() === selectedDate.toDateString()) {
       row.style.display = ""; // Hiển thị nếu trùng khớp
     } else {
       row.style.display = "none"; // Ẩn nếu không trùng khớp
     }
   });
+}
+
+// Hàm lọc lịch họp theo ngày hiện tại
+function filterMeetingsByCurrentDate(data) {
+  const currentDate = getCurrentDate();
+  const filteredData = data.filter((meeting) => {
+    const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
+    return meetingDate.toDateString() === new Date(currentDate).toDateString();
+  });
+  updateScheduleTable(filteredData);
+  console.log("Updated schedule table with current date");
 }
 //=======New Update : Kiểm tra thông tin nhập vào từ người dùng - Cảnh báo nếu nhập trùng phòng họp=======
 // Hàm kiểm tra xung đột thời gian giữa các cuộc họp
