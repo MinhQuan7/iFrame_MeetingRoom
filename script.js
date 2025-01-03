@@ -673,6 +673,7 @@ async function checkFileChanges() {
 
     // So sánh với dữ liệu cũ
     if (fileData !== lastFileData) {
+      showProgressBar();
       console.log("File đã thay đổi, đang cập nhật...");
       const data = await processExcelFile(file);
       updateScheduleTable(data);
@@ -953,7 +954,8 @@ document.addEventListener("DOMContentLoaded", initClock);
 document.addEventListener("DOMContentLoaded", function () {
   const datePicker = document.getElementById("meetingDate");
   hideProgressBar();
-  datePicker.addEventListener("change", function () {
+  datePicker.addEventListener("click", function () {
+    //Change addEventListener("change")  to addEventListener("click")
     const selectedDate = new Date(this.value);
     filterMeetingsByDate(selectedDate);
   });
