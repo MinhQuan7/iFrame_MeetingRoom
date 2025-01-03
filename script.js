@@ -649,6 +649,7 @@ function timeToMinutes(timeStr) {
   return hours * 3600 + minutes * 60 + seconds;
 }
 
+// Hàm kiểm tra thay đổi từ input element
 let fileHandle = null;
 let lastFileData = null;
 let fileCache = {
@@ -657,6 +658,7 @@ let fileCache = {
   reader: new FileReader(),
 };
 
+// Hàm kiểm tra thay đổi từ input element
 // Hàm kiểm tra thay đổi từ input element
 async function checkFileChanges() {
   if (!fileHandle) return;
@@ -668,34 +670,12 @@ async function checkFileChanges() {
     // Kiểm tra nếu lastFileData chưa được khởi tạo
     if (lastFileData === null) {
       lastFileData = fileData;
-      return;
-    }
-
-    // So sánh với dữ liệu cũ
-    if (fileData !== lastFileData) {
-      showProgressBar();
-      console.log("File đã thay đổi, đang cập nhật...");
-      const data = await processExcelFile(file);
-      updateScheduleTable(data);
-      startAutoUpdate(data);
+      // Upload file lần đầu tiên
+      uploadFile(file);
+    } else if (fileData !== lastFileData) {
+      // Upload file khi người dùng chọn file mới
+      uploadFile(file);
       lastFileData = fileData;
-
-      // Cập nhật cache
-      fileCache.data = data;
-      fileCache.lastModified = new Date().getTime();
-
-      // Lưu vào localStorage
-      try {
-        localStorage.setItem(
-          "fileCache",
-          JSON.stringify({
-            data: fileCache.data,
-            lastModified: fileCache.lastModified,
-          })
-        );
-      } catch (e) {
-        console.error("Không thể lưu vào localStorage:", e);
-      }
     }
   } catch (error) {
     console.error("Lỗi khi kiểm tra file:", error);
@@ -706,6 +686,46 @@ async function checkFileChanges() {
     }
   }
 }
+
+// Hàm upload file
+async function uploadFile(file) {
+  // Kiểm tra xem file đã được upload hay chưa
+  if (
+    fileCache.data === null ||
+    JSON.stringify(fileCache.data) !==
+      JSON.stringify(await processExcelFile(file))
+  ) {
+    showProgressBar();
+    console.log("Đang upload file...");
+    const data = await processExcelFile(file);
+    updateScheduleTable(data);
+    startAutoUpdate(data);
+
+    // Cập nhật cache
+    fileCache.data = data;
+    fileCache.lastModified = new Date().getTime();
+
+    // Lưu vào localStorage
+    try {
+      localStorage.setItem(
+        "fileCache",
+        JSON.stringify({
+          data: fileCache.data,
+          lastModified: fileCache.lastModified,
+        })
+      );
+    } catch (e) {
+      console.error("Không thể lưu vào localStorage:", e);
+    }
+    // Hiển thị thông báo
+    updateProgress(100, "File đã được upload!");
+    // Ẩn progress bar sau khi hoàn thành
+    setTimeout(() => {
+      hideProgressBar();
+    }, 2000);
+  }
+}
+
 // Function to show the progress bar
 function showProgressBar() {
   const progressContainer = document.querySelector(".window");
@@ -768,7 +788,6 @@ document
   .addEventListener("click", hideProgressBar);
 
 function updateProgress(percent, statusText) {
-  const overlay = document.getElementById("overlay");
   const progressFill = document.getElementById("progressFill");
   const progressText = document.getElementById("progressText");
   const progressStatus = document.getElementById("progressStatus");
@@ -954,7 +973,7 @@ document.addEventListener("DOMContentLoaded", initClock);
 document.addEventListener("DOMContentLoaded", function () {
   const datePicker = document.getElementById("meetingDate");
   hideProgressBar();
-  datePicker.addEventListener("click", function () {
+  datePicker.addEventListener("change", function () {
     //Change addEventListener("change")  to addEventListener("click")
     const selectedDate = new Date(this.value);
     filterMeetingsByDate(selectedDate);
