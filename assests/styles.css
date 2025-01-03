@@ -1555,6 +1555,7 @@ upload-icon-date {
   border-radius: 50%;
 }
 /*==================Upload processing=============*/
+/* Center the window */
 .window {
   width: 400px;
   background-color: #fff;

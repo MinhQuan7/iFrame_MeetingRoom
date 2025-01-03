@@ -705,6 +705,67 @@ async function checkFileChanges() {
     }
   }
 }
+// Function to show the progress bar
+function showProgressBar() {
+  const progressContainer = document.querySelector(".window");
+  if (progressContainer) {
+    progressContainer.style.display = "block"; // Show the progress bar
+  }
+}
+
+// Function to hide the progress bar
+function hideProgressBar() {
+  const progressContainer = document.querySelector(".window");
+  if (progressContainer) {
+    progressContainer.style.display = "none"; // Hide the progress bar
+  }
+}
+
+// Event listener for the upload button
+document.addEventListener("DOMContentLoaded", function () {
+  const uploadButton = document.querySelector(".upload-button");
+  showProgressBar();
+  uploadButton.addEventListener("click", async function (event) {
+    event.preventDefault();
+    try {
+      // Thử dùng file handle đã có
+      if (fileHandle) {
+        const file = await fileHandle.getFile();
+        await handleFileUpload(file);
+        return;
+      }
+    } catch (error) {
+      console.error("Không thể sử dụng file handle cũ:", error);
+      fileHandle = null;
+    }
+
+    // Nếu không có file handle hoặc có lỗi, tạo input mới
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".xlsx, .xls";
+    fileInput.style.display = "none";
+
+    fileInput.addEventListener("change", function (e) {
+      if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        handleFileUpload(file);
+        showProgressBar();
+      }
+    });
+
+    fileInput.click();
+  });
+
+  // Event listener for clicks outside the upload button
+  document.addEventListener("click", function (event) {
+    if (!uploadButton.contains(event.target)) {
+    }
+  });
+});
+document
+  .getElementById("stopUploadBtn")
+  .addEventListener("click", hideProgressBar);
+
 function updateProgress(percent, statusText) {
   const overlay = document.getElementById("overlay");
   const progressFill = document.getElementById("progressFill");
@@ -833,41 +894,6 @@ async function uploadToServer(file, processedData) {
     throw error;
   }
 }
-// Event listener for file upload
-document.addEventListener("DOMContentLoaded", function () {
-  const uploadButton = document.querySelector(".upload-button");
-
-  uploadButton.addEventListener("click", async function (event) {
-    event.preventDefault();
-
-    try {
-      // Thử dùng file handle đã có
-      if (fileHandle) {
-        const file = await fileHandle.getFile();
-        await handleFileUpload(file);
-        return;
-      }
-    } catch (error) {
-      console.error("Không thể sử dụng file handle cũ:", error);
-      fileHandle = null;
-    }
-
-    // Nếu không có file handle hoặc có lỗi, tạo input mới
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = ".xlsx, .xls";
-    fileInput.style.display = "none";
-
-    fileInput.addEventListener("change", function (e) {
-      if (e.target.files.length > 0) {
-        const file = e.target.files[0];
-        handleFileUpload(file);
-      }
-    });
-
-    fileInput.click();
-  });
-});
 
 //========================Update Time ====================
 function padZero(num) {
@@ -924,11 +950,9 @@ function initClock() {
 
 // Gọi hàm khởi tạo khi trang đã load
 document.addEventListener("DOMContentLoaded", initClock);
-
-//==========================New update : Selection when user pick any date=====
 document.addEventListener("DOMContentLoaded", function () {
   const datePicker = document.getElementById("meetingDate");
-
+  hideProgressBar();
   datePicker.addEventListener("change", function () {
     const selectedDate = new Date(this.value);
     filterMeetingsByDate(selectedDate);
@@ -1340,22 +1364,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Gọi hàm áp dụng background
   applyStoredBackgrounds();
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const progressContainer = document.getElementById("progressContainer");
-  const progressCloseBtn = progressContainer.querySelector(
-    ".progress-close-btn"
-  );
-
-  progressCloseBtn.addEventListener("click", function () {
-    // Hiệu ứng fade out
-    progressContainer.style.opacity = "0";
-    progressContainer.style.transform = "translate(-50%, -50%) scale(0.9)";
-
-    // Ẩn sau khi animation kết thúc
-    setTimeout(() => {
-      progressContainer.style.display = "none";
-    }, 300);
-  });
 });
