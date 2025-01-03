@@ -443,7 +443,6 @@ function updateScheduleTable(data) {
     const row = document.createElement("div");
     row.className = "table-row";
     row.setAttribute("role", "row");
-
     row.innerHTML = `
             <div role="cell">${meeting.id}</div>
             <div role="cell">${meeting.date}</div>
@@ -455,7 +454,6 @@ function updateScheduleTable(data) {
             <div role="cell">${meeting.purpose}</div>
             <div role="cell">${meeting.content}</div>
         `;
-
     tableBody.appendChild(row);
     console.log("============Called Filter Meeting By Current Date Complete!!");
   });
@@ -686,6 +684,7 @@ async function checkFileChanges() {
 }
 
 // Hàm upload file
+// Hàm upload file
 async function uploadFile(file) {
   // Kiểm tra xem file đã được upload hay chưa
   if (
@@ -722,6 +721,7 @@ async function uploadFile(file) {
     }, 2000);
   }
 }
+
 const overlay = document.createElement("div");
 overlay.style.position = "fixed";
 overlay.style.top = "0";
@@ -847,7 +847,7 @@ async function handleFileUpload(file) {
     updateProgress(60, "Đang cập nhật bảng...");
     filterMeetingsByCurrentDate(data);
     updateRoomStatus(data);
-    console.log("*********Add updatedRomstatus**********");
+    console.log("*********Add updated Room Status**********");
     console.log(
       "===========Updating data to Table =========== Line 849========="
     );
@@ -992,15 +992,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const datePicker = document.getElementById("meetingDate");
   hideProgressBar();
   datePicker.addEventListener("change", function () {
-    //Change addEventListener("change")  to addEventListener("click")
     const selectedDate = new Date(this.value);
     filterMeetingsByDate(selectedDate);
   });
 });
 
+// Hàm lọc lịch họp theo ngày
 function filterMeetingsByDate(selectedDate) {
   const rows = document.querySelectorAll(".schedule-table .table-row");
-
   rows.forEach((row) => {
     const meetingDateText = row.children[1].textContent; // Cột ngày
     const meetingDate = new Date(
@@ -1022,8 +1021,35 @@ function filterMeetingsByCurrentDate(data) {
     return meetingDate.toDateString() === new Date(currentDate).toDateString();
   });
   updateScheduleTable(filteredData);
+  const tableBody = document.querySelector(".schedule-table");
+  const headerRow = tableBody.querySelector(".table-header");
+  // Xóa các hàng cũ
+  Array.from(tableBody.children)
+    .filter((child) => child !== headerRow)
+    .forEach((child) => child.remove());
+
+  // Thêm dữ liệu mới
+  filteredData.forEach((meeting) => {
+    const row = document.createElement("div");
+    row.className = "table-row";
+    row.setAttribute("role", "row");
+    row.innerHTML = `
+            <div role="cell">${meeting.id}</div>
+            <div role="cell">${meeting.date}</div>
+            <div role="cell">${meeting.dayOfWeek}</div>
+            <div role="cell">${meeting.room}</div>
+            <div role="cell">${meeting.startTime}</div>
+            <div role="cell">${meeting.endTime}</div>
+            <div role="cell">${meeting.duration}</div>
+            <div role="cell">${meeting.purpose}</div>
+            <div role="cell">${meeting.content}</div>
+        `;
+    tableBody.appendChild(row);
+    console.log("============Called Filter Meeting By Current Date Complete!!");
+  });
   console.log("Updated schedule table with current date");
 }
+
 //=======New Update : Kiểm tra thông tin nhập vào từ người dùng - Cảnh báo nếu nhập trùng phòng họp=======
 // Hàm kiểm tra xung đột thời gian giữa các cuộc họp
 function checkTimeConflict(meeting1, meeting2) {
