@@ -726,11 +726,26 @@ async function uploadFile(file) {
   }
 }
 
+const overlay = document.createElement("div");
+overlay.style.position = "fixed";
+overlay.style.top = "0";
+overlay.style.left = "0";
+overlay.style.width = "100%";
+overlay.style.height = "100%";
+overlay.style.background = "rgba(0, 0, 0, 0.8)";
+overlay.style.filter = "blur(15px)";
+overlay.style.zIndex = "999";
+overlay.style.display = "none";
+document.body.appendChild(overlay);
+
 // Function to show the progress bar
 function showProgressBar() {
   const progressContainer = document.querySelector(".window");
   if (progressContainer) {
+    //hiệu ứng cho processing bar
+    progressContainer.classList.add("show");
     progressContainer.style.display = "block"; // Show the progress bar
+    overlay.style.display = "block";
   }
 }
 
@@ -738,7 +753,9 @@ function showProgressBar() {
 function hideProgressBar() {
   const progressContainer = document.querySelector(".window");
   if (progressContainer) {
+    progressContainer.classList.remove("show");
     progressContainer.style.display = "none"; // Hide the progress bar
+    overlay.style.display = "none";
   }
 }
 
