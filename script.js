@@ -429,35 +429,6 @@ function calculateDuration(startTime, endTime) {
   return `${hours}:${String(minutes).padStart(2, "0")}`;
 }
 
-// Cập nhật bảng lịch
-// function updateScheduleTable(data) {
-//   const tableBody = document.querySelector(".schedule-table");
-//   const headerRow = tableBody.querySelector(".table-header");
-//   // Xóa các hàng cũ
-//   Array.from(tableBody.children)
-//     .filter((child) => child !== headerRow)
-//     .forEach((child) => child.remove());
-
-//   // Thêm dữ liệu mới
-//   data.forEach((meeting) => {
-//     const row = document.createElement("div");
-//     row.className = "table-row";
-//     row.setAttribute("role", "row");
-//     row.innerHTML = `
-//             <div role="cell">${meeting.id}</div>
-//             <div role="cell">${meeting.date}</div>
-//             <div role="cell">${meeting.dayOfWeek}</div>
-//             <div role="cell">${meeting.room}</div>
-//             <div role="cell">${meeting.startTime}</div>
-//             <div role="cell">${meeting.endTime}</div>
-//             <div role="cell">${meeting.duration}</div>
-//             <div role="cell">${meeting.purpose}</div>
-//             <div role="cell">${meeting.content}</div>
-//         `;
-//     tableBody.appendChild(row);
-//     console.log("============Called Filter Meeting By Current Date Complete!!");
-//   });
-// }
 function getCurrentDate() {
   const now = new Date();
   const date = String(now.getDate()).padStart(2, "0");
@@ -1075,7 +1046,6 @@ document.addEventListener("DOMContentLoaded", function () {
 document
   .getElementById("stopUploadBtn")
   .addEventListener("click", hideProgressBar);
-
 async function handleFileUpload(file) {
   const progressContainer = document.getElementById("progressContainer");
   const progressStatus = document.getElementById("progressStatus");
@@ -1089,18 +1059,16 @@ async function handleFileUpload(file) {
     updateProgress(40, "Đang xử lý dữ liệu...");
     const data = await processExcelFile(file);
 
-    // Nếu không có xung đột, tiếp tục xử lý
-    updateProgress(60, "Đang cập nhật bảng...");
     // Ưu tiên hiển thị các lịch họp của ngày hiện tại
+    const today = new Date();
     const filteredData = data.filter((meeting) => {
-      if (meeting.date === "") return false;
-      const meetingDate = meeting.date.split("/").reverse().join("-");
-      const currentDate = getCurrentDate();
-      return meetingDate === currentDate;
+      const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
+      return meetingDate.toDateString() === today.toDateString();
     });
+
     // Cập nhật bảng với các cuộc họp của ngày hiện tại
-    console.log("Filtered data:", filteredData); // Thêm dòng code này
-    updateScheduleTable(filteredData);
+    console.log("Filtered data for today:", filteredData);
+    updateScheduleTable(filteredData.length > 0 ? filteredData : data);
 
     // Cập nhật cache
     updateProgress(80, "Đang lưu cache...");
@@ -1136,6 +1104,11 @@ async function handleFileUpload(file) {
     hideProgressBar();
     updateRoomStatus(data);
     startAutoUpdate(data);
+
+    // Nếu không có cuộc họp nào trong ngày, thông báo cho người dùng
+    if (filteredData.length === 0) {
+      alert("Không có cuộc họp nào trong ngày hôm nay.");
+    }
   } catch (error) {
     console.error("Lỗi xử lý file:", error);
     if (error.message === "CONFLICT_ERROR") {
@@ -1153,6 +1126,7 @@ async function handleFileUpload(file) {
     alert("Lỗi khi xử lý file. Vui lòng thử lại.");
   }
 }
+
 // Tải file lên server
 async function uploadToServer(file, processedData) {
   const formData = new FormData();
