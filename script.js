@@ -535,84 +535,6 @@ document
   .addEventListener("click", hideProgressBar);
 
 /*=================Hàm xử lý file Upload==============*/
-// async function handleFileUpload(file) {
-//   const progressContainer = document.getElementById("progressContainer");
-//   const progressStatus = document.getElementById("progressStatus");
-
-//   try {
-//     // Bắt đầu hiển thị progress
-//     updateProgress(10, "Đang khởi tạo...");
-//     console.log("Đang khởi tạo");
-
-//     // Xử lý file và kiểm tra xung đột
-//     updateProgress(40, "Đang xử lý dữ liệu...");
-//     const data = await processExcelFile(file);
-
-//     // Ưu tiên hiển thị các lịch họp của ngày hiện tại
-//     const today = new Date();
-//     const filteredData = data.filter((meeting) => {
-//       const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
-//       return meetingDate.toDateString() === today.toDateString();
-//     });
-//     // Lưu vào localStorage
-//     try {
-//       localStorage.setItem(
-//         "fileCache",
-//         JSON.stringify({
-//           data: fileCache.data,
-//           lastModified: fileCache.lastModified,
-//         })
-//       );
-//     } catch (e) {
-//       console.error("Không thể lưu vào localStorage:", e);
-//     }
-//     // Cập nhật bảng với các cuộc họp của ngày hiện tại
-//     console.log("Filtered data for today:", filteredData);
-//     updateScheduleTable(filteredData.length > 0 ? filteredData : data);
-//     updateRoomStatus(data);
-//     startAutoUpdate(data);
-//     // Cập nhật cache
-//     updateProgress(80, "Đang lưu cache...");
-//     fileCache.data = data;
-//     fileCache.lastModified = new Date().getTime();
-
-//     // Thiết lập monitoring
-//     updateProgress(90, "Đang thiết lập giám sát...");
-//     if (fileHandle) {
-//       if (window.fileCheckInterval) {
-//         clearInterval(window.fileCheckInterval);
-//       }
-//       window.fileCheckInterval = setInterval(checkFileChanges, 5000);
-//     }
-
-//     // Hoàn thành
-//     updateProgress(100, "Hoàn thành!");
-//     progressStatus.style.color = "#4CAF50";
-//     progressContainer.classList.add("upload-complete");
-//     hideProgressBar();
-//     console.log("Enable AutoUpdat feature of meeting room");
-//     // Nếu không có cuộc họp nào trong ngày, thông báo cho người dùng
-//     if (filteredData.length === 0) {
-//       alert("Không có cuộc họp nào trong ngày hôm nay.");
-//     }
-//   } catch (error) {
-//     console.error("Lỗi xử lý file:", error);
-//     if (error.message === "CONFLICT_ERROR") {
-//       // Xung đột đã được xử lý và hiển thị trong modal
-//       return;
-//     }
-//     // Hiển thị lỗi trong progress bar
-//     progressStatus.textContent = "Tải lên thất bại!";
-//     progressStatus.style.color = "#f44336";
-
-//     setTimeout(() => {
-//       progressContainer.style.display = "none";
-//     }, 2000);
-
-//     alert("Lỗi khi xử lý file. Vui lòng thử lại.");
-//   }
-// }
-
 async function handleFileUpload(file) {
   const progressContainer = document.getElementById("progressContainer");
   const progressStatus = document.getElementById("progressStatus");
@@ -804,7 +726,7 @@ function filterMeetingsByDate(selectedDate) {
   });
 }
 
-//=======New Update : Kiểm tra thông tin nhập vào từ người dùng - Cảnh báo nếu nhập trùng phòng họp=======
+
 // Hàm kiểm tra xung đột thời gian giữa các cuộc họp
 function checkTimeConflict(meeting1, meeting2) {
   const start1 = timeToMinutes(meeting1.startTime);
@@ -1251,7 +1173,7 @@ function isTimeOverdue(endTime, currentTime) {
   return isOverdue;
 }
 
-// Hàm để tự động cập nhật thời gian và trạng thái
+//=====Hàm để tự động cập nhật thời gian và trạng thái - Function related times, overdueTime=======
 function startAutoUpdate(data) {
   updateRoomStatus(data);
   const intervalId = setInterval(() => {
@@ -1261,7 +1183,7 @@ function startAutoUpdate(data) {
       console.log("Auto updating at:", currentTime);
       updateRoomStatus(data);
     }
-  }, 1000); // Vẫn kiểm tra mỗi giây nhưng chỉ cập nhật khi đổi phút
+  }, 1); // Vẫn kiểm tra mỗi giây nhưng chỉ cập nhật khi đổi phút
 
   window.autoUpdateInterval = intervalId;
   return () => clearInterval(intervalId);
