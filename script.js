@@ -1410,3 +1410,66 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+
+/*================Full Screen Feature===============*/
+document.addEventListener('DOMContentLoaded', function() {
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const meetingContainer = document.querySelector('.meeting-container');
+  const meetingPage = document.querySelector('.meeting-page');
+
+  function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      if (meetingPage.requestFullscreen) {
+        meetingPage.requestFullscreen();
+      } else if (meetingPage.mozRequestFullScreen) { // Firefox
+        meetingPage.mozRequestFullScreen();
+      } else if (meetingPage.webkitRequestFullscreen) { // Chrome, Safari and Opera
+        meetingPage.webkitRequestFullscreen();
+      } else if (meetingPage.msRequestFullscreen) { // Internet Explorer/Edge
+        meetingPage.msRequestFullscreen();
+      }
+
+      meetingContainer.classList.add('fullscreen-mode');
+      fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) { // Firefox
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) { // Internet Explorer/Edge
+        document.msExitFullscreen();
+      }
+
+      meetingContainer.classList.remove('fullscreen-mode');
+      fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+  }
+
+  // Fullscreen change event listeners
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+  document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+  document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+  function handleFullscreenChange() {
+    if (!document.fullscreenElement) {
+      meetingContainer.classList.remove('fullscreen-mode');
+      fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+  }
+
+  // Add click event to fullscreen button
+  fullscreenBtn.addEventListener('click', toggleFullScreen);
+
+  // Optional: Escape key to exit fullscreen
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.fullscreenElement) {
+      toggleFullScreen();
+    }
+  });
+});

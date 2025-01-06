@@ -1663,3 +1663,69 @@ upload-icon-date {
   background-color: #f0f0f0;
   cursor: pointer;
 }
+
+/*===============Fullscreen Feature================*/
+.fullscreen-toggle {
+  position: fixed; /* Thay đổi từ absolute sang fixed */
+  top: 20px; /* Khoảng cách từ đỉnh */
+  right: 20px; /* Khoảng cách từ phải */
+  z-index: 9999; /* Đảm bảo nút luôn nằm trên cùng */
+}
+
+.fullscreen-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Thêm shadow để nổi bật */
+}
+
+.fullscreen-button:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.fullscreen-button i {
+  color: white;
+  font-size: 20px;
+}
+
+/* Responsive cho các kích thước màn hình */
+@media (max-width: 768px) {
+  .fullscreen-toggle {
+    top: 10px;
+    right: 10px;
+  }
+
+  .fullscreen-button {
+    width: 35px;
+    height: 35px;
+  }
+
+  .fullscreen-button i {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fullscreen-toggle {
+    top: 5px;
+    right: 5px;
+  }
+
+  .fullscreen-button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .fullscreen-button i {
+    font-size: 16px;
+  }
+}
