@@ -86,42 +86,109 @@
   line-height: 1.5;
   letter-spacing: 0.5px;
 }
-.rooms-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.meeting-info-container {
   width: 100%;
-  margin-top: 2px;
-  flex-direction: column;
-  overflow: hidden;
-  justify-content: space-between;
+  max-width: 100%;
+  padding: 1rem;
+  font-size: 0.9rem;
 }
 
-.room-section {
-  display: flex;
+.meeting-table {
   width: 100%;
-  flex-direction: column;
-  overflow: hidden; /* Thêm overflow: hidden */
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Column widths */
+.meeting-table th:nth-child(1) {
+  width: 5%;
+} /* TT */
+.meeting-table th:nth-child(2) {
+  width: 12%;
+} /* Ngày */
+.meeting-table th:nth-child(3) {
+  width: 8%;
+} /* Thứ */
+.meeting-table th:nth-child(4) {
+  width: 8%;
+} /* Phòng */
+.meeting-table th:nth-child(5) {
+  width: 10%;
+} /* Giờ bắt đầu */
+.meeting-table th:nth-child(6) {
+  width: 10%;
+} /* Giờ kết thúc */
+.meeting-table th:nth-child(7) {
+  width: 12%;
+} /* Thời gian sử dụng */
+.meeting-table th:nth-child(8) {
+  width: 15%;
+} /* Mục đích */
+.meeting-table th:nth-child(9) {
+  width: 20%;
+} /* Nội dung */
+
+.meeting-table th,
+.meeting-table td {
+  padding: 0.5rem;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Header styles */
+.table-header {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+/* Button styles */
+.upload-button,
+.date-picker {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 20px;
+}
+
+@media screen and (max-width: 1366px) {
+  .meeting-info-container {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .meeting-table th,
+  .meeting-table td {
+    padding: 0.4rem;
+  }
 }
 
 .room-number {
-  width: 93%;
-  font-size: 1.25rem;
+  width: 85%;
+  font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
-  padding: 8px 8px;
+  padding: 6px;
   background: linear-gradient(
     135deg,
     rgba(69, 255, 218, 0.2),
     rgba(69, 255, 218, 0.1)
   );
-  border-radius: 12px; /* Tăng border-radius để bo tròn góc nhiều hơn */
-  border: 1px solid rgba(69, 255, 218, 0.3); /* Thêm border nhẹ */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Thêm shadow để tạo chiều sâu */
   border-radius: 8px;
-  min-width: 120px;
+  border: 1px solid rgba(69, 255, 218, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 100px;
   text-align: center;
   transition: all 0.3s ease;
+}
+
+@media screen and (max-width: 1366px) {
+  .room-number {
+    width: 80%;
+    font-size: 0.9rem;
+    padding: 4px;
+    min-width: 90px;
+  }
 }
 .room-number:hover {
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Tăng shadow khi hover */
@@ -232,68 +299,6 @@
   flex: 1; /* Cho phép các phần tử co giãn */
 }
 
-.meeting-page {
-  /* Set display to flex and direction to column */
-  display: flex;
-  flex-direction: column;
-  /* Set minimum height to full viewport height */
-  min-height: 100vh;
-}
-
-.meeting-screen {
-  /* Set background image and size */
-  background-image: url(imgs/background.jpg);
-  background-size: cover;
-  /* Set flex to 1 to take up remaining space */
-  flex: 1;
-  /* Add padding for spacing */
-  padding: 20px;
-}
-
-.meeting-container {
-  /* Set maximum width and center horizontally */
-  max-width: 1600px;
-  margin: 0 auto;
-  /* Add padding for spacing */
-  padding: 20px 40px;
-}
-
-.content-wrapper {
-  /* Set gap for spacing between columns */
-  gap: 20px;
-  /* Set display to flex */
-  display: flex;
-}
-
-.left-column {
-  /* Set display to flex and direction to column */
-  display: flex;
-  flex-direction: column;
-  /* Set line height to normal */
-  line-height: normal;
-  /* Set width to 40% */
-  width: 40%;
-  /* Set margin left to 0 */
-  margin-left: 0;
-  /* Set height to fit content */
-  height: fit-content;
-  /* Add padding right for spacing */
-  padding-right: 40px;
-}
-
-.header-section {
-  /* Set display to flex and direction to column */
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  /* Set overflow to hidden */
-  overflow: hidden;
-  /* Set justify content to start */
-  justify-content: start;
-  /* Add padding for spacing */
-  padding: 0 16px 7px;
-}
-
 .date-wrapper {
   /* Set color to black */
   color: #000;
@@ -320,140 +325,6 @@
   text-align: right;
   right: 20px;
   top: 20px;
-}
-
-.welcome-message {
-  align-self: stretch;
-  flex: 1;
-  min-width: 240px;
-  /* Set width to 100% */
-  width: 100%;
-  /* Set gap for spacing */
-  gap: 10px;
-  /* Set overflow to hidden */
-  overflow: hidden;
-  /* Add margin for spacing */
-  margin: auto 0;
-  /* Add padding for spacing */
-  padding: 15px;
-  /* Set transition for smooth animation */
-  transition: all 0.3s ease;
-}
-
-.welcome-text {
-  /* Set maximum width to 300px */
-  max-width: 300px;
-  /* Set font size to 18px */
-  font-size: 18px;
-  /* Set font weight to 500 */
-  font-weight: 500;
-  /* Set padding to 0 */
-  padding: 0;
-  /* Set display to flex */
-  display: flex;
-  /* Set align items to center */
-  align-items: center;
-  /* Set color to white */
-  color: #fff;
-  /* Set text align to left */
-  text-align: left;
-  /* Set line height to 1.5 */
-  line-height: 1.5;
-  /* Set letter spacing to 0.5px */
-  letter-spacing: 0.5px;
-}
-
-.rooms-container {
-  /* Set display to flex and direction to column */
-  display: flex;
-  flex-direction: column;
-  /* Set gap for spacing */
-  gap: 15px;
-  /* Set width to 100% */
-  width: 100%;
-  /* Set margin top to 2px */
-  margin-top: 2px;
-  /* Set flex direction to column */
-  flex-direction: column;
-  /* Set overflow to hidden */
-  overflow: hidden;
-  /* Set justify content to space between */
-  justify-content: space-between;
-}
-
-.room-section {
-  /* Set display to flex and direction to column */
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  /* Set overflow to hidden */
-  overflow: hidden;
-}
-
-.room-number {
-  /* Set width to 93% */
-  width: 93%;
-  /* Set font size to 1.25rem */
-  font-size: 1.25rem;
-  /* Set font weight to 600 */
-  font-weight: 600;
-  /* Set color to white */
-  color: #ffffff;
-  /* Set padding for spacing */
-  padding: 8px 8px;
-  /* Set background to linear gradient */
-  background: linear-gradient(
-    135deg,
-    rgba(69, 255, 218, 0.2),
-    rgba(69, 255, 218, 0.1)
-  );
-  /* Set border radius to 12px */
-  border-radius: 12px;
-  /* Set border to 1px solid rgba(69, 255, 218, 0.3) */
-  border: 1px solid rgba(69, 255, 218, 0.3);
-  /* Set box shadow for depth effect */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  /* Set border radius to 8px */
-  border-radius: 8px;
-  /* Set minimum width to 120px */
-  min-width: 120px;
-  /* Set text align to center */
-  text-align: center;
-  /* Set transition for smooth animation */
-  transition: all 0.3s ease;
-}
-
-.room-number:hover {
-  /* Set box shadow for depth effect on hover */
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-  /* Set background to linear gradient on hover */
-  background: linear-gradient(
-    135deg,
-    rgba(69, 255, 218, 0.3),
-    rgba(69, 255, 218, 0.2)
-  );
-}
-
-.room-details {
-  /* Set display to flex and align items to center */
-  display: flex;
-  align-items: center;
-  /* Set gap for spacing */
-  gap: 39px;
-  /* Set overflow to hidden */
-  overflow: hidden;
-  /* Set font family to Inter, sans-serif */
-  font-family: Inter, sans-serif;
-  /* Set color to black */
-  color: #000;
-  /* Set font weight to 400 */
-  font-weight: 400;
-  /* Set justify content to start */
-  justify-content: start;
-  /* Add padding for spacing */
-  padding: 8px 22px 10px 0;
-  /* Set border radius to 16px */
-  border-radius: 16px;
 }
 
 .meeting-info {
@@ -538,12 +409,67 @@
   .meeting-stats {
     font-size: 13px;
   }
+  .schedule-section {
+    position: relative; /* Tạo context cho phần tử con absolute */
+    padding-bottom: 80px; /* Dành không gian cho background-management */
+  }
+
+  .background-management {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 20px;
+    z-index: 10; /* Đảm bảo nằm trên các phần tử khác */
+    margin-bottom: -100px;
+  }
+
+  .background-management > * {
+    margin: 0 10px; /* Khoảng cách giữa các phần tử */
+  }
 }
 
 @media (max-width: 480px) {
   .meeting-info {
     min-height: 150px; /* Giảm từ 180px */
     padding: 10px;
+  }
+
+  .schedule-content {
+    max-height: 60vh; /* Giới hạn chiều cao */
+    overflow-y: auto; /* Cho phép cuộn dọc */
+    padding-right: 10px; /* Thêm padding để tránh che thanh cuộn */
+  }
+
+  /* Tùy chỉnh thanh cuộn cho mobile */
+  .schedule-content::-webkit-scrollbar {
+    width: 6px; /* Chiều rộng thanh cuộn mỏng */
+  }
+
+  .schedule-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* Màu nền track */
+    border-radius: 10px;
+  }
+
+  .schedule-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3); /* Màu của thanh cuộn */
+    border-radius: 10px;
+  }
+
+  .schedule-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  /* Responsive cho các cột */
+  .table-header > div,
+  .table-row > div {
+    flex: 1;
+    min-width: 100px; /* Đảm bảo các cột không bị ép quá nhỏ */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Hiển thị ... nếu nội dung quá dài */
+    white-space: nowrap; /* Ngăn văn bản xuống dòng */
   }
 }
 .indicator-dot.busy {
@@ -570,15 +496,6 @@
 }
 
 /* Cập nhật media queries để duy trì tỷ lệ mới trên các màn hình lớn */
-/* @media (max-width: 1200px) {
-  .left-column {
-    width: 33%;
-  }
-
-  .right-column {
-    width: 67%;
-  }
-} */
 @media (max-width: 1200px) {
   .content-wrapper {
     flex-direction: column; /* Đặt lại hướng cột cho màn hình nhỏ */
@@ -701,10 +618,74 @@ upload-icon-date {
   max-height: 70vh;
   overflow-y: auto;
   font-size: 16px;
-  margin: 15px 0;
+  /* margin: 15px 0; */
   flex-direction: column;
-  /* overflow: hidden; */
+  overflow-x: hidden;
   justify-content: start;
+
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+.schedule-table th,
+.schedule-table td {
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.schedule-table th {
+  background-color: rgba(255, 255, 255, 0.05);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.schedule-table td {
+  vertical-align: middle;
+}
+
+/* Cột số thứ tự */
+.schedule-table td:first-child {
+  width: 30px;
+  text-align: center;
+}
+
+/* Cột ngày và thứ */
+.schedule-table td:nth-child(2),
+.schedule-table td:nth-child(3) {
+  white-space: nowrap;
+  width: 80px;
+}
+
+/* Cột phòng */
+.schedule-table td:nth-child(4) {
+  width: 60px;
+  text-align: center;
+}
+
+/* Cột giờ bắt đầu và kết thúc */
+.schedule-table td:nth-child(5),
+.schedule-table td:nth-child(6) {
+  width: 50px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Cột thời gian sử dụng */
+.schedule-table td:nth-child(7) {
+  width: 60px;
+  text-align: center;
+}
+
+/* Hover effect */
+.schedule-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Zebra striping */
+.schedule-table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.01);
 }
 
 .table-header,
@@ -902,171 +883,6 @@ upload-icon-date {
   margin: auto 0;
   padding: 0 2px;
 }
-
-@media (max-width: 991px) {
-  .meeting-screen {
-    max-width: 100%;
-  }
-
-  .meeting-container {
-    max-width: 100%;
-    padding: 0 20px;
-  }
-
-  .content-wrapper {
-    display: flex;
-    gap: 20px;
-    padding: 15px;
-    max-height: 100vh;
-    overflow: hidden;
-  }
-
-  .left-column {
-    max-width: 100%;
-    min-width: 300px;
-    flex: 0 1 auto;
-  }
-
-  .right-column {
-    width: 70%;
-    flex-grow: 1;
-  }
-
-  .header-section {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    /* width: 100%;
-    padding: 15px; */
-    padding: 10px;
-  }
-
-  .date-wrapper,
-  .welcome-text {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 10px;
-    margin-top: 0;
-  }
-
-  .welcome-message {
-    /* max-width: 100%;
-    font-size: 40px; */
-    padding: 10px;
-  }
-
-  .schedule-title {
-    max-width: 100%;
-    font-size: 40px;
-  }
-
-  .schedule-actions {
-    max-width: 100%;
-    margin-top: 40px;
-  }
-
-  .schedule-table {
-    max-width: 100%;
-    margin-bottom: 10px;
-  }
-
-  .room-buttons {
-    max-width: 100%;
-    margin-right: 9px;
-    white-space: initial;
-    padding: 0 20px;
-  }
-
-  .room-button {
-    white-space: initial;
-    padding: 0 20px;
-  }
-
-  .button-content,
-  .button-text {
-    white-space: initial;
-  }
-}
-
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-  .content-wrapper {
-    gap: 15px;
-  }
-
-  .left-column {
-    width: 40%;
-  }
-
-  .right-column {
-    width: 60%;
-  }
-}
-
-@media (max-width: 991px) {
-  .content-wrapper {
-    flex-direction: column;
-  }
-
-  .left-column,
-  .right-column {
-    width: 100%;
-  }
-
-  .date-wrapper {
-    font-size: 20px;
-  }
-
-  .welcome-text {
-    font-size: 32px;
-  }
-
-  .meeting-title {
-    font-size: 20px;
-  }
-
-  .schedule-title {
-    font-size: 28px;
-  }
-}
-
-@media (max-width: 768px) {
-  .meeting-container {
-    padding: 10px;
-  }
-
-  .logo {
-    width: 150px;
-  }
-
-  .date-wrapper,
-  .welcome-text {
-    font-size: 18px;
-  }
-
-  .room-buttons {
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 480px) {
-  .meeting-info {
-    min-height: 180px;
-  }
-
-  .meeting-time,
-  .meeting-stats,
-  .schedule-table {
-    font-size: 14px;
-  }
-
-  .room-button {
-    min-width: 120px;
-    padding: 10px;
-  }
-}
-
 /*//=======New update : Selection when user pick any date=====*/
 .date-picker {
   margin-left: 10px; /* Khoảng cách với nút upload */
@@ -1607,4 +1423,360 @@ upload-icon-date {
   border-radius: 3px;
   background-color: #f0f0f0;
   cursor: pointer;
+}
+
+/*===============Fullscreen Feature================*/
+.fullscreen-toggle {
+  position: fixed; /* Thay đổi từ absolute sang fixed */
+  top: 20px; /* Khoảng cách từ đỉnh */
+  right: 20px; /* Khoảng cách từ phải */
+  z-index: 9999; /* Đảm bảo nút luôn nằm trên cùng */
+}
+
+.fullscreen-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Thêm shadow để nổi bật */
+}
+
+.fullscreen-button:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.fullscreen-button i {
+  color: white;
+  font-size: 20px;
+}
+
+/* Responsive cho các kích thước màn hình */
+@media (max-width: 768px) {
+  .fullscreen-toggle {
+    top: 10px;
+    right: 10px;
+  }
+
+  .fullscreen-button {
+    width: 35px;
+    height: 35px;
+  }
+
+  .fullscreen-button i {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fullscreen-toggle {
+    top: 5px;
+    right: 5px;
+  }
+
+  .fullscreen-button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .fullscreen-button i {
+    font-size: 16px;
+  }
+}
+
+/* Responsive cho màn hình từ 1200px đến 1650px */
+/* Mobile - Small (320px and up) */
+/* Base styles */
+* {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+/* Mobile First - Extra Small (320px and up) */
+@media (min-width: 320px) {
+  .meeting-screen,
+  .meeting-container {
+    max-width: 100%;
+    padding: 8px;
+  }
+
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+
+  .header-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 6px;
+  }
+  .date-wrapper,
+  .welcome-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 12px; /* Giảm font-size */
+  }
+  .welcome-message,
+  .schedule-title {
+    font-size: 16px; /* Giảm font-size */
+    padding: 4px;
+  }
+
+  .meeting-info {
+    padding: 6px;
+    margin: 3px 0;
+    min-height: 100px; /* Giảm min-height */
+    height: auto; /* Cho phép co giãn theo nội dung */
+  }
+  .meeting-title {
+    font-size: 11px;
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+
+  .meeting-time,
+  .meeting-stats,
+  .stats-row {
+    font-size: 10px;
+    gap: 3px;
+  }
+
+  .room-buttons {
+    margin-right: 4px;
+    padding: 0 8px;
+  }
+
+  .room-button {
+    min-width: 100px;
+    padding: 6px;
+  }
+
+  .logo {
+    width: 100px;
+  }
+}
+
+/* Tablet (768px and up) */
+@media (min-width: 768px) {
+  .content-wrapper {
+    flex-direction: row;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .left-column {
+    width: 40%;
+    min-width: 280px;
+    max-width: 350px;
+  }
+
+  .right-column {
+    width: 60%;
+    flex-grow: 1;
+  }
+
+  .welcome-message,
+  .schedule-title {
+    font-size: 18px;
+  }
+
+  .date-wrapper,
+  .welcome-text {
+    font-size: 13px; /* Giảm font-size */
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+
+  .meeting-info {
+    padding: 8px;
+    margin: 4px 0;
+    min-height: 110px;
+  }
+
+  .meeting-title {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .meeting-time,
+  .meeting-stats,
+  .stats-row {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .logo {
+    width: 120px;
+  }
+}
+
+/* Desktop (1200px and up) */
+@media (min-width: 1200px) {
+  .content-wrapper {
+    gap: 15px;
+    max-width: 1600px;
+    margin: 0 auto;
+    height: 100vh;
+  }
+
+  .left-column {
+    width: 35%;
+    max-width: 400px;
+  }
+
+  .right-column {
+    width: 65%;
+  }
+
+  .welcome-message,
+  .schedule-title {
+    font-size: 20px;
+  }
+
+  .date-wrapper,
+  .welcome-text {
+    font-size: 14px; /* Giảm font-size */
+    gap: 8px;
+  }
+
+  .meeting-info {
+    padding: 8px 10px;
+    margin: 4px 0;
+    min-height: 115px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .meeting-header {
+    margin-bottom: 4px;
+  }
+
+  .meeting-title {
+    font-size: 12px;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .meeting-time,
+  .meeting-stats,
+  .stats-row {
+    font-size: 11px;
+    gap: 5px;
+  }
+
+  /* Tối ưu spacing cho thông tin stats */
+  .meeting-stats {
+    margin-top: 4px;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* Thêm ellipsis cho text dài */
+  .meeting-title,
+  .stats-row > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .room-button {
+    min-width: 110px;
+    padding: 8px;
+  }
+}
+
+/* Large Desktop (1440px and up) */
+@media (min-width: 1440px) {
+  .content-wrapper {
+    gap: 20px;
+    max-width: 1800px;
+  }
+
+  .left-column {
+    max-width: 420px;
+  }
+  .date-wrapper,
+  .welcome-text {
+    font-size: 14px; /* Giữ nguyên size */
+  }
+  .welcome-message,
+  .schedule-title {
+    font-size: 22px;
+  }
+}
+
+/* Extra Large Desktop (1920px and up) */
+@media (min-width: 1920px) {
+  .content-wrapper {
+    max-width: 1900px;
+  }
+
+  .left-column {
+    max-width: 450px;
+  }
+}
+
+/* Utility Classes */
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
+}
+
+.overflow-wrap {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+@media (max-width: 850px) {
+  .date-wrapper {
+    font-size: 10px; /* Giảm font size */
+    gap: 4px; /* Giảm khoảng cách */
+    margin-bottom: 3px;
+  }
+
+  .logo {
+    width: 90px; /* Giảm width của logo */
+  }
+}
+.flex-grow {
+  flex-grow: 1;
+}
+
+.flex-shrink {
+  flex-shrink: 1;
+}
+
+.text-compact {
+  letter-spacing: -0.2px;
 }

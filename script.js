@@ -432,6 +432,7 @@ function calculateDuration(startTime, endTime) {
 function updateScheduleTable(data) {
   const tableBody = document.querySelector(".schedule-table");
   const headerRow = tableBody.querySelector(".table-header");
+  updateProgress(40, "Đang đồng bộ hóa dữ liệu...");
   // Xóa các hàng cũ
   Array.from(tableBody.children)
     .filter((child) => child !== headerRow)
@@ -442,6 +443,8 @@ function updateScheduleTable(data) {
     const row = document.createElement("div");
     row.className = "table-row";
     row.setAttribute("role", "row");
+    updateProgress(70, "Đang cập nhật dữ liệu...");
+    console.log("Đang cập nhật dữ liệu với processing bar");
     row.innerHTML = `
             <div role="cell">${meeting.id}</div>
             <div role="cell">${meeting.date}</div>
@@ -454,7 +457,9 @@ function updateScheduleTable(data) {
             <div role="cell">${meeting.content}</div>
         `;
     tableBody.appendChild(row);
-    console.log("============Called Filter Meeting By Current Date Complete!!");
+    updateProgress(100, "Cập nhật thành công");
+    console.log("Đồng bộ hóa dữ liệu thành công ! ");
+    hideProgressBar();
   });
 }
 // Sửa hàm timeToMinutes để xử lý giây
@@ -467,43 +472,6 @@ function timeToMinutes(timeStr) {
   return hours * 3600 + minutes * 60 + seconds;
 }
 
-// Hàm upload file
-async function uploadFile(file) {
-  // Kiểm tra xem file đã được upload hay chưa
-  if (
-    fileCache.data === null ||
-    JSON.stringify(fileCache.data) !==
-      JSON.stringify(await processExcelFile(file))
-  ) {
-    showProgressBar();
-    console.log("Đang upload file...");
-    const data = await processExcelFile(file);
-    updateScheduleTable(data);
-    console.log("*******Updating data to TABLE******");
-    // Cập nhật cache
-    fileCache.data = data;
-    fileCache.lastModified = new Date().getTime();
-
-    // Lưu vào localStorage
-    try {
-      localStorage.setItem(
-        "fileCache",
-        JSON.stringify({
-          data: fileCache.data,
-          lastModified: fileCache.lastModified,
-        })
-      );
-    } catch (e) {
-      console.error("Không thể lưu vào localStorage:", e);
-    }
-    // Hiển thị thông báo
-    updateProgress(100, "File đã được upload!");
-    // Ẩn progress bar sau khi hoàn thành
-    setTimeout(() => {
-      hideProgressBar();
-    }, 2000);
-  }
-}
 // Function to show the progress bar
 function showProgressBar() {
   const progressContainer = document.querySelector(".window");
@@ -570,6 +538,8 @@ document.addEventListener("DOMContentLoaded", function () {
 document
   .getElementById("stopUploadBtn")
   .addEventListener("click", hideProgressBar);
+
+/*=================Hàm xử lý file Upload==============*/
 async function handleFileUpload(file) {
   const progressContainer = document.getElementById("progressContainer");
   const progressStatus = document.getElementById("progressStatus");
@@ -578,17 +548,49 @@ async function handleFileUpload(file) {
     // Bắt đầu hiển thị progress
     updateProgress(10, "Đang khởi tạo...");
     console.log("Đang khởi tạo");
+    // Xử lý File System Access API
+    try {
+      updateProgress(20, "Đang đọc file...");
+      const handles = await window.showOpenFilePicker({
+        multiple: false,
+        types: [
+          {
+            description: "Excel Files",
+            accept: {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                [".xlsx"],
+              "application/vnd.ms-excel": [".xls"],
+            },
+          },
+        ],
+      });
+      fileHandle = handles[0];
+      const initialFile = await fileHandle.getFile();
+      lastFileData = await initialFile.text();
+    } catch (error) {
+      console.error("Không thể lấy file handle:", error);
+    }
 
     // Xử lý file và kiểm tra xung đột
     updateProgress(40, "Đang xử lý dữ liệu...");
     const data = await processExcelFile(file);
-
-    // Ưu tiên hiển thị các lịch họp của ngày hiện tại
     const today = new Date();
     const filteredData = data.filter((meeting) => {
       const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
       return meetingDate.toDateString() === today.toDateString();
     });
+    // Nếu không có xung đột, tiếp tục xử lý
+    updateProgress(60, "Đang cập nhật bảng...");
+    console.log("Filtered data for today:", filteredData);
+    updateScheduleTable(filteredData.length > 0 ? filteredData : data);
+    updateRoomStatus(data);
+    startAutoUpdate(data);
+
+    // Cập nhật cache
+    updateProgress(80, "Đang lưu cache...");
+    fileCache.data = data;
+    fileCache.lastModified = new Date().getTime();
+
     // Lưu vào localStorage
     try {
       localStorage.setItem(
@@ -601,15 +603,6 @@ async function handleFileUpload(file) {
     } catch (e) {
       console.error("Không thể lưu vào localStorage:", e);
     }
-    // Cập nhật bảng với các cuộc họp của ngày hiện tại
-    console.log("Filtered data for today:", filteredData);
-    updateScheduleTable(filteredData.length > 0 ? filteredData : data);
-    updateRoomStatus(data);
-    startAutoUpdate(data);
-    // Cập nhật cache
-    updateProgress(80, "Đang lưu cache...");
-    fileCache.data = data;
-    fileCache.lastModified = new Date().getTime();
 
     // Thiết lập monitoring
     updateProgress(90, "Đang thiết lập giám sát...");
@@ -622,20 +615,20 @@ async function handleFileUpload(file) {
 
     // Hoàn thành
     updateProgress(100, "Hoàn thành!");
-    progressStatus.style.color = "#4CAF50";
-    progressContainer.classList.add("upload-complete");
     hideProgressBar();
-    console.log("Enable AutoUpdat feature of meeting room");
-    // Nếu không có cuộc họp nào trong ngày, thông báo cho người dùng
-    if (filteredData.length === 0) {
-      alert("Không có cuộc họp nào trong ngày hôm nay.");
-    }
+
+    // Ẩn progress bar sau khi hoàn thành
+    setTimeout(() => {
+      progressContainer.style.display = "none";
+      progressContainer.classList.remove("upload-complete");
+    }, 2000);
   } catch (error) {
     console.error("Lỗi xử lý file:", error);
     if (error.message === "CONFLICT_ERROR") {
       // Xung đột đã được xử lý và hiển thị trong modal
       return;
     }
+
     // Hiển thị lỗi trong progress bar
     progressStatus.textContent = "Tải lên thất bại!";
     progressStatus.style.color = "#f44336";
@@ -702,7 +695,7 @@ function updateClock() {
 
   if (logoElement) {
     logoElement.innerHTML = `
-            <div class="clock-container" style="font-size: 100px; color: #ffffff;justify-content: right;">
+            <div class="clock-container" style="font-size: 40px; color: #ffffff;justify-content: right;">
                 ${time}
             </div>
         `;
@@ -738,7 +731,6 @@ function filterMeetingsByDate(selectedDate) {
   });
 }
 
-//=======New Update : Kiểm tra thông tin nhập vào từ người dùng - Cảnh báo nếu nhập trùng phòng họp=======
 // Hàm kiểm tra xung đột thời gian giữa các cuộc họp
 function checkTimeConflict(meeting1, meeting2) {
   const start1 = timeToMinutes(meeting1.startTime);
@@ -1185,7 +1177,7 @@ function isTimeOverdue(endTime, currentTime) {
   return isOverdue;
 }
 
-// Hàm để tự động cập nhật thời gian và trạng thái
+//=====Hàm để tự động cập nhật thời gian và trạng thái - Function related times, overdueTime=======
 function startAutoUpdate(data) {
   updateRoomStatus(data);
   const intervalId = setInterval(() => {
@@ -1330,7 +1322,18 @@ async function checkFileChanges() {
     if (fileData !== lastFileData) {
       console.log("File đã thay đổi, đang cập nhật...");
       const data = await processExcelFile(file);
-      updateScheduleTable(data);
+      const today = new Date();
+      const filteredData = data.filter((meeting) => {
+        const meetingDate = new Date(
+          meeting.date.split("/").reverse().join("-")
+        );
+        return meetingDate.toDateString() === today.toDateString();
+      });
+      // Nếu không có xung đột, tiếp tục xử lý
+      updateProgress(60, "Đang cập nhật bảng...");
+      console.log("Filtered data for today:", filteredData);
+      updateScheduleTable(filteredData.length > 0 ? filteredData : data);
+
       startAutoUpdate(data);
       lastFileData = fileData;
 
@@ -1404,6 +1407,74 @@ document.addEventListener("DOMContentLoaded", function () {
         return meetingDate.toDateString() === selectedDate.toDateString();
       });
       updateScheduleTable(filteredData);
+    }
+  });
+});
+
+/*================Full Screen Feature===============*/
+document.addEventListener("DOMContentLoaded", function () {
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  const meetingContainer = document.querySelector(".meeting-container");
+  const meetingPage = document.querySelector(".meeting-page");
+
+  function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      if (meetingPage.requestFullscreen) {
+        meetingPage.requestFullscreen();
+      } else if (meetingPage.mozRequestFullScreen) {
+        // Firefox
+        meetingPage.mozRequestFullScreen();
+      } else if (meetingPage.webkitRequestFullscreen) {
+        // Chrome, Safari and Opera
+        meetingPage.webkitRequestFullscreen();
+      } else if (meetingPage.msRequestFullscreen) {
+        // Internet Explorer/Edge
+        meetingPage.msRequestFullscreen();
+      }
+
+      meetingContainer.classList.add("fullscreen-mode");
+      fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        // Firefox
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        // Chrome, Safari and Opera
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        // Internet Explorer/Edge
+        document.msExitFullscreen();
+      }
+
+      meetingContainer.classList.remove("fullscreen-mode");
+      fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+  }
+
+  // Fullscreen change event listeners
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+  document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+  document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+
+  function handleFullscreenChange() {
+    if (!document.fullscreenElement) {
+      meetingContainer.classList.remove("fullscreen-mode");
+      fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+  }
+
+  // Add click event to fullscreen button
+  fullscreenBtn.addEventListener("click", toggleFullScreen);
+
+  // Optional: Escape key to exit fullscreen
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && document.fullscreenElement) {
+      toggleFullScreen();
     }
   });
 });

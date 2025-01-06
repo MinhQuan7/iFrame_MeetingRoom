@@ -2,6 +2,10 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+/>
 
 <div class="meeting-page">
   <div class="meeting-screen">
@@ -277,6 +281,15 @@
                 </div>
               </div>
             </div>
+            <div class="fullscreen-toggle">
+              <button
+                id="fullscreenBtn"
+                class="fullscreen-button"
+                aria-label="Toggle Fullscreen"
+              >
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
             <div class="room-buttons">
               <button class="room-button" aria-label="Select Room 1">
                 <div class="button-content">
@@ -369,7 +382,6 @@
       configCurrent3 = configuration.realtime_configs[10]; // Lưu cấu hình power
       configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
     },
-
     // Hàm lấy giá trị từ các ID và cập nhật giao diện
     onValues: (values) => {
       console.log("Configuration:", {
