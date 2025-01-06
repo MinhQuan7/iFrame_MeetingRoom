@@ -543,7 +543,6 @@
     padding-bottom: 80px; /* Dành không gian cho background-management */
   }
 
-  
   .background-management {
     position: absolute;
     bottom: 0;
@@ -553,6 +552,7 @@
     align-items: center;
     padding: 15px 20px;
     z-index: 10; /* Đảm bảo nằm trên các phần tử khác */
+    margin-bottom: -100px;
   }
 
   .background-management > * {
