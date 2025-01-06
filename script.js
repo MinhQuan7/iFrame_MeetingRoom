@@ -613,6 +613,101 @@ document
 //   }
 // }
 
+async function handleFileUpload(file) {
+  const progressContainer = document.getElementById("progressContainer");
+  const progressStatus = document.getElementById("progressStatus");
+
+  try {
+    // Bắt đầu hiển thị progress
+    updateProgress(10, "Đang khởi tạo...");
+    console.log("Đang khởi tạo");
+    // Xử lý File System Access API
+    try {
+      updateProgress(20, "Đang đọc file...");
+      const handles = await window.showOpenFilePicker({
+        multiple: false,
+        types: [
+          {
+            description: "Excel Files",
+            accept: {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                [".xlsx"],
+              "application/vnd.ms-excel": [".xls"],
+            },
+          },
+        ],
+      });
+      fileHandle = handles[0];
+      const initialFile = await fileHandle.getFile();
+      lastFileData = await initialFile.text();
+    } catch (error) {
+      console.error("Không thể lấy file handle:", error);
+    }
+
+    // Xử lý file và kiểm tra xung đột
+    updateProgress(40, "Đang xử lý dữ liệu...");
+    const data = await processExcelFile(file);
+
+    // Nếu không có xung đột, tiếp tục xử lý
+    updateProgress(60, "Đang cập nhật bảng...");
+    updateScheduleTable(data);
+    startAutoUpdate(data);
+
+    // Cập nhật cache
+    updateProgress(80, "Đang lưu cache...");
+    fileCache.data = data;
+    fileCache.lastModified = new Date().getTime();
+
+    // Lưu vào localStorage
+    try {
+      localStorage.setItem(
+        "fileCache",
+        JSON.stringify({
+          data: fileCache.data,
+          lastModified: fileCache.lastModified,
+        })
+      );
+    } catch (e) {
+      console.error("Không thể lưu vào localStorage:", e);
+    }
+
+    // Thiết lập monitoring
+    updateProgress(90, "Đang thiết lập giám sát...");
+    if (fileHandle) {
+      if (window.fileCheckInterval) {
+        clearInterval(window.fileCheckInterval);
+      }
+      window.fileCheckInterval = setInterval(checkFileChanges, 5000);
+    }
+
+    // Hoàn thành
+    updateProgress(100, "Hoàn thành!");
+    progressStatus.style.color = "#4CAF50";
+    progressContainer.classList.add("upload-complete");
+
+    // Ẩn progress bar sau khi hoàn thành
+    setTimeout(() => {
+      progressContainer.style.display = "none";
+      progressContainer.classList.remove("upload-complete");
+    }, 2000);
+  } catch (error) {
+    console.error("Lỗi xử lý file:", error);
+    if (error.message === "CONFLICT_ERROR") {
+      // Xung đột đã được xử lý và hiển thị trong modal
+      return;
+    }
+
+    // Hiển thị lỗi trong progress bar
+    progressStatus.textContent = "Tải lên thất bại!";
+    progressStatus.style.color = "#f44336";
+
+    setTimeout(() => {
+      progressContainer.style.display = "none";
+    }, 2000);
+
+    alert("Lỗi khi xử lý file. Vui lòng thử lại.");
+  }
+}
 
 // Tải file lên server
 async function uploadToServer(file, processedData) {
