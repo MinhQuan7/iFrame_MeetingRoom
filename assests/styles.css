@@ -958,7 +958,7 @@ upload-icon-date {
   padding: 0 2px;
 }
 
-@media (max-width: 991px) {
+/* @media (max-width: 991px) {
   .meeting-screen {
     max-width: 100%;
   }
@@ -991,8 +991,6 @@ upload-icon-date {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    /* width: 100%;
-    padding: 15px; */
     padding: 10px;
   }
 
@@ -1006,8 +1004,6 @@ upload-icon-date {
   }
 
   .welcome-message {
-    /* max-width: 100%;
-    font-size: 40px; */
     padding: 10px;
   }
 
@@ -1044,7 +1040,7 @@ upload-icon-date {
   }
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 1200px) {
   .content-wrapper {
     gap: 15px;
@@ -1120,7 +1116,7 @@ upload-icon-date {
     min-width: 120px;
     padding: 10px;
   }
-}
+} */
 
 /*//=======New update : Selection when user pick any date=====*/
 .date-picker {
@@ -1727,5 +1723,244 @@ upload-icon-date {
 
   .fullscreen-button i {
     font-size: 16px;
+  }
+}
+
+/* Responsive cho màn hình từ 1200px đến 1650px */
+/* Mobile - Small (320px and up) */
+/* Base styles */
+* {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+/* Mobile First - Extra Small (320px and up) */
+@media (min-width: 320px) {
+  .meeting-screen,
+  .meeting-container {
+    max-width: 100%;
+    padding: 8px;
+  }
+
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+
+  .header-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 6px;
+  }
+  .date-wrapper,
+  .welcome-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 12px; /* Giảm font-size */
+  }
+  .welcome-message,
+  .schedule-title {
+    font-size: 16px; /* Giảm font-size */
+    padding: 4px;
+  }
+
+  .meeting-info {
+    padding: 8px;
+    margin: 4px 0;
+    min-height: 140px;
+  }
+
+  .meeting-title {
+    font-size: 13px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .meeting-time,
+  .meeting-stats,
+  .stats-row {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .room-buttons {
+    margin-right: 4px;
+    padding: 0 8px;
+  }
+
+  .room-button {
+    min-width: 100px;
+    padding: 6px;
+  }
+
+  .logo {
+    width: 100px;
+  }
+}
+
+/* Tablet (768px and up) */
+@media (min-width: 768px) {
+  .content-wrapper {
+    flex-direction: row;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .left-column {
+    width: 40%;
+    min-width: 280px;
+    max-width: 350px;
+  }
+
+  .right-column {
+    width: 60%;
+    flex-grow: 1;
+  }
+
+  .welcome-message,
+  .schedule-title {
+    font-size: 18px;
+  }
+
+  .date-wrapper,
+  .welcome-text {
+    font-size: 13px; /* Giảm font-size */
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+
+  .meeting-info {
+    padding: 10px;
+    margin: 5px 0;
+  }
+
+  .logo {
+    width: 120px;
+  }
+}
+
+/* Desktop (1200px and up) */
+@media (min-width: 1200px) {
+  .content-wrapper {
+    gap: 15px;
+    max-width: 1600px;
+    margin: 0 auto;
+    height: 100vh;
+  }
+
+  .left-column {
+    width: 35%;
+    max-width: 400px;
+  }
+
+  .right-column {
+    width: 65%;
+  }
+
+  .welcome-message,
+  .schedule-title {
+    font-size: 20px;
+  }
+
+  .date-wrapper,
+  .welcome-text {
+    font-size: 14px; /* Giảm font-size */
+    gap: 8px;
+  }
+
+  .meeting-info {
+    padding: 12px;
+    margin: 6px 0;
+    min-height: 120px;
+  }
+
+  .meeting-title {
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .meeting-time,
+  .meeting-stats,
+  .stats-row {
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .room-button {
+    min-width: 110px;
+    padding: 8px;
+  }
+}
+
+/* Large Desktop (1440px and up) */
+@media (min-width: 1440px) {
+  .content-wrapper {
+    gap: 20px;
+    max-width: 1800px;
+  }
+
+  .left-column {
+    max-width: 420px;
+  }
+  .date-wrapper,
+  .welcome-text {
+    font-size: 14px; /* Giữ nguyên size */
+  }
+  .welcome-message,
+  .schedule-title {
+    font-size: 22px;
+  }
+}
+
+/* Extra Large Desktop (1920px and up) */
+@media (min-width: 1920px) {
+  .content-wrapper {
+    max-width: 1900px;
+  }
+
+  .left-column {
+    max-width: 450px;
+  }
+}
+
+/* Utility Classes */
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
+}
+
+.overflow-wrap {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+@media (max-width: 850px) {
+  .date-wrapper {
+    font-size: 10px; /* Giảm font size */
+    gap: 4px; /* Giảm khoảng cách */
+    margin-bottom: 3px;
+  }
+
+  .logo {
+    width: 90px; /* Giảm width của logo */
   }
 }
