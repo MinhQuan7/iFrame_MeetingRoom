@@ -1478,3 +1478,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+//====================Feature Go to Page 2=======================
+document.addEventListener("DOMContentLoaded", function () {
+  // Lấy tất cả các nút phòng
+  const roomButtons = document.querySelectorAll(".room-button");
+
+  roomButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      // Lấy text của phòng
+      const roomText = this.querySelector(".button-text").textContent;
+
+      // Chuyển hướng đến trang tương ứng
+      if (roomText === "P.1") {
+        window.location.href = "index1.html";
+      }
+      // Bạn có thể thêm điều kiện cho P.2, P.3 nếu cần
+    });
+  });
+});

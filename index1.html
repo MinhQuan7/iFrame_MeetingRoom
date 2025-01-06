@@ -10,159 +10,197 @@
       rel="stylesheet"
     />
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-gradient: linear-gradient(to bottom right, #00c6ff, #0072ff);
+        --secondary-gradient: linear-gradient(
+          to bottom right,
+          #4b6cb7,
+          #182848
+        );
+        --panel-spacing: clamp(10px, 2vw, 20px);
+        --font-small: clamp(0.8rem, 1.5vw, 1rem);
+        --font-medium: clamp(1rem, 2vw, 1.2rem);
+        --font-large: clamp(1.5rem, 3vw, 2rem);
+        --font-xlarge: clamp(2rem, 5vw, 5em);
+      }
+
       body {
         margin: 0;
         font-family: "Roboto", sans-serif;
-        display: flex;
-        height: 100vh;
-        background: linear-gradient(to bottom right, #00c6ff, #0072ff);
+        min-height: 100vh;
+        background: var(--primary-gradient);
       }
+
       .container {
-        display: flex;
-        width: 100%;
-        height: 100%;
+        display: grid;
+        grid-template-columns: minmax(250px, 1fr) minmax(300px, 2fr) minmax(
+            250px,
+            1fr
+          );
+        gap: var(--panel-spacing);
+        min-height: 100vh;
+        padding: var(--panel-spacing);
       }
-      .left-panel,
-      .right-panel {
-        padding: 20px;
-        box-sizing: border-box;
-      }
+
       .left-panel {
-        width: 30%;
-        background: linear-gradient(to bottom right, #00c6ff, #0072ff);
+        background: var(--primary-gradient);
         color: white;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        gap: var(--panel-spacing);
+        border-radius: 30px;
       }
-      .left-panel .time {
-        font-size: 5em;
+
+      .time {
+        font-size: var(--font-xlarge);
+        font-weight: 300;
+        line-height: 1;
+      }
+
+      .date {
+        font-size: var(--font-medium);
         font-weight: 300;
       }
-      .left-panel .date {
-        font-size: 1.5em;
-        font-weight: 300;
-      }
-      .left-panel .device {
+
+      .device {
         background: white;
         border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 10px;
+        padding: var(--panel-spacing);
+        margin-bottom: var(--panel-spacing);
         color: black;
         display: flex;
         align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
       }
-      .left-panel .device img {
-        width: 30px;
-        height: 30px;
-        margin-right: 10px;
+
+      .device-info {
+        flex: 1;
+        min-width: 200px;
+        font-size: var(--font-small);
       }
-      .left-panel .device .status {
-        margin-left: auto;
+
+      .status {
         display: flex;
         align-items: center;
+        gap: 5px;
+        white-space: nowrap;
       }
-      .left-panel .device .status span {
-        margin-left: 5px;
-      }
-      .left-panel .device.online .status span {
+
+      .online .status span {
         color: green;
       }
-      .left-panel .device.offline .status span {
+      .offline .status span {
         color: red;
       }
-      .left-panel .home-button {
-        background: #00c6ff;
-        border: none;
-        border-radius: 10px;
-        padding: 15px;
-        color: white;
-        font-size: 1.2em;
-        cursor: pointer;
-      }
+
       .main-panel {
-        width: 40%;
         background: white;
         border-radius: 20px;
-        padding: 20px;
-        box-sizing: border-box;
+        padding: calc(var(--panel-spacing) * 1.5);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        margin-right: 20px; /* Add margin to separate from right panel */
       }
+
       .main-panel h1 {
-        font-size: 1.5em;
-        font-weight: 500;
+        font-size: var(--font-medium);
+        margin-bottom: 1rem;
       }
-      .main-panel .current-status {
+
+      .current-status {
         color: red;
-        font-size: 1.2em;
-        font-weight: 500;
+        font-size: var(--font-medium);
+        margin-bottom: 0.5rem;
       }
-      .main-panel .meeting-title {
-        font-size: 2em;
-        font-weight: 400;
+
+      .meeting-title {
+        font-size: var(--font-large);
+        margin-bottom: 0.5rem;
       }
-      .main-panel .meeting-time {
+
+      .meeting-time {
         color: blue;
-        font-size: 1.5em;
-        font-weight: 500;
+        font-size: var(--font-medium);
+        margin-bottom: 1rem;
       }
-      .main-panel .purpose {
-        font-size: 1.2em;
-        font-weight: 300;
-        color: gray;
-      }
-      .main-panel .purpose-value {
-        font-size: 1.5em;
-        font-weight: 500;
-      }
-      .main-panel .end-meeting {
-        background: red;
-        border: none;
-        border-radius: 10px;
-        padding: 15px;
-        color: white;
-        font-size: 1.2em;
-        cursor: pointer;
-      }
+
       .right-panel {
-        width: 30%;
-        background: linear-gradient(to bottom right, #4b6cb7, #182848);
+        background: var(--secondary-gradient);
         border-radius: 20px;
-        padding: 20px;
-        box-sizing: border-box;
+        padding: calc(var(--panel-spacing) * 1.5);
         color: white;
       }
+
       .right-panel h2 {
         color: limegreen;
-        font-size: 1.5em;
-        font-weight: 500;
+        font-size: var(--font-medium);
+        margin-bottom: 1rem;
       }
-      .right-panel .upcoming-meeting {
-        margin-top: 20px;
+
+      .upcoming-meeting {
+        margin-bottom: var(--panel-spacing);
       }
-      .right-panel .upcoming-meeting .meeting-title {
-        font-size: 1.2em;
-        font-weight: 400;
+
+      .upcoming-meeting .meeting-title {
+        font-size: var(--font-medium);
+        color: white;
       }
-      .right-panel .upcoming-meeting .meeting-time {
-        font-size: 1em;
-        font-weight: 300;
+
+      .upcoming-meeting .meeting-time {
+        font-size: var(--font-small);
         color: lightgray;
       }
-      .right-panel .upcoming-meeting:not(:last-child) {
-        margin-bottom: 20px;
+
+      button {
+        width: 100%;
+        padding: calc(var(--panel-spacing));
+        border: none;
+        border-radius: 10px;
+        font-size: var(--font-medium);
+        cursor: pointer;
+        color: white;
+        transition: opacity 0.2s;
       }
+
+      .home-button {
+        background: #00c6ff;
+      }
+
+      .end-meeting {
+        background: red;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      @media (max-width: 1024px) {
+        .container {
+          grid-template-columns: 1fr 1.5fr;
+          grid-template-rows: auto 1fr;
+        }
+
+        .right-panel {
+          grid-column: 1 / -1;
+        }
+      }
+
       @media (max-width: 768px) {
         .container {
-          flex-direction: column;
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto auto;
         }
-        .left-panel,
-        .main-panel,
-        .right-panel {
-          width: 100%;
+
+        .device-info {
+          min-width: 150px;
         }
       }
     </style>
@@ -237,5 +275,6 @@
         </div>
       </div>
     </div>
+    <script src="script1.js"></script>
   </body>
 </html>
