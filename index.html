@@ -327,8 +327,8 @@
     configHumi3 = null,
     configCurrent3 = null,
     configPower3 = null;
-  eraWidget.mobileHeight = 991;
   eraWidget.init({
+    mobileHeight:(991),
     onConfiguration: (configuration) => {
       // Lưu các cấu hình khi nhận được từ widget
       configTemp = configuration.realtime_configs[0]; // Lưu cấu hình nhiệt độ
