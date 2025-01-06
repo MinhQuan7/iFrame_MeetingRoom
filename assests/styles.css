@@ -26,11 +26,33 @@
 .left-column {
   display: flex;
   flex-direction: column;
-  line-height: normal;
-  width: 30%;
-  margin-left: 0;
+  line-height: 1.2;
+  width: clamp(25%, 30%, 35%);
   height: fit-content;
-  padding-right: 40px;
+  padding-right: clamp(15px, 2vw, 40px);
+}
+@media (min-width: 1600px) {
+  .left-column {
+    width: 30%;
+  }
+}
+@media (max-width: 1599px) {
+  .left-column {
+    width: 28%;
+    padding-right: 30px;
+  }
+}
+@media (max-width: 1199px) {
+  .content-wrapper {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .left-column {
+    width: 100%;
+    padding-right: 20px;
+    padding-left: 20px;
+  }
 }
 
 .header-section {
@@ -40,14 +62,16 @@
   overflow: hidden;
   justify-content: start;
   padding: 0 16px 7px;
+  margin-top: -30px;
 }
-
 .date-wrapper {
-  color: #000;
-  font: 510 15px SF Pro, sans-serif; /* Simplified font declaration */
-  white-space: nowrap; /* Prevent text wrapping */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  top: 10px;
+  left: 40px;
 }
-
 .logo {
   display: flex;
   justify-content: flex-start; /* Căn logo sang bên trái */
@@ -56,24 +80,84 @@
 }
 
 .current-date {
-  font-size: 8px;
+  font-size: 0.8rem; /* Nhỏ hơn và sử dụng đơn vị rem */
   color: #ffffff;
   white-space: nowrap;
-  padding-top: 20px;
-  text-align: right;
+  opacity: 0.8; /* Làm mờ đi một chút để nhấn mạnh clock */
+  letter-spacing: 0.5px; /* Tăng khoảng cách chữ để dễ đọc */
+  margin-left: 40px;
+  margin-top: 5px;
 }
-.welcome-message {
-  align-self: stretch;
-  flex: 1;
-  /* min-width: 240px;
-  width: 100%; */
-  gap: 10px;
-  overflow: hidden;
-  margin: auto 0;
-  padding: 15px;
-  transition: all 0.3s ease;
+/* Import font SVN-Gilroy */
+@font-face {
+  font-family: "SVN-Gilroy";
+  src: url("/fonts/SVN-Gilroy-Bold.woff2") format("woff2"),
+    url("/fonts/SVN-Gilroy-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
+/* Fallback fonts trong trường hợp SVN-Gilroy không load được */
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.welcome-message {
+  /* Layout properties */
+  align-self: stretch;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* Spacing */
+  gap: 10px;
+  margin: 40px 0 auto 0;
+  padding: 15px;
+
+  /* Text styling */
+  font-family: "SVN-Gilroy", "SF Pro Display", -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3.5rem); /* Responsive font size */
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-transform: uppercase;
+
+  /* Colors and effects */
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Other properties */
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  /* Optimize font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Media query cho thiết bị di động */
+@media screen and (max-width: 768px) {
+  .welcome-message {
+    font-size: 1.8rem;
+    padding: 10px;
+    margin-top: 20px;
+  }
+}
+
+@media (min-width: 1366px) {
+  .welcome-message {
+    margin-top: 6px;
+  }
+}
 .welcome-text {
   max-width: 300px;
   font-size: 18px;
@@ -85,12 +169,7 @@
   text-align: left;
   line-height: 1.5;
   letter-spacing: 0.5px;
-}
-.meeting-info-container {
-  width: 100%;
-  max-width: 100%;
-  padding: 1rem;
-  font-size: 0.9rem;
+  margin-left: 50px;
 }
 
 .meeting-table {
@@ -151,6 +230,14 @@
   border-radius: 20px;
 }
 
+@media screen and (min-width: 1400px) {
+  .room-number {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 4px;
+    min-width: 90px;
+  }
+}
 @media screen and (max-width: 1366px) {
   .meeting-info-container {
     padding: 0.75rem;
@@ -164,7 +251,7 @@
 }
 
 .room-number {
-  width: 85%;
+  width: 100%;
   font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
@@ -184,7 +271,7 @@
 
 @media screen and (max-width: 1366px) {
   .room-number {
-    width: 80%;
+    width: 100%;
     font-size: 0.9rem;
     padding: 4px;
     min-width: 90px;
@@ -299,34 +386,6 @@
   flex: 1; /* Cho phép các phần tử co giãn */
 }
 
-.date-wrapper {
-  /* Set color to black */
-  color: #000;
-  /* Set font family and size */
-  font: 510 15px SF Pro, sans-serif;
-  /* Set white space to nowrap */
-  white-space: nowrap;
-}
-
-.logo {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 20px 20px 20px 0;
-}
-
-.current-date {
-  font-size: 8px;
-  color: #ffffff;
-  white-space: nowrap;
-  align-self: stretch;
-  margin: auto 0;
-  margin-top: -60px;
-  text-align: right;
-  right: 20px;
-  top: 20px;
-}
-
 .meeting-info {
   margin: 15px 0;
   max-width: 100%;
@@ -364,6 +423,46 @@
   justify-content: start;
   flex-wrap: wrap;
 }
+
+.clock-container {
+  display: flex;
+  color: #ffffff;
+  font-size: clamp(5rem, 5vw, 5.5rem);
+  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+@media (max-width: 1366px) {
+  .clock-container {
+    font-size: 3.75rem;
+    top: 8px;
+    left: 40px;
+    padding-left: 10px;
+  }
+  .date-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .current-date {
+    font-size: clamp(0.5rem, 1.8vw, 0.7rem);
+    margin-left: 5px;
+  }
+  .welcome-text {
+    margin-top: 20px; /* Điều chỉnh khoảng cách trên */
+  }
+}
+@media (max-width: 768px) {
+  .clock-container {
+    font-size: 2.5rem;
+    top: 5px;
+    left: 40px;
+  }
+  .welcome-text {
+    margin-top: 30px;
+  }
+}
 .temperature,
 .humidity {
   align-self: stretch;
@@ -400,7 +499,18 @@
   border-radius: 50%;
 }
 /* Responsive adjustments */
+@media (max-width: 1366px) and (min-width: 992px) {
+  .left-column {
+    width: 26%;
+    padding-right: 15px;
+  }
+}
+
 @media (max-width: 991px) {
+  .left-column {
+    width: 100%;
+    padding: 15px;
+  }
   .meeting-title {
     font-size: 16px;
   }
@@ -506,6 +616,15 @@
   .right-column {
     width: 100%; /* Đặt lại chiều rộng cho các cột */
   }
+  .date-wrapper {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .current-date {
+    margin-left: 60px;
+    text-align: left;
+    margin-top: 5px;
+  }
 }
 /* Giữ nguyên layout dọc trên màn hình nhỏ */
 @media (max-width: 991px) {
@@ -516,15 +635,15 @@
 }
 .schedule-content {
   max-width: 100%;
-  height: 100%; /* Added to ensure content takes full height */
-  padding: 20px 20px 20px 20px; /* Adjusted padding */
+  height: 95%; 
+  padding: 20px 20px 20px 20px; 
   border-radius: 16px;
   background-color: rgba(255, 255, 255, 0.85);
   display: flex;
   flex-direction: column;
   font-weight: 520;
   text-align: center;
-  overflow: hidden; /* Prevent content overflow */
+  overflow: hidden;
 }
 
 .schedule-section {
@@ -1598,8 +1717,11 @@ upload-icon-date {
   .welcome-message,
   .schedule-title {
     font-size: 18px;
+    margin-top: -20px;
   }
-
+  .current-date {
+    margin-top: 50px;
+  }
   .date-wrapper,
   .welcome-text {
     font-size: 13px; /* Giảm font-size */
@@ -1651,6 +1773,7 @@ upload-icon-date {
   .welcome-message,
   .schedule-title {
     font-size: 20px;
+    margin-top: 6px;
   }
 
   .date-wrapper,
@@ -1707,6 +1830,9 @@ upload-icon-date {
   .room-button {
     min-width: 110px;
     padding: 8px;
+  }
+  .current-date {
+    margin-left: 60px;
   }
 }
 

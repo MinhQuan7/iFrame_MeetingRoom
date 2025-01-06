@@ -673,7 +673,7 @@ function updateClock() {
   const hours = padZero(now.getHours());
   const minutes = padZero(now.getMinutes());
   const seconds = padZero(now.getSeconds());
-  const time = `${hours}:${minutes}:${seconds}`;
+  const time = `${hours}:${minutes}`;
 
   const days = [
     "Chủ Nhật",
@@ -695,10 +695,10 @@ function updateClock() {
 
   if (logoElement) {
     logoElement.innerHTML = `
-            <div class="clock-container" style="font-size: 40px; color: #ffffff;justify-content: right;">
-                ${time}
-            </div>
-        `;
+    <div class="clock-container">
+      ${time}
+    </div>
+  `;
   }
 
   if (currentDateElement) {
