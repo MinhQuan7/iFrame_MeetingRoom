@@ -1,0 +1,455 @@
+<link rel="stylesheet" href="assests/styles.css" />
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<div class="meeting-page">
+  <div class="meeting-screen">
+    <div class="meeting-container">
+      <div class="content-wrapper">
+        <div class="left-column">
+          <div class="header-section">
+            <div class="date-wrapper">
+              <div class="logo">Time</div>
+              <div class="current-date">Thứ Hai, 10/11/2024</div>
+            </div>
+            <div class="welcome-text">
+              <div class="welcome-message">CHÀO MỪNG ĐẾN VỚI PNJ Corp</div>
+            </div>
+            <div class="rooms-container">
+              <div class="room-section">
+                <div class="room-number">Lotus</div>
+                <div class="room-details">
+                  <div class="meeting-info">
+                    <div class="meeting-header">
+                      <div class="meeting-title">
+                        <span>Thông tin cuộc họp: Trống</span>
+                      </div>
+                      <div class="meeting-time">
+                        <div class="time-spacer"></div>
+                        <div class="start-time">
+                          <span>Thời gian bắt đầu:</span>
+                          7:00
+                        </div>
+                        <div class="end-time">
+                          <span>Thời gian kết thúc:</span>
+                          9:00
+                        </div>
+                      </div>
+                    </div>
+                    <div class="meeting-stats">
+                      <div class="stats-row">
+                        <div class="temperature">
+                          Nhiệt độ: <span id="temperature-eRa"></span>°C
+                        </div>
+                        <div class="humidity">
+                          Độ ẩm: <span id="humidity-eRa"></span>%
+                        </div>
+                      </div>
+                      <div class="stats-row">
+                        <div class="current">
+                          Dòng điện:<span id="current-eRa"></span>A
+                        </div>
+                        <div class="power">
+                          Công suất: <span id="power-eRa"></span>kWh
+                        </div>
+                      </div>
+                      <div class="status-indicator">
+                        <div class="indicator-dot busy"></div>
+                        <div class="status-text">Đang họp</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="room-section">
+                <div class="room-number">Lavender 1</div>
+                <div class="room-details">
+                  <div class="meeting-info">
+                    <div class="meeting-header">
+                      <div class="meeting-title">
+                        <span>Thông tin cuộc họp:</span>
+                        Trống
+                      </div>
+                      <div class="meeting-time">
+                        <div class="time-spacer"></div>
+                        <div class="start-time">
+                          <span>Thời gian bắt đầu:</span>
+                          --:--
+                        </div>
+                        <div class="end-time">
+                          <span>Thời gian kết thúc:</span>
+                          --:--
+                        </div>
+                      </div>
+                    </div>
+                    <div class="meeting-stats">
+                      <div class="stats-row">
+                        <div class="temperature">
+                          Nhiệt độ: <span id="temperature-eRa2"></span>°C
+                        </div>
+                        <div class="humidity">
+                          Độ ẩm: <span id="humidity-eRa2"></span>%
+                        </div>
+                      </div>
+                      <div class="stats-row">
+                        <div class="current">
+                          Dòng điện: <span id="current-eRa2"></span>A
+                        </div>
+                        <div class="power">
+                          Công suất:
+                          <span id="power-eRa2"></span>
+                          kWh
+                        </div>
+                      </div>
+                      <div class="status-indicator">
+                        <div class="indicator-dot available"></div>
+                        <div class="status-text">Trống</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="room-section">
+                <div class="room-number">Lavender 2</div>
+                <div class="room-details">
+                  <div class="meeting-info">
+                    <div class="meeting-header">
+                      <div class="meeting-title">
+                        <span>Thông tin cuộc họp:</span>
+                        Họp với khách hàng
+                      </div>
+                      <div class="meeting-time">
+                        <div class="time-spacer"></div>
+                        <div class="start-time">
+                          <span>Thời gian bắt đầu:</span>
+                          7:00
+                        </div>
+                        <div class="end-time">
+                          <span>Thời gian kết thúc:</span>
+                          9:00
+                        </div>
+                      </div>
+                    </div>
+                    <div class="meeting-stats">
+                      <div class="stats-row">
+                        <div class="temperature">
+                          Nhiệt độ:
+                          <span id="temperature-eRa3"></span>
+                          ℃
+                        </div>
+                        <div class="humidity">
+                          Độ ẩm: <span id="humidity-eRa3"></span>%
+                        </div>
+                      </div>
+                      <div class="stats-row">
+                        <div class="current">
+                          Dòng điện:
+                          <span id="current-eRa3"></span>
+                          A
+                        </div>
+                        <div class="power">
+                          Công suất:
+                          <span id="power-eRa3"></span>
+                          kW
+                        </div>
+                      </div>
+                      <div class="status-indicator">
+                        <div class="indicator-dot busy"></div>
+                        <div class="status-text">Đang họp</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Thêm phần upload background mới -->
+              <!-- Cập nhật HTML -->
+              <div class="background-management">
+                <div class="settings-icon">
+                  <i class="fas fa-cog"></i>
+                </div>
+                <div
+                  class="background-upload-container main-bg-container hidden"
+                >
+                  <input
+                    type="file"
+                    id="mainBackgroundUpload"
+                    accept="image/*"
+                    style="display: none"
+                  />
+                  <button class="background-upload-button main-background-btn">
+                    <div class="button-icon-wrapper">
+                      <i class="fas fa-desktop"></i>
+                    </div>
+                    <span>Background Chính</span>
+                  </button>
+                </div>
+
+                <div
+                  class="background-upload-container schedule-bg-container hidden"
+                >
+                  <input
+                    type="file"
+                    id="scheduleBackgroundUpload"
+                    accept="image/*"
+                    style="display: none"
+                  />
+                  <button
+                    class="background-upload-button schedule-background-btn"
+                  >
+                    <div class="button-icon-wrapper">
+                      <i class="fas fa-table"></i>
+                    </div>
+                    <span>Background Lịch</span>
+                  </button>
+                </div>
+
+                <button class="reset-background-button hidden">
+                  <div class="button-icon-wrapper">
+                    <i class="fas fa-undo"></i>
+                  </div>
+                  <span>Đặt Lại</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-column">
+          <div class="schedule-section">
+            <div class="schedule-content">
+              <h1 class="schedule-title">THÔNG TIN LỊCH HỌP</h1>
+              <div class="schedule-actions">
+                <button class="upload-button">
+                  Upload Meeting From
+                  <img
+                    class="upload-icon"
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/63b8f295cfd8166b173b26ae08d375f7f940976a41ab185ea145bd917523e537?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
+                    alt="Upload icon"
+                  />
+                </button>
+                <input type="date" id="meetingDate" class="date-picker" />
+                <img
+                  class="upload-icon-date"
+                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/c0a4e8a69fa64878bebad21d5087b0ff9a059ee566216f2bb71511caa204eaa7?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
+                  alt="Additional action icon"
+                />
+              </div>
+              <div
+                class="schedule-table"
+                role="table"
+                aria-label="Meeting Schedule"
+              >
+                <div class="table-header" role="row">
+                  <div role="columnheader">TT</div>
+                  <div role="columnheader">Ngày</div>
+                  <div role="columnheader">Thứ</div>
+                  <div role="columnheader">Phòng</div>
+                  <div role="columnheader">Giờ bắt đầu</div>
+                  <div role="columnheader">Giờ kết thúc</div>
+                  <div role="columnheader">Thời gian sử dụng</div>
+                  <div role="columnheader">Mục đích sử dụng</div>
+                  <div role="columnheader">Nội dung</div>
+                </div>
+                <div class="table-row" role="row">
+                  <div role="cell">1</div>
+                  <div role="cell">12/11/2024</div>
+                  <div role="cell">Thứ 3</div>
+                  <div role="cell">P. 1</div>
+                  <div role="cell">7:30</div>
+                  <div role="cell">9:30</div>
+                  <div role="cell">2:00</div>
+                  <div role="cell">Họp</div>
+                  <div role="cell">Họp nội bộ</div>
+                </div>
+                <div class="table-row" role="row">
+                  <div role="cell">2</div>
+                  <div role="cell">14/11/2024</div>
+                  <div role="cell">Thứ 5</div>
+                  <div role="cell">P. 2</div>
+                  <div role="cell">7:30</div>
+                  <div role="cell">17:00</div>
+                  <div role="cell">9:30</div>
+                  <div role="cell">Đào tạo</div>
+                  <div role="cell">Đào tạo</div>
+                </div>
+              </div>
+            </div>
+            <div class="room-buttons">
+              <button class="room-button" aria-label="Select Room 1">
+                <div class="button-content">
+                  <div class="button-text">P.1</div>
+                </div>
+              </button>
+              <button class="room-button" aria-label="Select Room 2">
+                <div class="button-content">
+                  <div class="button-text">P.2</div>
+                </div>
+              </button>
+              <button class="room-button" aria-label="Select Room 3">
+                <div class="button-content">
+                  <div class="button-text">P.3</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="window">
+  <div class="title-bar">
+    <div class="buttons">
+      <div class="close"></div>
+      <div class="minimize"></div>
+      <div class="maximize"></div>
+    </div>
+    <div class="title">Progress Extracting</div>
+  </div>
+  <div class="content">
+    <p id="progressText">Processing Extract Data...</p>
+    <p id="progressStatus">Processing . . .</p>
+    <div id="progressContainer" class="progress-bar">
+      <div id="progressFill" class="progress"></div>
+    </div>
+    <div class="button-container">
+      <button id="stopUploadBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+<script src="https://www.unpkg.com/@eohjsc/era-widget@1.1.3/src/index.js"></script>
+<script src="script.js"></script>
+<script>
+  const eraWidget = new EraWidget();
+  // Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
+  const temp = document.getElementById("temperature-eRa");
+  const humi = document.getElementById("humidity-eRa");
+  const currentIndex = document.getElementById("current-eRa");
+  const powerIndex = document.getElementById("power-eRa");
+
+  const temp2 = document.getElementById("temperature-eRa2");
+  const humi2 = document.getElementById("humidity-eRa2");
+  const currentIndex2 = document.getElementById("current-eRa2");
+  const powerIndex2 = document.getElementById("power-eRa2");
+
+  const temp3 = document.getElementById("temperature-eRa3");
+  const humi3 = document.getElementById("humidity-eRa3");
+  const currentIndex3 = document.getElementById("current-eRa3");
+  const powerIndex3 = document.getElementById("power-eRa3");
+  let configTemp = null,
+    configHumi = null,
+    configCurrent = null,
+    configPower = null,
+    configTemp2 = null,
+    configHumi2 = null,
+    configCurrent2 = null,
+    configPower2 = null,
+    configTemp3 = null,
+    configHumi3 = null,
+    configCurrent3 = null,
+    configPower3 = null;
+  eraWidget.init({
+    onConfiguration: (configuration) => {
+      // Lưu các cấu hình khi nhận được từ widget
+      configTemp = configuration.realtime_configs[0]; // Lưu cấu hình nhiệt độ
+      configHumi = configuration.realtime_configs[1]; // Lưu cấu hình độ ẩm
+      configCurrent = configuration.realtime_configs[2]; // Lưu cấu hình power
+      configPower = configuration.realtime_configs[3]; // Lưu cấu hình toggle light
+
+      configTemp2 = configuration.realtime_configs[4]; // Lưu cấu hình nhiệt độ
+      configHumi2 = configuration.realtime_configs[5]; // Lưu cấu hình độ ẩm
+      configCurrent2 = configuration.realtime_configs[6]; // Lưu cấu hình power
+      configPower2 = configuration.realtime_configs[7]; // Lưu cấu hình toggle light
+
+      configTemp3 = configuration.realtime_configs[8]; // Lưu cấu hình nhiệt độ
+      configHumi3 = configuration.realtime_configs[9]; // Lưu cấu hình độ ẩm
+      configCurrent3 = configuration.realtime_configs[10]; // Lưu cấu hình power
+      configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
+    },
+
+    // Hàm lấy giá trị từ các ID và cập nhật giao diện
+    onValues: (values) => {
+      console.log("Configuration:", {
+        configTemp,
+        configHumi,
+        configCurrent,
+        configPower,
+
+        configTemp2,
+        configHumi2,
+        configCurrent2,
+        configPower2,
+
+        configTemp3,
+        configHumi3,
+        configCurrent3,
+        configPower3,
+      });
+
+      console.log("Current values:", values);
+
+      if (configTemp && values[configTemp.id]) {
+        const tempValue = values[configTemp.id].value;
+        if (temp) temp.textContent = tempValue;
+      }
+
+      if (configHumi && values[configHumi.id]) {
+        const humidValue = values[configHumi.id].value;
+        if (humi) humi.textContent = humidValue;
+      }
+
+      if (configCurrent && values[configCurrent.id]) {
+        const currentValue = values[configCurrent.id].value;
+        if (currentIndex) currentIndex.textContent = currentValue;
+      }
+
+      if (configPower && values[configPower.id]) {
+        const powerValue = values[configPower.id].value;
+        if (powerIndex) powerIndex.textContent = powerValue;
+      }
+
+      if (configTemp2 && values[configTemp2.id]) {
+        const tempValue2 = values[configTemp2.id].value;
+        if (temp2) temp2.textContent = tempValue2;
+      }
+
+      if (configHumi2 && values[configHumi2.id]) {
+        const humidValue2 = values[configHumi2.id].value;
+        if (humi2) humi2.textContent = humidValue2;
+      }
+
+      if (configCurrent2 && values[configCurrent2.id]) {
+        const currentValue2 = values[configCurrent2.id].value;
+        if (currentIndex2) currentIndex2.textContent = currentValue2;
+      }
+
+      if (configPower2 && values[configPower2.id]) {
+        const powerValue2 = values[configPower2.id].value;
+        if (powerIndex2) powerIndex2.textContent = powerValue2;
+      }
+
+      if (configTemp3 && values[configTemp3.id]) {
+        const tempValue3 = values[configTemp3.id].value;
+        if (temp3) temp3.textContent = tempValue3;
+      }
+
+      if (configHumi3 && values[configHumi3.id]) {
+        const humidValue3 = values[configHumi3.id].value;
+        if (humi3) humi3.textContent = humidValue3;
+      }
+
+      if (configCurrent3 && values[configCurrent3.id]) {
+        const currentValue3 = values[configCurrent3.id].value;
+        if (currentIndex3) currentIndex3.textContent = currentValue3;
+      }
+
+      if (configPower3 && values[configPower3.id]) {
+        const powerValue3 = values[configPower3.id].value;
+        if (powerIndex3) powerIndex3.textContent = powerValue3;
+      }
+    },
+  });
+</script>
