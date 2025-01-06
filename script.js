@@ -432,6 +432,7 @@ function calculateDuration(startTime, endTime) {
 function updateScheduleTable(data) {
   const tableBody = document.querySelector(".schedule-table");
   const headerRow = tableBody.querySelector(".table-header");
+  updateProgress(40, "Đang đồng bộ hóa dữ liệu...");
   // Xóa các hàng cũ
   Array.from(tableBody.children)
     .filter((child) => child !== headerRow)
@@ -442,6 +443,8 @@ function updateScheduleTable(data) {
     const row = document.createElement("div");
     row.className = "table-row";
     row.setAttribute("role", "row");
+    updateProgress(70, "Đang cập nhật dữ liệu...");
+    console.log("Đang cập nhật dữ liệu với processing bar");
     row.innerHTML = `
             <div role="cell">${meeting.id}</div>
             <div role="cell">${meeting.date}</div>
@@ -454,7 +457,9 @@ function updateScheduleTable(data) {
             <div role="cell">${meeting.content}</div>
         `;
     tableBody.appendChild(row);
-    console.log("============Called Filter Meeting By Current Date Complete!!");
+    updateProgress(100, "Cập nhật thành công");
+    console.log("Đồng bộ hóa dữ liệu thành công ! ");
+    hideProgressBar();
   });
 }
 // Sửa hàm timeToMinutes để xử lý giây
@@ -725,7 +730,6 @@ function filterMeetingsByDate(selectedDate) {
     }
   });
 }
-
 
 // Hàm kiểm tra xung đột thời gian giữa các cuộc họp
 function checkTimeConflict(meeting1, meeting2) {
@@ -1316,11 +1320,20 @@ async function checkFileChanges() {
 
     // So sánh với dữ liệu cũ
     if (fileData !== lastFileData) {
-      updateProgress(40, "Đang đồng bộ hóa dữ liệu...");
       console.log("File đã thay đổi, đang cập nhật...");
       const data = await processExcelFile(file);
-      updateProgress(70, "Đang cập nhật dữ liệu...");
-      updateScheduleTable(data);
+      const today = new Date();
+      const filteredData = data.filter((meeting) => {
+        const meetingDate = new Date(
+          meeting.date.split("/").reverse().join("-")
+        );
+        return meetingDate.toDateString() === today.toDateString();
+      });
+      // Nếu không có xung đột, tiếp tục xử lý
+      updateProgress(60, "Đang cập nhật bảng...");
+      console.log("Filtered data for today:", filteredData);
+      updateScheduleTable(filteredData.length > 0 ? filteredData : data);
+
       startAutoUpdate(data);
       lastFileData = fileData;
 
@@ -1337,8 +1350,6 @@ async function checkFileChanges() {
             lastModified: fileCache.lastModified,
           })
         );
-        updateProgress(100, "Cập nhật thành công");
-        hideProgressBar();
       } catch (e) {
         console.error("Không thể lưu vào localStorage:", e);
       }
