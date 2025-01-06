@@ -315,7 +315,6 @@
   const humi3 = document.getElementById("humidity-eRa3");
   const currentIndex3 = document.getElementById("current-eRa3");
   const powerIndex3 = document.getElementById("power-eRa3");
-  eraWidget.requestAdjustMobileHeight(991);
   let configTemp = null,
     configHumi = null,
     configCurrent = null,
@@ -328,6 +327,7 @@
     configHumi3 = null,
     configCurrent3 = null,
     configPower3 = null;
+  eraWidget.mobileHeight = 991;
   eraWidget.init({
     onConfiguration: (configuration) => {
       // Lưu các cấu hình khi nhận được từ widget
@@ -346,7 +346,6 @@
       configCurrent3 = configuration.realtime_configs[10]; // Lưu cấu hình power
       configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
     },
-
     // Hàm lấy giá trị từ các ID và cập nhật giao diện
     onValues: (values) => {
       console.log("Configuration:", {

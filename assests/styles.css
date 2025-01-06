@@ -567,9 +567,9 @@
   }
 
   .schedule-content {
-  max-height: 60vh; /* Giới hạn chiều cao */
-  overflow-y: auto; /* Cho phép cuộn dọc */
-  padding-right: 10px; /* Thêm padding để tránh che thanh cuộn */
+    max-height: 60vh; /* Giới hạn chiều cao */
+    overflow-y: auto; /* Cho phép cuộn dọc */
+    padding-right: 10px; /* Thêm padding để tránh che thanh cuộn */
   }
 
   /* Tùy chỉnh thanh cuộn cho mobile */
@@ -591,13 +591,6 @@
     background-color: rgba(0, 0, 0, 0.5);
   }
 
-  /* Đảm bảo table rows không bị cắt */
-  .schedule-table {
-    display: block;
-    max-height: 100%; /* Sử dụng toàn bộ không gian */
-    overflow-y: auto;
-  }
-
   /* Responsive cho các cột */
   .table-header > div,
   .table-row > div {
@@ -607,7 +600,6 @@
     text-overflow: ellipsis; /* Hiển thị ... nếu nội dung quá dài */
     white-space: nowrap; /* Ngăn văn bản xuống dòng */
   }
-
 }
 .indicator-dot.busy {
   background-color: #ff0000;
@@ -766,7 +758,7 @@ upload-icon-date {
   font-size: 16px;
   margin: 15px 0;
   flex-direction: column;
-  /* overflow: hidden; */
+  overflow-x: hidden;
   justify-content: start;
 }
 
