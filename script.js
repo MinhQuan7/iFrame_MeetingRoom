@@ -1183,7 +1183,7 @@ function startAutoUpdate(data) {
       console.log("Auto updating at:", currentTime);
       updateRoomStatus(data);
     }
-  }, 1); // Vẫn kiểm tra mỗi giây nhưng chỉ cập nhật khi đổi phút
+  }, 1000); // Vẫn kiểm tra mỗi giây nhưng chỉ cập nhật khi đổi phút
 
   window.autoUpdateInterval = intervalId;
   return () => clearInterval(intervalId);
@@ -1316,8 +1316,10 @@ async function checkFileChanges() {
 
     // So sánh với dữ liệu cũ
     if (fileData !== lastFileData) {
+      updateProgress(40, "Đang đồng bộ hóa dữ liệu...");
       console.log("File đã thay đổi, đang cập nhật...");
       const data = await processExcelFile(file);
+      updateProgress(70, "Đang cập nhật dữ liệu...");
       updateScheduleTable(data);
       startAutoUpdate(data);
       lastFileData = fileData;
@@ -1335,6 +1337,8 @@ async function checkFileChanges() {
             lastModified: fileCache.lastModified,
           })
         );
+        updateProgress(100, "Cập nhật thành công");
+        hideProgressBar();
       } catch (e) {
         console.error("Không thể lưu vào localStorage:", e);
       }
