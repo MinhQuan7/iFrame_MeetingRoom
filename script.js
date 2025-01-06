@@ -566,6 +566,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 document
   .getElementById("stopUploadBtn")
   .addEventListener("click", hideProgressBar);
@@ -588,16 +589,6 @@ async function handleFileUpload(file) {
       const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
       return meetingDate.toDateString() === today.toDateString();
     });
-
-    // Cập nhật bảng với các cuộc họp của ngày hiện tại
-    console.log("Filtered data for today:", filteredData);
-    updateScheduleTable(filteredData.length > 0 ? filteredData : data);
-
-    // Cập nhật cache
-    updateProgress(80, "Đang lưu cache...");
-    fileCache.data = data;
-    fileCache.lastModified = new Date().getTime();
-
     // Lưu vào localStorage
     try {
       localStorage.setItem(
@@ -610,6 +601,15 @@ async function handleFileUpload(file) {
     } catch (e) {
       console.error("Không thể lưu vào localStorage:", e);
     }
+    // Cập nhật bảng với các cuộc họp của ngày hiện tại
+    console.log("Filtered data for today:", filteredData);
+    updateScheduleTable(filteredData.length > 0 ? filteredData : data);
+    updateRoomStatus(data);
+    startAutoUpdate(data);
+    // Cập nhật cache
+    updateProgress(80, "Đang lưu cache...");
+    fileCache.data = data;
+    fileCache.lastModified = new Date().getTime();
 
     // Thiết lập monitoring
     updateProgress(90, "Đang thiết lập giám sát...");
@@ -625,8 +625,6 @@ async function handleFileUpload(file) {
     progressStatus.style.color = "#4CAF50";
     progressContainer.classList.add("upload-complete");
     hideProgressBar();
-    updateRoomStatus(data);
-    startAutoUpdate(data);
     console.log("Enable AutoUpdat feature of meeting room");
     // Nếu không có cuộc họp nào trong ngày, thông báo cho người dùng
     if (filteredData.length === 0) {
@@ -1190,7 +1188,6 @@ function isTimeOverdue(endTime, currentTime) {
 // Hàm để tự động cập nhật thời gian và trạng thái
 function startAutoUpdate(data) {
   updateRoomStatus(data);
-
   const intervalId = setInterval(() => {
     const currentTime = getCurrentTime();
     // Chỉ cập nhật khi thay đổi phút
@@ -1315,7 +1312,6 @@ let fileCache = {
   lastModified: null,
   reader: new FileReader(),
 };
-
 // Hàm kiểm tra thay đổi từ input element
 async function checkFileChanges() {
   if (!fileHandle) return;
@@ -1327,12 +1323,33 @@ async function checkFileChanges() {
     // Kiểm tra nếu lastFileData chưa được khởi tạo
     if (lastFileData === null) {
       lastFileData = fileData;
-      // Upload file lần đầu tiên
-      uploadFile(file);
-    } else if (fileData !== lastFileData) {
-      // Upload file khi người dùng chọn file mới
-      uploadFile(file);
+      return;
+    }
+
+    // So sánh với dữ liệu cũ
+    if (fileData !== lastFileData) {
+      console.log("File đã thay đổi, đang cập nhật...");
+      const data = await processExcelFile(file);
+      updateScheduleTable(data);
+      startAutoUpdate(data);
       lastFileData = fileData;
+
+      // Cập nhật cache
+      fileCache.data = data;
+      fileCache.lastModified = new Date().getTime();
+
+      // Lưu vào localStorage
+      try {
+        localStorage.setItem(
+          "fileCache",
+          JSON.stringify({
+            data: fileCache.data,
+            lastModified: fileCache.lastModified,
+          })
+        );
+      } catch (e) {
+        console.error("Không thể lưu vào localStorage:", e);
+      }
     }
   } catch (error) {
     console.error("Lỗi khi kiểm tra file:", error);
@@ -1343,6 +1360,7 @@ async function checkFileChanges() {
     }
   }
 }
+
 const overlay = document.createElement("div");
 overlay.style.position = "fixed";
 overlay.style.top = "0";
