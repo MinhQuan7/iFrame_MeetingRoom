@@ -538,6 +538,28 @@
   .meeting-stats {
     font-size: 13px;
   }
+  .schedule-section {
+    position: relative; /* Tạo context cho phần tử con absolute */
+    padding-bottom: 80px; /* Dành không gian cho background-management */
+  }
+
+  .background-management {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: rgba(255, 255, 255, 0.1); /* Nền mờ để nổi bật */
+    backdrop-filter: blur(5px); /* Hiệu ứng mờ */
+    z-index: 10; /* Đảm bảo nằm trên các phần tử khác */
+  }
+
+  .background-management > * {
+    margin: 0 10px; /* Khoảng cách giữa các phần tử */
+  }
 }
 
 @media (max-width: 480px) {
