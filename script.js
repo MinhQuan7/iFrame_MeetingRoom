@@ -647,10 +647,16 @@ async function handleFileUpload(file) {
     // Xử lý file và kiểm tra xung đột
     updateProgress(40, "Đang xử lý dữ liệu...");
     const data = await processExcelFile(file);
-
+    const today = new Date();
+    const filteredData = data.filter((meeting) => {
+      const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
+      return meetingDate.toDateString() === today.toDateString();
+    });
     // Nếu không có xung đột, tiếp tục xử lý
     updateProgress(60, "Đang cập nhật bảng...");
-    updateScheduleTable(data);
+    console.log("Filtered data for today:", filteredData);
+    updateScheduleTable(filteredData.length > 0 ? filteredData : data);
+    updateRoomStatus(data);
     startAutoUpdate(data);
 
     // Cập nhật cache
@@ -682,8 +688,7 @@ async function handleFileUpload(file) {
 
     // Hoàn thành
     updateProgress(100, "Hoàn thành!");
-    progressStatus.style.color = "#4CAF50";
-    progressContainer.classList.add("upload-complete");
+    hideProgressBar();
 
     // Ẩn progress bar sau khi hoàn thành
     setTimeout(() => {
