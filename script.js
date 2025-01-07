@@ -1480,20 +1480,110 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //====================Feature Go to Page 2=======================
+// Hàm load trang động
+function loadDynamicPage(pageType) {
+  const dynamicContent = document.getElementById('dynamicPageContent');
+  const mainContent = document.querySelector('.content-wrapper');
+
+  if (pageType === 'room1') {
+    // Ẩn nội dung chính
+    mainContent.style.display = 'none';
+    dynamicContent.style.display = 'block';
+    
+    // Render nội dung trang P.1
+    dynamicContent.innerHTML = `
+      <div class="container">
+        <div class="left-panel">
+          <div>
+            <div class="time">9:41</div>
+            <div class="date">Thứ 2, 10/12/2024</div>
+          </div>
+          <div>
+            <div class="device online">
+              <img
+                alt="Power meter icon"
+                height="30"
+                src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
+                width="30"
+              />
+              <div>
+                <div>Power meter AC 1</div>
+                <div>Dòng điện: 8.5 A | Công suất: 0.56 KW</div>
+              </div>
+              <div class="status">
+                <i class="fas fa-circle"> </i>
+                <span> Online </span>
+              </div>
+            </div>
+            <div class="device offline">
+              <img
+                alt="Air conditioner icon"
+                height="30"
+                src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg"
+                width="30"
+              />
+              <div>
+                <div>Máy lạnh 1</div>
+                <div>Nhiệt độ: 25.5 °C | Độ ẩm: 70 %</div>
+              </div>
+              <div class="status">
+                <i class="fas fa-circle"> </i>
+                <span> Offline </span>
+              </div>
+            </div>
+          </div>
+          <button class="home-button">TRANG CHỦ</button>
+        </div>
+        <div class="main-panel">
+          <div>
+            <h1>PHÒNG HỌP P 1</h1>
+            <div class="current-status">HIỆN TẠI</div>
+            <div class="meeting-title-1">Đào tạo nội bộ team sản xuất</div>
+            <div class="meeting-time-1">9:00 AM - 12:00 PM</div>
+            <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
+            <div class="purpose-value">ĐÀO TẠO</div>
+          </div>
+          <button class="end-meeting">END MEETING</button>
+        </div>
+        <div class="right-panel">
+          <h2>TIẾP THEO</h2>
+          <div class="upcoming-meeting">
+            <div class="meeting-title-1">Họp báo cáo tuần team marketing</div>
+            <div class="meeting-time-1">13:30 - 14:30</div>
+          </div>
+          <div class="upcoming-meeting">
+            <div class="meeting-title-1">Họp với đối tác</div>
+            <div class="meeting-time-1">14:30 - 15:30</div>
+          </div>
+          <div class="upcoming-meeting">
+            <div class="meeting-title-1">Họp tuần team sản xuất</div>
+            <div class="meeting-time-1">15:30 - 17:00</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Thêm sự kiện cho nút Home
+    const homeButton = dynamicContent.querySelector('.home-button');
+    homeButton.addEventListener('click', () => {
+      dynamicContent.style.display = 'none';
+      mainContent.style.display = 'flex';
+    });
+  }
+}
+
+// Cập nhật sự kiện cho room buttons
 document.addEventListener("DOMContentLoaded", function () {
-  // Lấy tất cả các nút phòng
   const roomButtons = document.querySelectorAll(".room-button");
 
   roomButtons.forEach((button) => {
     button.addEventListener("click", function () {
-      // Lấy text của phòng
       const roomText = this.querySelector(".button-text").textContent;
 
-      // Chuyển hướng đến trang tương ứng
       if (roomText === "P.1") {
-        window.location.href = "index1.html";
+        loadDynamicPage('room1');
       }
-      // Bạn có thể thêm điều kiện cho P.2, P.3 nếu cần
+      // Thêm điều kiện cho các phòng khác nếu cần
     });
   });
 });
