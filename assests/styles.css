@@ -2201,6 +2201,7 @@ button:hover {
 }
 
 .time-1 {
+  margin-left: -17%;
   margin-top: 40px;
 }
 
@@ -2214,23 +2215,20 @@ button:hover {
 }
 @media (min-width: 1370px) and (max-width: 1590px) {
   .time-1 {
-    margin-left: 9%;
+    margin-left: -17%;
   }
   .currentDateElement-1 {
     margin-top: 15%;
   }
 }
 @media (min-width: 1370px) and (max-width: 1700px) {
-  .time-1 {
-    margin-left: 9%;
-  }
   .currentDateElement-1 {
     margin-top: 15%;
   }
 }
 @media (min-width: 1750px) {
   .time-1 {
-    margin-left: 35%;
+    margin-left: -10%;
   }
   .currentDateElement-1 {
     margin-top: 15%;

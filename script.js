@@ -1517,97 +1517,103 @@ function loadDynamicPage(pageType) {
       return meetingDate.toDateString() === today.toDateString();
     });
 
+const currentTime = new Date().getTime();
+const upcomingMeetings = filteredData.filter((meeting) => {
+const meetingStartTime = new Date(meeting.startTime).getTime();
+const meetingEndTime = new Date(meeting.endTime).getTime();
+return meetingStartTime <= currentTime && meetingEndTime> currentTime;
+  });
     // Render nội dung trang
-    dynamicContent.innerHTML = `
-      <div class="container">
-        <div class="left-panel">
-          <div>
-            <div class="clock-container">
-              <div class="time-1" id="currentTime-1">9:41</div>
-            </div>
-            <div class="currentDateElement-1" id="currentDate-1">Thứ 2, 10/12/2024</div>
-          </div>
-          <div>
-            <div class="device online">
-              <img
-                alt="Power meter icon"
-                height="30"
-                src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
-                width="30"
-              />
-              <div>
-                <div>Power meter AC 1</div>
-                <div>Dòng điện: 8.5 A | Công suất: 0.56 KW</div>
-              </div>
-              <div class="status">
-                <i class="fas fa-circle"> </i>
-                <span> Online </span>
-              </div>
-            </div>
-            <div class="device offline">
-              <img
-                alt="Air conditioner icon"
-                height="30"
-                src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg"
-                width="30"
-              />
-              <div>
-                <div>Máy lạnh 1</div>
-                <div>Nhiệt độ: 25.5 °C | Độ ẩm: 70 %</div>
-              </div>
-              <div class="status">
-                <i class="fas fa-circle"> </i>
-                <span> Offline </span>
-              </div>
-            </div>
-          </div>
-          <button class="home-button">TRANG CHỦ</button>
+   dynamicContent.innerHTML = `
+  <div class="container">
+    <div class="left-panel">
+      <div>
+        <div class="clock-container">
+          <div class="time-1" id="currentTime-1">9:41</div>
         </div>
-        <div class="main-panel">
+        <div class="currentDateElement-1" id="currentDate-1">Thứ 2, 10/12/2024</div>
+      </div>
+      <div>
+        <div class="device online">
+          <img
+            alt="Power meter icon"
+            height="30"
+            src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
+            width="30"
+          />
           <div>
-            <h1>${
-              filteredData.length > 0
-                ? filteredData[0].room
-                : "Không có thông tin"
-            }</h1>
-            <div class="current-status">HIỆN TẠI</div>
-            <div class="meeting-title-1">${
-              filteredData.length > 0
-                ? filteredData[0].content
-                : "Không có cuộc họp"
-            }</div>
-            <div class="meeting-time-1">
-              <div role="cell">Bắt đầu: ${
-                filteredData.length > 0 ? filteredData[0].startTime : "--:--"
-              }</div>
-              <div role="cell">Kết thúc: ${
-                filteredData.length > 0 ? filteredData[0].endTime : "--:--"
-              }</div>
-            </div>
-            <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
-            <div class="purpose-value">${
-              filteredData.length > 0
-                ? filteredData[0].purpose
-                : "Chưa xác định"
-            }</div>
+            <div>Power meter AC 1</div>
+            <div>Dòng điện: 8.5 A | Công suất: 0.56 KW</div>
           </div>
-          <button class="end-meeting">END MEETING</button>
+          <div class="status">
+            <i class="fas fa-circle"> </i>
+            <span> Online </span>
+          </div>
         </div>
-        <div class="right-panel">
-          <h2>LỊCH HỌP PHÒNG ${roomName.toUpperCase()}</h2>
-          ${filteredData
-            .map(
-              (meeting) => `
-            <div class="upcoming-meeting">
-              <div class="meeting-title">${meeting.content}</div>
-              <div class="meeting-time-1">${meeting.startTime} - ${meeting.endTime}</div>
-            </div>
-          `
-            )
-            .join("")}
+        <div class="device offline">
+          <img
+            alt="Air conditioner icon"
+            height="30"
+            src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg"
+            width="30"
+          />
+          <div>
+            <div>Máy lạnh 1</div>
+            <div>Nhiệt độ: 25.5 °C | Độ ẩm: 70 %</div>
+          </div>
+          <div class="status">
+            <i class="fas fa-circle"> </i>
+            <span> Offline </span>
+          </div>
         </div>
       </div>
-    `;
+      <button class="home-button">TRANG CHỦ</button>
+    </div>
+    <div class="main-panel">
+      <div>
+        <h1>${
+          upcomingMeetings.length > 0
+            ? upcomingMeetings[0].room
+            : "Không có thông tin"
+        }</h1>
+        <div class="current-status">HIỆN TẠI</div>
+        <div class="meeting-title-1">${
+          upcomingMeetings.length > 0
+            ? upcomingMeetings[0].content
+            : "Không có cuộc họp"
+        }</div>
+        <div class="meeting-time-1">
+          <div role="cell">Bắt đầu: ${
+            upcomingMeetings.length > 0 ? upcomingMeetings[0].startTime : "--:--"
+          }</div>
+          <div role="cell">Kết thúc: ${
+            upcomingMeetings.length > 0 ? upcomingMeetings[0].endTime : "--:--"
+          }</div>
+        </div>
+        <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
+        <div class="purpose-value">${
+          upcomingMeetings.length > 0
+            ? upcomingMeetings[0].purpose
+            : "Chưa xác định"
+        }</div>
+      </div>
+      <button class="end-meeting">END MEETING</button>
+    </div>
+    <div class="right-panel">
+      <h2>LỊCH HỌP PHÒNG ${roomName.toUpperCase()}</h2>
+      ${upcomingMeetings
+        .map(
+          (meeting) => `
+        <div class="upcoming-meeting">
+          <div class="meeting-title">${meeting.content}</div>
+          <div class="meeting-time-1">${meeting.startTime} - ${meeting.endTime}</div>
+        </div>
+      `
+        )
+        .join("")}
+    </div>
+  </div>
+`;
 
     // Cập nhật thời gian và ngày hiện tại
     const currentTimeElement = document.getElementById("currentTime-1");
