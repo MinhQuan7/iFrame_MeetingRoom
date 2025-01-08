@@ -1488,36 +1488,42 @@ document.addEventListener("DOMContentLoaded", function () {
       if (roomText === "P.1") {
         loadDynamicPage("room1");
       }
+      if (roomText === "P.2") {
+      loadDynamicPage("room2");
+      }
+      if (roomText === "P.3") {
+      loadDynamicPage("room3");
+      }
+
     });
   });
 });
-
 function loadDynamicPage(pageType) {
   const dynamicContent = document.getElementById("dynamicPageContent");
   const mainContent = document.querySelector(".content-wrapper");
-  if (pageType === "room1") {
-    // Lấy dữ liệu từ hàm updateScheduleTable
-    const data = JSON.parse(localStorage.getItem("fileCache")).data;
+  const data = JSON.parse(localStorage.getItem("fileCache")).data;
 
-    // Lọc các cuộc họp cho phòng Lotus
-    const lotusRoomMeetings = data.filter((meeting) =>
-      meeting.room.toLowerCase().includes("lotus")
+  // Hàm chung để render trang động
+  function renderDynamicPage(roomKeyword, roomName) {
+    // Lọc các cuộc họp cho phòng
+    const roomMeetings = data.filter((meeting) =>
+      meeting.room.toLowerCase().includes(roomKeyword)
     );
 
     // Lọc các cuộc họp diễn ra trong ngày
     const today = new Date();
-    const filteredData = lotusRoomMeetings.filter((meeting) => {
+    const filteredData = roomMeetings.filter((meeting) => {
       const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
       return meetingDate.toDateString() === today.toDateString();
     });
 
-    // Render nội dung trang P.1
+    // Render nội dung trang
     dynamicContent.innerHTML = `
       <div class="container">
         <div class="left-panel">
           <div>
             <div class="clock-container">
-            <div class="time-1" id="currentTime-1">9:41</div>
+              <div class="time-1" id="currentTime-1">9:41</div>
             </div>
             <div class="currentDateElement-1" id="currentDate-1">Thứ 2, 10/12/2024</div>
           </div>
@@ -1588,7 +1594,7 @@ function loadDynamicPage(pageType) {
           <button class="end-meeting">END MEETING</button>
         </div>
         <div class="right-panel">
-          <h2>LỊCH HỌP PHÒNG LOTUS</h2>
+          <h2>LỊCH HỌP PHÒNG ${roomName.toUpperCase()}</h2>
           ${filteredData
             .map(
               (meeting) => `
@@ -1602,6 +1608,7 @@ function loadDynamicPage(pageType) {
         </div>
       </div>
     `;
+
     // Cập nhật thời gian và ngày hiện tại
     const currentTimeElement = document.getElementById("currentTime-1");
     const currentDateElement = document.getElementById("currentDate-1");
@@ -1617,11 +1624,11 @@ function loadDynamicPage(pageType) {
       currentDateElement.textContent = `${day}, ${date}`;
     };
 
-    updateTimeAndDate(); // Gọi hàm để cập nhật thời gian và ngày ngay lập tức
-    setInterval(updateTimeAndDate, 60000); // Cập nhật mỗi phút
+    updateTimeAndDate(); 
+    setInterval(updateTimeAndDate, 60000);
 
-    dynamicContent.style.display = "block"; // Hiển thị dynamicPage Content
-    mainContent.style.display = "none"; // Ẩn mainContent
+    dynamicContent.style.display = "block";
+    mainContent.style.display = "none";
 
     // Thêm sự kiện cho nút Home
     const homeButton = dynamicContent.querySelector(".home-button");
@@ -1629,5 +1636,18 @@ function loadDynamicPage(pageType) {
       dynamicContent.style.display = "none";
       mainContent.style.display = "flex";
     });
+  }
+
+  // Xử lý từng loại phòng
+  switch (pageType) {
+    case "room1":
+      renderDynamicPage("lotus", "Lotus");
+      break;
+    case "room2":
+      renderDynamicPage("lavender 1", "Lavender 1");
+      break;
+    case "room3":
+      renderDynamicPage("lavender 2", "Lavender 2");
+      break;
   }
 }

@@ -2206,6 +2206,7 @@ button:hover {
     margin-top: 15%;
   }
 }
+
 @media (max-width: 1200px) {
   .time-1 {
     font-size: xxx-large;
