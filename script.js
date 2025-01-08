@@ -1487,135 +1487,188 @@ document.addEventListener("DOMContentLoaded", function () {
       const roomText = this.querySelector(".button-text").textContent;
       if (roomText === "P.1") {
         loadDynamicPage("room1");
+        console.log("Press button of P.1");
       }
       if (roomText === "P.2") {
       loadDynamicPage("room2");
+      console.log("Press button of P.2");
       }
       if (roomText === "P.3") {
       loadDynamicPage("room3");
+      console.log("Press button of P.3");
       }
 
     });
   });
 });
+
+// Hàm render trang động riêng biệt
+function renderRoomPage(data, roomKeyword, roomName) {
+  console.log("Rendering room page for:", roomName);
+  console.log("Data received:", data);
+
+  // Lọc các cuộc họp cho phòng
+  const roomMeetings = data.filter((meeting) =>
+    meeting.room.toLowerCase().includes(roomKeyword.toLowerCase())
+  );
+  console.log("Filtered room meetings:", roomMeetings);
+
+  // Lọc các cuộc họp diễn ra trong ngày
+  const today = new Date();
+  const filteredData = roomMeetings.filter((meeting) => {
+    const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
+    return meetingDate.toDateString() === today.toDateString();
+  });
+  console.log("Today's meetings:", filteredData);
+
+  // Lấy thời gian hiện tại
+  const currentTime = new Date();
+  const currentTimeStr = `${String(currentTime.getHours()).padStart(2, '0')}:${String(currentTime.getMinutes()).padStart(2, '0')}`;
+
+  // Tìm cuộc họp đang diễn ra
+  const currentMeeting = filteredData.find(meeting => {
+    const startTime = meeting.startTime;
+    const endTime = meeting.endTime;
+    return currentTimeStr >= startTime && currentTimeStr <= endTime;
+  });
+  console.log("Current meeting:", currentMeeting);
+
+  // Lọc các cuộc họp sắp diễn ra
+  const upcomingMeetings = filteredData.filter(meeting => {
+    const startTime = meeting.startTime;
+    return currentTimeStr <= startTime;
+  }).sort((a, b) => {
+    const timeA = a.startTime.split(':').map(Number);
+    const timeB = b.startTime.split(':').map(Number);
+    return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
+  });
+  console.log("Upcoming meetings:", upcomingMeetings);
+
+  return `
+    <div class="container">
+      <div class="left-panel">
+        <div>
+          <div class="clock-container">
+            <div class="time-1" id="currentTime-1"></div>
+          </div>
+          <div class="currentDateElement-1" id="currentDate-1"></div>
+        </div>
+        <div>
+          <div class="device online">
+            <img
+              alt="Power meter icon"
+              height="30"
+              src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
+              width="30"
+            />
+            <div>
+              <div>Power meter AC 1</div>
+              <div>Dòng điện: 8.5 A | Công suất: 0.56 KW</div>
+            </div>
+            <div class="status">
+              <i class="fas fa-circle"> </i>
+              <span> Online </span>
+            </div>
+          </div>
+          <div class="device offline">
+            <img
+              alt="Air conditioner icon"
+              height="30"
+              src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg"
+              width="30"
+            />
+            <div>
+              <div>Máy lạnh 1</div>
+              <div>Nhiệt độ: 25.5 °C | Độ ẩm: 70 %</div>
+            </div>
+            <div class="status">
+              <i class="fas fa-circle"> </i>
+              <span> Offline </span>
+            </div>
+          </div>
+        </div>
+        <button class="home-button">TRANG CHỦ</button>
+      </div>
+      <div class="main-panel">
+        <div>
+          <h1>${currentMeeting ? currentMeeting.room : roomName}</h1>
+          <div class="current-status">HIỆN TẠI</div>
+          <div class="meeting-title-1">${
+            currentMeeting ? currentMeeting.content : "Không có cuộc họp"
+          }</div>
+          <div class="meeting-time-1">
+            <div role="cell">Bắt đầu: ${
+              currentMeeting ? currentMeeting.startTime : "--:--"
+            }</div>
+            <div role="cell">Kết thúc: ${
+              currentMeeting ? currentMeeting.endTime : "--:--"
+            }</div>
+          </div>
+          <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
+          <div class="purpose-value">${
+            currentMeeting ? currentMeeting.purpose : "Chưa xác định"
+          }</div>
+        </div>
+        <button class="end-meeting">END MEETING</button>
+      </div>
+      <div class="right-panel">
+        <h2>LỊCH HỌP PHÒNG ${roomName.toUpperCase()}</h2>
+        ${upcomingMeetings.map(meeting => `
+          <div class="upcoming-meeting">
+            <div class="meeting-title">${meeting.content}</div>
+            <div class="meeting-time-1">${meeting.startTime} - ${meeting.endTime}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Hàm chính để load trang động
 function loadDynamicPage(pageType) {
+  console.log("Loading dynamic page for:", pageType);
+  
   const dynamicContent = document.getElementById("dynamicPageContent");
   const mainContent = document.querySelector(".content-wrapper");
-  const data = JSON.parse(localStorage.getItem("fileCache")).data;
+  
+  if (!dynamicContent || !mainContent) {
+    console.error("Required elements not found!");
+    return;
+  }
 
-  // Hàm chung để render trang động
-  function renderDynamicPage(roomKeyword, roomName) {
-    // Lọc các cuộc họp cho phòng
-    const roomMeetings = data.filter((meeting) =>
-      meeting.room.toLowerCase().includes(roomKeyword)
-    );
+  try {
+    const cachedData = localStorage.getItem("fileCache");
+    if (!cachedData) {
+      console.error("No cached data found!");
+      return;
+    }
 
-    // Lọc các cuộc họp diễn ra trong ngày
-    const today = new Date();
-    const filteredData = roomMeetings.filter((meeting) => {
-      const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
-      return meetingDate.toDateString() === today.toDateString();
-    });
+    const data = JSON.parse(cachedData).data;
+    console.log("Loaded data from cache:", data);
 
-const currentTime = new Date().getTime();
-const upcomingMeetings = filteredData.filter((meeting) => {
-const meetingStartTime = new Date(meeting.startTime).getTime();
-const meetingEndTime = new Date(meeting.endTime).getTime();
-return meetingStartTime <= currentTime && meetingEndTime> currentTime;
-  });
-    // Render nội dung trang
-   dynamicContent.innerHTML = `
-  <div class="container">
-    <div class="left-panel">
-      <div>
-        <div class="clock-container">
-          <div class="time-1" id="currentTime-1">9:41</div>
-        </div>
-        <div class="currentDateElement-1" id="currentDate-1">Thứ 2, 10/12/2024</div>
-      </div>
-      <div>
-        <div class="device online">
-          <img
-            alt="Power meter icon"
-            height="30"
-            src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
-            width="30"
-          />
-          <div>
-            <div>Power meter AC 1</div>
-            <div>Dòng điện: 8.5 A | Công suất: 0.56 KW</div>
-          </div>
-          <div class="status">
-            <i class="fas fa-circle"> </i>
-            <span> Online </span>
-          </div>
-        </div>
-        <div class="device offline">
-          <img
-            alt="Air conditioner icon"
-            height="30"
-            src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg"
-            width="30"
-          />
-          <div>
-            <div>Máy lạnh 1</div>
-            <div>Nhiệt độ: 25.5 °C | Độ ẩm: 70 %</div>
-          </div>
-          <div class="status">
-            <i class="fas fa-circle"> </i>
-            <span> Offline </span>
-          </div>
-        </div>
-      </div>
-      <button class="home-button">TRANG CHỦ</button>
-    </div>
-    <div class="main-panel">
-      <div>
-        <h1>${
-          upcomingMeetings.length > 0
-            ? upcomingMeetings[0].room
-            : "Không có thông tin"
-        }</h1>
-        <div class="current-status">HIỆN TẠI</div>
-        <div class="meeting-title-1">${
-          upcomingMeetings.length > 0
-            ? upcomingMeetings[0].content
-            : "Không có cuộc họp"
-        }</div>
-        <div class="meeting-time-1">
-          <div role="cell">Bắt đầu: ${
-            upcomingMeetings.length > 0 ? upcomingMeetings[0].startTime : "--:--"
-          }</div>
-          <div role="cell">Kết thúc: ${
-            upcomingMeetings.length > 0 ? upcomingMeetings[0].endTime : "--:--"
-          }</div>
-        </div>
-        <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
-        <div class="purpose-value">${
-          upcomingMeetings.length > 0
-            ? upcomingMeetings[0].purpose
-            : "Chưa xác định"
-        }</div>
-      </div>
-      <button class="end-meeting">END MEETING</button>
-    </div>
-    <div class="right-panel">
-      <h2>LỊCH HỌP PHÒNG ${roomName.toUpperCase()}</h2>
-      ${upcomingMeetings
-        .map(
-          (meeting) => `
-        <div class="upcoming-meeting">
-          <div class="meeting-title">${meeting.content}</div>
-          <div class="meeting-time-1">${meeting.startTime} - ${meeting.endTime}</div>
-        </div>
-      `
-        )
-        .join("")}
-    </div>
-  </div>
-`;
+    let roomKeyword, roomName;
+    switch (pageType) {
+      case "room1":
+        roomKeyword = "lotus";
+        roomName = "Lotus";
+        break;
+      case "room2":
+        roomKeyword = "lavender 1";
+        roomName = "Lavender 1";
+        break;
+      case "room3":
+        roomKeyword = "lavender 2";
+        roomName = "Lavender 2";
+        break;
+      default:
+        console.error("Unknown room type:", pageType);
+        return;
+    }
 
-    // Cập nhật thời gian và ngày hiện tại
+    // Render trang
+    dynamicContent.innerHTML = renderRoomPage(data, roomKeyword, roomName);
+    
+    // Cập nhật đồng hồ
     const currentTimeElement = document.getElementById("currentTime-1");
     const currentDateElement = document.getElementById("currentDate-1");
 
@@ -1626,33 +1679,31 @@ return meetingStartTime <= currentTime && meetingEndTime> currentTime;
       const day = now.toLocaleString("vi-VN", { weekday: "long" });
       const date = now.toLocaleDateString("vi-VN");
 
-      currentTimeElement.textContent = `${hours}:${minutes}`;
-      currentDateElement.textContent = `${day}, ${date}`;
+      if (currentTimeElement && currentDateElement) {
+        currentTimeElement.textContent = `${hours}:${minutes}`;
+        currentDateElement.textContent = `${day}, ${date}`;
+      }
     };
 
-    updateTimeAndDate(); 
-    setInterval(updateTimeAndDate, 60000);
+    // Khởi tạo đồng hồ
+    updateTimeAndDate();
+    const timeInterval = setInterval(updateTimeAndDate, 60000);
 
+    // Hiển thị trang động
     dynamicContent.style.display = "block";
     mainContent.style.display = "none";
 
-    // Thêm sự kiện cho nút Home
+    // Xử lý nút Home
     const homeButton = dynamicContent.querySelector(".home-button");
-    homeButton.addEventListener("click", () => {
-      dynamicContent.style.display = "none";
-      mainContent.style.display = "flex";
-    });
-  }
+    if (homeButton) {
+      homeButton.addEventListener("click", () => {
+        clearInterval(timeInterval);
+        dynamicContent.style.display = "none";
+        mainContent.style.display = "flex";
+      });
+    }
 
-  // Xử lý từng loại phòng
-  switch (pageType) {
-    case "room1":
-      renderDynamicPage("lotus", "Lotus");
-      break;
-    case "room2":
-      break;
-    case "room3":
-      renderDynamicPage("lavender 2", "Lavender 2");
-      break;
+  } catch (error) {
+    console.error("Error loading dynamic page:", error);
   }
 }

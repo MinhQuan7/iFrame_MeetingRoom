@@ -2206,7 +2206,7 @@ button:hover {
 
 @media (min-width: 1300px) and (max-width: 1369px) {
   .time-1 {
-    margin-left: 5%;
+    margin-left: -17%;
   }
   .current-date-1 {
     margin-left: 75%;
