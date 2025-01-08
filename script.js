@@ -1317,14 +1317,14 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
 
   // Lọc các cuộc họp cho phòng hiện tại
   const roomMeetings = meetings.filter(
-    (meeting) => normalizeRoomName(meeting.room) === normalizeRoomName(roomCode)
+    (meeting) => 
+      normalizeRoomName(meeting.room) === normalizeRoomName(roomCode) &&
+      // Loại bỏ các cuộc họp đã kết thúc hoặc đánh dấu là đã kết thúc
+      (!meeting.isEnded && !isTimeOverdue(meeting.endTime, currentTime))
   );
 
-  const upcomingMeetings = roomMeetings.filter(
-    (meeting) => !isTimeOverdue(meeting.endTime, currentTime)
-  );
-
-  const activeMeeting = upcomingMeetings.find((meeting) =>
+  // Tìm cuộc họp đang diễn ra
+  const activeMeeting = roomMeetings.find((meeting) =>
     isTimeInRange(currentTime, meeting.startTime, meeting.endTime)
   );
 
@@ -1336,54 +1336,38 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
     isActive: !!activeMeeting,
     content: activeMeeting
       ? activeMeeting.content || activeMeeting.purpose
-      : upcomingMeetings.length > 0
-      ? upcomingMeetings.map((m) => m.content || m.purpose).join(" | ")
+      : roomMeetings.length > 0
+      ? roomMeetings.map((m) => m.content || m.purpose).join(" | ")
       : "Trống",
     startTime: activeMeeting
       ? activeMeeting.startTime
-      : upcomingMeetings.length > 0
-      ? upcomingMeetings.map((m) => m.startTime).join(" | ")
+      : roomMeetings.length > 0
+      ? roomMeetings.map((m) => m.startTime).join(" | ")
       : "--:--",
     endTime: activeMeeting
       ? activeMeeting.endTime
-      : upcomingMeetings.length > 0
-      ? upcomingMeetings.map((m) => m.endTime).join(" | ")
+      : roomMeetings.length > 0
+      ? roomMeetings.map((m) => m.endTime).join(" | ")
       : "--:--",
   };
-  // So sánh với trạng thái trước đó
-  if (
-    !previousStates[roomKey] ||
-    JSON.stringify(previousStates[roomKey]) !== JSON.stringify(newState)
-  ) {
-    // Chỉ cập nhật DOM nếu có sự thay đổi
-    if (activeMeeting) {
-      titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${newState.content}`;
-      startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${newState.startTime}`;
-      endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${newState.endTime}`;
-      statusIndicator.textContent = "Đang họp";
-      indicatorDot.classList.remove("available");
-      indicatorDot.classList.add("busy");
-    } else {
-      const nextThreeMeetings = upcomingMeetings
-        .sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime))
-        .slice(0, 3);
 
-      if (nextThreeMeetings.length > 0) {
-        titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${newState.content}`;
-        startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${newState.startTime}`;
-        endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${newState.endTime}`;
-      } else {
-        titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> Trống`;
-        startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
-        endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
-      }
-      statusIndicator.textContent = "Trống";
-      indicatorDot.classList.remove("busy");
-      indicatorDot.classList.add("available");
-    }
-
-    // Lưu trạng thái mới
-    previousStates[roomKey] = newState;
+  // Cập nhật giao diện
+  if (activeMeeting) {
+    // Có cuộc họp đang diễn ra
+    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${newState.content}`;
+    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${newState.startTime}`;
+    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${newState.endTime}`;
+    statusIndicator.textContent = "Đang họp";
+    indicatorDot.classList.remove("available");
+    indicatorDot.classList.add("busy");
+  } else {
+    // Không có cuộc họp nào
+    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> Trống`;
+    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
+    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
+    statusIndicator.textContent = "Trống";
+    indicatorDot.classList.remove("busy");
+    indicatorDot.classList.add("available");
   }
 }
 if (!Element.prototype.contains) {
