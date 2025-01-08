@@ -3,10 +3,6 @@
   flex-direction: column;
   min-height: 100vh;
 }
-.dynamic-page-container {
-  background-image: url(imgs/background1.jpg);
-  background-size: 100% 100%;
-}
 .meeting-screen {
   background-image: url(imgs/background.jpg);
   background-size: cover;
@@ -877,19 +873,6 @@ upload-icon-date {
 .schedule-table::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
-.room-button {
-  padding: 15px;
-  width: auto;
-  min-width: 150px;
-  background-color: rgba(69, 255, 218, 0.6);
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  justify-content: center;
-  margin: auto 0;
-  border-radius: 20px;
-}
 /* New update - Room button hover effects */
 .room-button {
   border-radius: 23px;
@@ -1006,6 +989,12 @@ upload-icon-date {
   flex: 1;
   margin: auto 0;
   padding: 0 2px;
+
+  /* Thêm các thuộc tính sau để căn giữa */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 /*//=======New update : Selection when user pick any date=====*/
 .date-picker {
@@ -1981,28 +1970,43 @@ body {
   min-height: 100vh;
   background: var(--primary-gradient);
 }
-
-.dynamic-page-container {
-  position: fixed; /* Cố định vị trí */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh; /* Chiếm toàn bộ chiều cao viewport */
-  z-index: 1000; /* Đảm bảo nằm trên các phần tử khác */
-  overflow: hidden; /* Ngăn cuộn */
-}
-
-.dynamic-page-container .container {
-  height: 100%; /* Chiếm toàn bộ chiều cao của container cha */
-  overflow: hidden; /* Ngăn cuộn */
-}
-
 /* Đảm bảo không có margin hoặc padding không mong muốn */
 body,
 html {
   margin: 0;
   padding: 0;
+  height: 100%;
   overflow: hidden;
+}
+.dynamic-page-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.dynamic-page-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(imgs/background1.jpg);
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+}
+
+.dynamic-page-container .container {
+  height: 100vh; /* Sử dụng viewport height */
+  max-height: 100vh;
+  overflow: hidden;
+  padding: 0; /* Loại bỏ padding */
+  margin: 0; /* Loại bỏ margin */
 }
 
 /* Hiệu ứng chuyển trang mượt mà */
@@ -2181,10 +2185,72 @@ button {
 
 .home-button {
   background: #00c6ff;
-  width: 70%;
-  margin-bottom: 20px;
+  width: 45%;
+  margin-bottom: 30px;
+  margin-left: 20px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease; /* Thêm transition cho mượt */
+  cursor: pointer; /* Thêm cursor pointer để rõ là có thể click */
+}
+@media (max-width: 1650px) {
+  .home-button {
+    width: 50%;
+  }
+}
+.home-button:hover {
+  transform: scale(1.05); /* Scale to lớn hơn 5% khi hover */
+  background: #00b3ff; /* Màu hơi đậm hơn một chút khi hover */
+  box-shadow: 0 5px 15px rgba(0, 198, 255, 0.4); /* Thêm shadow khi hover */
 }
 
+.home-button:active {
+  transform: scale(0.95); /* Thu nhỏ lại khi click */
+}
+
+.home-button i {
+  font-size: 18px;
+  transition: transform 0.3s ease; /* Transition riêng cho icon */
+}
+
+.home-button:hover i {
+  transform: translateY(-2px); /* Icon nhảy lên một chút khi hover */
+}
+
+.home-button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
 .end-meeting {
   background: red;
 }

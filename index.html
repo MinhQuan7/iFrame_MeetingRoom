@@ -6,6 +6,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<div class="dynamic-page-container" id="dynamicPageContent" style="display: none"></div>
 
 <div class="meeting-page">
   <div class="meeting-screen">
@@ -177,15 +179,8 @@
                 <div class="settings-icon">
                   <i class="fas fa-cog"></i>
                 </div>
-                <div
-                  class="background-upload-container main-bg-container hidden"
-                >
-                  <input
-                    type="file"
-                    id="mainBackgroundUpload"
-                    accept="image/*"
-                    style="display: none"
-                  />
+                <div class="background-upload-container main-bg-container hidden">
+                  <input type="file" id="mainBackgroundUpload" accept="image/*" style="display: none" />
                   <button class="background-upload-button main-background-btn">
                     <div class="button-icon-wrapper">
                       <i class="fas fa-desktop"></i>
@@ -194,18 +189,9 @@
                   </button>
                 </div>
 
-                <div
-                  class="background-upload-container schedule-bg-container hidden"
-                >
-                  <input
-                    type="file"
-                    id="scheduleBackgroundUpload"
-                    accept="image/*"
-                    style="display: none"
-                  />
-                  <button
-                    class="background-upload-button schedule-background-btn"
-                  >
+                <div class="background-upload-container schedule-bg-container hidden">
+                  <input type="file" id="scheduleBackgroundUpload" accept="image/*" style="display: none" />
+                  <button class="background-upload-button schedule-background-btn">
                     <div class="button-icon-wrapper">
                       <i class="fas fa-table"></i>
                     </div>
@@ -231,24 +217,16 @@
               <div class="schedule-actions">
                 <button class="upload-button">
                   Upload Meeting From
-                  <img
-                    class="upload-icon"
+                  <img class="upload-icon"
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/63b8f295cfd8166b173b26ae08d375f7f940976a41ab185ea145bd917523e537?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
-                    alt="Upload icon"
-                  />
+                    alt="Upload icon" />
                 </button>
                 <input type="date" id="meetingDate" class="date-picker" />
-                <img
-                  class="upload-icon-date"
+                <img class="upload-icon-date"
                   src="https://cdn.builder.io/api/v1/image/assets/TEMP/c0a4e8a69fa64878bebad21d5087b0ff9a059ee566216f2bb71511caa204eaa7?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
-                  alt="Additional action icon"
-                />
+                  alt="Additional action icon" />
               </div>
-              <div
-                class="schedule-table"
-                role="table"
-                aria-label="Meeting Schedule"
-              >
+              <div class="schedule-table" role="table" aria-label="Meeting Schedule">
                 <div class="table-header" role="row">
                   <div role="columnheader">TT</div>
                   <div role="columnheader">Ngày</div>
@@ -285,11 +263,7 @@
               </div>
             </div>
             <div class="fullscreen-toggle">
-              <button
-                id="fullscreenBtn"
-                class="fullscreen-button"
-                aria-label="Toggle Fullscreen"
-              >
+              <button id="fullscreenBtn" class="fullscreen-button" aria-label="Toggle Fullscreen">
                 <i class="fas fa-expand"></i>
               </button>
             </div>
@@ -316,16 +290,7 @@
     </div>
   </div>
 </div>
-<<<<<<< HEAD
-<div id="dynamicPageContent" class="dynamic-page-container" style="display: none">
-</div>
-=======
-<div
-  id="dynamicPageContent"
-  class="dynamic-page-container"
-  style="display: none"
-></div>
->>>>>>> origin/main
+
 <div class="window">
   <div class="title-bar">
     <div class="buttons">
@@ -346,6 +311,7 @@
     </div>
   </div>
 </div>
+
 <script src="https://www.unpkg.com/@eohjsc/era-widget@1.1.3/src/index.js"></script>
 <script src="script.js"></script>
 <script>

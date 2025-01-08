@@ -1587,7 +1587,9 @@ function renderRoomPage(data, roomKeyword, roomName) {
             </div>
           </div>
         </div>
-        <button class="home-button">TRANG CHỦ</button>
+        <button class="home-button">
+        <i class="fas fa-home"></i>
+  TRANG CHỦ</button>
       </div>
       <div class="main-panel">
         <div>
