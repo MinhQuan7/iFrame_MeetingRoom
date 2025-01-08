@@ -1650,7 +1650,6 @@ return meetingStartTime <= currentTime && meetingEndTime> currentTime;
       renderDynamicPage("lotus", "Lotus");
       break;
     case "room2":
-      renderDynamicPage("lavender 1", "Lavender 1");
       break;
     case "room3":
       renderDynamicPage("lavender 2", "Lavender 2");

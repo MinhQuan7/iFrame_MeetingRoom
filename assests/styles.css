@@ -439,7 +439,6 @@
   top: 0;
   left: 0;
 }
-
 @media (max-width: 1366px) {
   .clock-container {
     font-size: 3.75rem;
