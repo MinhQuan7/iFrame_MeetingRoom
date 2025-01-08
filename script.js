@@ -691,7 +691,6 @@ function updateClock() {
   const dateStr = `${dayName}, ${date}/${month}/${year}`;
 
   const logoElement = document.querySelector(".logo");
-  const currentDateElement = document.querySelector(".current-date");
 
   if (logoElement) {
     logoElement.innerHTML = `
@@ -701,13 +700,14 @@ function updateClock() {
   `;
   }
 
-  if (currentDateElement) {
-    currentDateElement.textContent = dateStr;
-    currentDateElement.style.fontSize = "17px"; // Thay đổi kích thước font
-    currentDateElement.style.color = "#ffffff"; // Thay đổi màu chữ
-    currentDateElement.style.fontWeight = "bold"; // Đậm chữ
-    currentDateElement.style.paddingRight = "25px";
-  }
+const currentDateElement = document.querySelector(".current-date");
+if (currentDateElement) {
+  currentDateElement.textContent = "Thứ 2, \n10/12/2024";
+  currentDateElement.style.fontSize = "15px"; // Thay đổi kích thước font
+  currentDateElement.style.color = "#ffffff"; // Thay đổi màu chữ
+  currentDateElement.style.fontWeight = "bold"; // Đậm chữ
+  currentDateElement.style.paddingRight = "25px";
+}
 }
 
 // Khởi tạo đồng hồ và cập nhật mỗi giây

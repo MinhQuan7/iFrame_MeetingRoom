@@ -3,7 +3,10 @@
   flex-direction: column;
   min-height: 100vh;
 }
-
+.dynamic-page-container {
+  background-image: url(imgs/background1.jpg);
+  background-size: 100% 100%;
+}
 .meeting-screen {
   background-image: url(imgs/background.jpg);
   background-size: cover;
@@ -83,10 +86,13 @@
   font-size: 0.8rem; /* Nhỏ hơn và sử dụng đơn vị rem */
   color: #ffffff;
   white-space: nowrap;
-  opacity: 0.8; /* Làm mờ đi một chút để nhấn mạnh clock */
+  opacity: 0.85; /* Làm mờ đi một chút để nhấn mạnh clock */
   letter-spacing: 0.5px; /* Tăng khoảng cách chữ để dễ đọc */
   margin-left: 40px;
-  margin-top: 5px;
+  margin-top: 10%;
+  flex-direction: column;
+  display: flex;
+  white-space: pre-wrap;
 }
 /* Import font SVN-Gilroy */
 @font-face {
@@ -433,11 +439,11 @@
   top: 0;
   left: 0;
 }
+
 @media (max-width: 1366px) {
   .clock-container {
     font-size: 3.75rem;
     top: 8px;
-    left: 40px;
     padding-left: 10px;
   }
   .date-wrapper {
@@ -1016,9 +1022,28 @@ upload-icon-date {
   background-color: rgba(130, 132, 255, 0.86);
   text-align: center;
   justify-content: center;
-  margin-left: 30%;
+  margin-left: 65%;
 }
-
+@media (min-width: 1300px) and (max-width: 1700px) {
+  .date-picker {
+    margin-left: 50%;
+  }
+}
+@media (min-width: 1200px) and (max-width: 1290px) {
+  .date-picker {
+    margin-left: 30%;
+  }
+}
+@media (min-width: 1100px) and (max-width: 1190px) {
+  .date-picker {
+    margin-left: 27%;
+  }
+}
+@media (max-width: 991px) {
+  .date-picker {
+    margin-left: 10%;
+  }
+}
 .date-picker:hover {
   outline: none;
   transform: translateY(-2px);
@@ -1697,6 +1722,9 @@ upload-icon-date {
 
 /* Tablet (768px and up) */
 @media (min-width: 768px) {
+  .clock-container {
+    margin-left: 5%;
+  }
   .content-wrapper {
     flex-direction: row;
     gap: 12px;
@@ -1720,7 +1748,8 @@ upload-icon-date {
     margin-top: -20px;
   }
   .current-date {
-    margin-top: 50px;
+    margin-left: 60%;
+    margin-top: -5%;
   }
   .date-wrapper,
   .welcome-text {
@@ -1832,7 +1861,8 @@ upload-icon-date {
     padding: 8px;
   }
   .current-date {
-    margin-left: 60px;
+    margin-left: 20%;
+    margin-top: 8%;
   }
 }
 
@@ -1850,9 +1880,18 @@ upload-icon-date {
   .welcome-text {
     font-size: 14px; /* Giữ nguyên size */
   }
-  .welcome-message,
+  .welcome-message {
+    margin-top: 15%;
+  }
   .schedule-title {
     font-size: 22px;
+  }
+  .clock-container {
+    margin-left: 5%;
+  }
+  .current-date {
+    margin-top: 8%;
+    margin-left: 24%;
   }
 }
 
@@ -2163,15 +2202,6 @@ button:hover {
 
 .time-1 {
   margin-top: 40px;
-}
-
-.current-date-1 {
-  color: #ffffff;
-  white-space: nowrap;
-  opacity: 0.8;
-  letter-spacing: 0.5px;
-  margin-left: 40px;
-  margin-top: 5px;
 }
 
 @media (min-width: 1300px) and (max-width: 1369px) {
