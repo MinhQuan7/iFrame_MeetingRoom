@@ -1325,8 +1325,20 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
 
   // Tìm cuộc họp đang diễn ra
   const activeMeeting = roomMeetings.find((meeting) =>
-    isTimeInRange(currentTime, meeting.startTime, meeting.endTime)
+    isTimeInRange(currentTime, meeting.startTime, meeting.endTime) &&
+    !meeting.isEnded
   );
+
+  // Kiểm tra xem có cuộc họp nào đã được kết thúc gần đây hay không
+  const recentEndedMeeting = roomMeetings.find((meeting) =>
+    meeting.isEnded &&
+    isTimeInRange(currentTime, meeting.endTime, currentTime)
+  );
+
+  // Nếu có cuộc họp đã được kết thúc gần đây, không cập nhật trạng thái phòng
+  if (recentEndedMeeting) {
+    return;
+  }
 
   // Tạo key duy nhất cho phòng
   const roomKey = roomCode;
@@ -1818,6 +1830,7 @@ function handleEndMeeting(event) {
     const updatedMeeting = {...data[currentMeetingIndex]};
     updatedMeeting.endTime = currentTime;
     updatedMeeting.isEnded = true; // Đánh dấu cuộc họp đã kết thúc
+    updatedMeeting.lastUpdated = new Date().getTime(); // Thêm thuộc tính lastUpdated
 
     // Thay thế cuộc họp cũ bằng cuộc họp đã cập nhật
     const updatedData = [...data];
@@ -1846,7 +1859,6 @@ function handleEndMeeting(event) {
     alert("Không tìm thấy cuộc họp đang diễn ra.");
   }
 }
-
 // Thêm sự kiện cho nút "End Meeting"
 document.addEventListener("DOMContentLoaded", function () {
   const dynamicContent = document.getElementById("dynamicPageContent");
