@@ -673,7 +673,7 @@ function updateClock() {
   const hours = padZero(now.getHours());
   const minutes = padZero(now.getMinutes());
   const seconds = padZero(now.getSeconds());
-  const time = `${hours}:${minutes}:${seconds}`;
+  const time = `${hours}:${minutes}`;
 
   const days = [
     "Chủ Nhật",
@@ -695,10 +695,10 @@ function updateClock() {
 
   if (logoElement) {
     logoElement.innerHTML = `
-            <div class="clock-container" style="font-size: 100px; color: #ffffff;justify-content: right;">
-                ${time}
-            </div>
-        `;
+    <div class="clock-container">
+      ${time}
+    </div>
+  `;
   }
 
   if (currentDateElement) {
@@ -1411,65 +1411,223 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
 /*================Full Screen Feature===============*/
-document.addEventListener('DOMContentLoaded', function() {
-  const fullscreenBtn = document.getElementById('fullscreenBtn');
-  const meetingContainer = document.querySelector('.meeting-container');
-  const meetingPage = document.querySelector('.meeting-page');
+document.addEventListener("DOMContentLoaded", function () {
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  const meetingContainer = document.querySelector(".meeting-container");
+  const meetingPage = document.querySelector(".meeting-page");
 
   function toggleFullScreen() {
     if (!document.fullscreenElement) {
       // Enter fullscreen
       if (meetingPage.requestFullscreen) {
         meetingPage.requestFullscreen();
-      } else if (meetingPage.mozRequestFullScreen) { // Firefox
+      } else if (meetingPage.mozRequestFullScreen) {
+        // Firefox
         meetingPage.mozRequestFullScreen();
-      } else if (meetingPage.webkitRequestFullscreen) { // Chrome, Safari and Opera
+      } else if (meetingPage.webkitRequestFullscreen) {
+        // Chrome, Safari and Opera
         meetingPage.webkitRequestFullscreen();
-      } else if (meetingPage.msRequestFullscreen) { // Internet Explorer/Edge
+      } else if (meetingPage.msRequestFullscreen) {
+        // Internet Explorer/Edge
         meetingPage.msRequestFullscreen();
       }
 
-      meetingContainer.classList.add('fullscreen-mode');
+      meetingContainer.classList.add("fullscreen-mode");
       fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
     } else {
       // Exit fullscreen
       if (document.exitFullscreen) {
         document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) { // Firefox
+      } else if (document.mozCancelFullScreen) {
+        // Firefox
         document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+      } else if (document.webkitExitFullscreen) {
+        // Chrome, Safari and Opera
         document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) { // Internet Explorer/Edge
+      } else if (document.msExitFullscreen) {
+        // Internet Explorer/Edge
         document.msExitFullscreen();
       }
 
-      meetingContainer.classList.remove('fullscreen-mode');
+      meetingContainer.classList.remove("fullscreen-mode");
       fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
     }
   }
 
   // Fullscreen change event listeners
-  document.addEventListener('fullscreenchange', handleFullscreenChange);
-  document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-  document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-  document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+  document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+  document.addEventListener("MSFullscreenChange", handleFullscreenChange);
 
   function handleFullscreenChange() {
     if (!document.fullscreenElement) {
-      meetingContainer.classList.remove('fullscreen-mode');
+      meetingContainer.classList.remove("fullscreen-mode");
       fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
     }
   }
 
   // Add click event to fullscreen button
-  fullscreenBtn.addEventListener('click', toggleFullScreen);
+  fullscreenBtn.addEventListener("click", toggleFullScreen);
 
   // Optional: Escape key to exit fullscreen
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.fullscreenElement) {
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && document.fullscreenElement) {
       toggleFullScreen();
     }
   });
 });
+
+//====================Feature Go to Page 2=======================
+document.addEventListener("DOMContentLoaded", function () {
+  const roomButtons = document.querySelectorAll(".room-button");
+  roomButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      const roomText = this.querySelector(".button-text").textContent;
+      if (roomText === "P.1") {
+        loadDynamicPage("room1");
+      }
+    });
+  });
+});
+
+function loadDynamicPage(pageType) {
+  const dynamicContent = document.getElementById("dynamicPageContent");
+  const mainContent = document.querySelector(".content-wrapper");
+  if (pageType === "room1") {
+    // Lấy dữ liệu từ hàm updateScheduleTable
+    const data = JSON.parse(localStorage.getItem("fileCache")).data;
+
+    // Lọc các cuộc họp cho phòng Lotus
+    const lotusRoomMeetings = data.filter((meeting) =>
+      meeting.room.toLowerCase().includes("lotus")
+    );
+
+    // Lọc các cuộc họp diễn ra trong ngày
+    const today = new Date();
+    const filteredData = lotusRoomMeetings.filter((meeting) => {
+      const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
+      return meetingDate.toDateString() === today.toDateString();
+    });
+
+    // Render nội dung trang P.1
+    dynamicContent.innerHTML = `
+      <div class="container">
+        <div class="left-panel">
+          <div>
+            <div class="clock-container">
+            <div class="time-1" id="currentTime-1">9:41</div>
+            </div>
+            <div class="currentDateElement-1" id="currentDate-1">Thứ 2, 10/12/2024</div>
+          </div>
+          <div>
+            <div class="device online">
+              <img
+                alt="Power meter icon"
+                height="30"
+                src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
+                width="30"
+              />
+              <div>
+                <div>Power meter AC 1</div>
+                <div>Dòng điện: 8.5 A | Công suất: 0.56 KW</div>
+              </div>
+              <div class="status">
+                <i class="fas fa-circle"> </i>
+                <span> Online </span>
+              </div>
+            </div>
+            <div class="device offline">
+              <img
+                alt="Air conditioner icon"
+                height="30"
+                src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg"
+                width="30"
+              />
+              <div>
+                <div>Máy lạnh 1</div>
+                <div>Nhiệt độ: 25.5 °C | Độ ẩm: 70 %</div>
+              </div>
+              <div class="status">
+                <i class="fas fa-circle"> </i>
+                <span> Offline </span>
+              </div>
+            </div>
+          </div>
+          <button class="home-button">TRANG CHỦ</button>
+        </div>
+        <div class="main-panel">
+          <div>
+            <h1>${
+              filteredData.length > 0
+                ? filteredData[0].room
+                : "Không có thông tin"
+            }</h1>
+            <div class="current-status">HIỆN TẠI</div>
+            <div class="meeting-title-1">${
+              filteredData.length > 0
+                ? filteredData[0].content
+                : "Không có cuộc họp"
+            }</div>
+            <div class="meeting-time-1">
+              <div role="cell">Bắt đầu: ${
+                filteredData.length > 0 ? filteredData[0].startTime : "--:--"
+              }</div>
+              <div role="cell">Kết thúc: ${
+                filteredData.length > 0 ? filteredData[0].endTime : "--:--"
+              }</div>
+            </div>
+            <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
+            <div class="purpose-value">${
+              filteredData.length > 0
+                ? filteredData[0].purpose
+                : "Chưa xác định"
+            }</div>
+          </div>
+          <button class="end-meeting">END MEETING</button>
+        </div>
+        <div class="right-panel">
+          <h2>LỊCH HỌP PHÒNG LOTUS</h2>
+          ${filteredData
+            .map(
+              (meeting) => `
+            <div class="upcoming-meeting">
+              <div class="meeting-title">${meeting.content}</div>
+              <div class="meeting-time-1">${meeting.startTime} - ${meeting.endTime}</div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      </div>
+    `;
+    // Cập nhật thời gian và ngày hiện tại
+    const currentTimeElement = document.getElementById("currentTime-1");
+    const currentDateElement = document.getElementById("currentDate-1");
+
+    const updateTimeAndDate = () => {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const day = now.toLocaleString("vi-VN", { weekday: "long" });
+      const date = now.toLocaleDateString("vi-VN");
+
+      currentTimeElement.textContent = `${hours}:${minutes}`;
+      currentDateElement.textContent = `${day}, ${date}`;
+    };
+
+    updateTimeAndDate(); // Gọi hàm để cập nhật thời gian và ngày ngay lập tức
+    setInterval(updateTimeAndDate, 60000); // Cập nhật mỗi phút
+
+    dynamicContent.style.display = "block"; // Hiển thị dynamicPage Content
+    mainContent.style.display = "none"; // Ẩn mainContent
+
+    // Thêm sự kiện cho nút Home
+    const homeButton = dynamicContent.querySelector(".home-button");
+    homeButton.addEventListener("click", () => {
+      dynamicContent.style.display = "none";
+      mainContent.style.display = "flex";
+    });
+  }
+}

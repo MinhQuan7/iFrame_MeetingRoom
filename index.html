@@ -2,7 +2,10 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet" />
 
 <div class="meeting-page">
   <div class="meeting-screen">
@@ -282,6 +285,7 @@
     </div>
   </div>
 </div>
+<div id="dynamicPageContent" class="dynamic-page-container" style="display: none"></div>
 <div class="window">
   <div class="title-bar">
     <div class="buttons">
@@ -432,6 +436,5 @@
         if (powerIndex3) powerIndex3.textContent = powerValue3;
       }
     },
-
   });
 </script>
