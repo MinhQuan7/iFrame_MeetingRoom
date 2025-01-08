@@ -700,14 +700,14 @@ function updateClock() {
   `;
   }
 
-const currentDateElement = document.querySelector(".current-date");
-if (currentDateElement) {
-  currentDateElement.textContent = "Thứ 2, \n10/12/2024";
-  currentDateElement.style.fontSize = "15px"; // Thay đổi kích thước font
-  currentDateElement.style.color = "#ffffff"; // Thay đổi màu chữ
-  currentDateElement.style.fontWeight = "bold"; // Đậm chữ
-  currentDateElement.style.paddingRight = "25px";
-}
+  const currentDateElement = document.querySelector(".current-date");
+  if (currentDateElement) {
+    currentDateElement.textContent = "Thứ 2, \n10/12/2024";
+    currentDateElement.style.fontSize = "15px"; // Thay đổi kích thước font
+    currentDateElement.style.color = "#ffffff"; // Thay đổi màu chữ
+    currentDateElement.style.fontWeight = "bold"; // Đậm chữ
+    currentDateElement.style.paddingRight = "25px";
+  }
 }
 
 // Khởi tạo đồng hồ và cập nhật mỗi giây
@@ -1317,22 +1317,25 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
 
   // Lọc các cuộc họp cho phòng hiện tại
   const roomMeetings = meetings.filter(
-    (meeting) => 
+    (meeting) =>
       normalizeRoomName(meeting.room) === normalizeRoomName(roomCode) &&
       // Loại bỏ các cuộc họp đã kết thúc hoặc đánh dấu là đã kết thúc
-      (!meeting.isEnded && !isTimeOverdue(meeting.endTime, currentTime))
+      !meeting.isEnded &&
+      !isTimeOverdue(meeting.endTime, currentTime)
   );
 
   // Tìm cuộc họp đang diễn ra
-  const activeMeeting = roomMeetings.find((meeting) =>
-    isTimeInRange(currentTime, meeting.startTime, meeting.endTime) &&
-    !meeting.isEnded
+  const activeMeeting = roomMeetings.find(
+    (meeting) =>
+      isTimeInRange(currentTime, meeting.startTime, meeting.endTime) &&
+      !meeting.isEnded
   );
 
   // Kiểm tra xem có cuộc họp nào đã được kết thúc gần đây hay không
-  const recentEndedMeeting = roomMeetings.find((meeting) =>
-    meeting.isEnded &&
-    isTimeInRange(currentTime, meeting.endTime, currentTime)
+  const recentEndedMeeting = roomMeetings.find(
+    (meeting) =>
+      meeting.isEnded &&
+      isTimeInRange(currentTime, meeting.endTime, currentTime)
   );
 
   // Nếu có cuộc họp đã được kết thúc gần đây, không cập nhật trạng thái phòng
@@ -1581,14 +1584,13 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Press button of P.1");
       }
       if (roomText === "P.2") {
-      loadDynamicPage("room2");
-      console.log("Press button of P.2");
+        loadDynamicPage("room2");
+        console.log("Press button of P.2");
       }
       if (roomText === "P.3") {
-      loadDynamicPage("room3");
-      console.log("Press button of P.3");
+        loadDynamicPage("room3");
+        console.log("Press button of P.3");
       }
-
     });
   });
 });
@@ -1614,10 +1616,13 @@ function renderRoomPage(data, roomKeyword, roomName) {
 
   // Lấy thời gian hiện tại
   const currentTime = new Date();
-  const currentTimeStr = `${String(currentTime.getHours()).padStart(2, '0')}:${String(currentTime.getMinutes()).padStart(2, '0')}`;
+  const currentTimeStr = `${String(currentTime.getHours()).padStart(
+    2,
+    "0"
+  )}:${String(currentTime.getMinutes()).padStart(2, "0")}`;
 
   // Tìm cuộc họp đang diễn ra
-  const currentMeeting = filteredData.find(meeting => {
+  const currentMeeting = filteredData.find((meeting) => {
     const startTime = meeting.startTime;
     const endTime = meeting.endTime;
     return currentTimeStr >= startTime && currentTimeStr <= endTime;
@@ -1625,14 +1630,16 @@ function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Current meeting:", currentMeeting);
 
   // Lọc các cuộc họp sắp diễn ra
-  const upcomingMeetings = filteredData.filter(meeting => {
-    const startTime = meeting.startTime;
-    return currentTimeStr <= startTime;
-  }).sort((a, b) => {
-    const timeA = a.startTime.split(':').map(Number);
-    const timeB = b.startTime.split(':').map(Number);
-    return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
-  });
+  const upcomingMeetings = filteredData
+    .filter((meeting) => {
+      const startTime = meeting.startTime;
+      return currentTimeStr <= startTime;
+    })
+    .sort((a, b) => {
+      const timeA = a.startTime.split(":").map(Number);
+      const timeB = b.startTime.split(":").map(Number);
+      return timeA[0] * 60 + timeA[1] - (timeB[0] * 60 + timeB[1]);
+    });
   console.log("Upcoming meetings:", upcomingMeetings);
 
   return `
@@ -1706,12 +1713,16 @@ function renderRoomPage(data, roomKeyword, roomName) {
       </div>
       <div class="right-panel">
         <h2>LỊCH HỌP PHÒNG ${roomName.toUpperCase()}</h2>
-        ${upcomingMeetings.map(meeting => `
+        ${upcomingMeetings
+          .map(
+            (meeting) => `
           <div class="upcoming-meeting">
             <div class="meeting-title">${meeting.content}</div>
             <div class="meeting-time-1">${meeting.startTime} - ${meeting.endTime}</div>
           </div>
-        `).join('')}
+        `
+          )
+          .join("")}
       </div>
     </div>
   `;
@@ -1720,10 +1731,10 @@ function renderRoomPage(data, roomKeyword, roomName) {
 // Hàm chính để load trang động
 function loadDynamicPage(pageType) {
   console.log("Loading dynamic page for:", pageType);
-  
+
   const dynamicContent = document.getElementById("dynamicPageContent");
   const mainContent = document.querySelector(".content-wrapper");
-  
+
   if (!dynamicContent || !mainContent) {
     console.error("Required elements not found!");
     return;
@@ -1760,7 +1771,7 @@ function loadDynamicPage(pageType) {
 
     // Render trang
     dynamicContent.innerHTML = renderRoomPage(data, roomKeyword, roomName);
-    
+
     // Cập nhật đồng hồ
     const currentTimeElement = document.getElementById("currentTime-1");
     const currentDateElement = document.getElementById("currentDate-1");
@@ -1795,7 +1806,6 @@ function loadDynamicPage(pageType) {
         mainContent.style.display = "flex";
       });
     }
-
   } catch (error) {
     console.error("Error loading dynamic page:", error);
   }
@@ -1815,19 +1825,22 @@ function handleEndMeeting(event) {
   const currentDate = getCurrentDate();
 
   // Lấy thông tin phòng từ tiêu đề
-  const roomName = event.target.closest(".main-panel").querySelector("h1").textContent;
+  const roomName = event.target
+    .closest(".main-panel")
+    .querySelector("h1").textContent;
 
   // Tìm cuộc họp hiện tại
-  const currentMeetingIndex = data.findIndex(meeting => 
-    meeting.room.toLowerCase().includes(roomName.toLowerCase()) &&
-    meeting.date === currentDate &&
-    currentTime >= meeting.startTime &&
-    currentTime <= meeting.endTime
+  const currentMeetingIndex = data.findIndex(
+    (meeting) =>
+      meeting.room.toLowerCase().includes(roomName.toLowerCase()) &&
+      meeting.date === currentDate &&
+      currentTime >= meeting.startTime &&
+      currentTime <= meeting.endTime
   );
 
   if (currentMeetingIndex !== -1) {
     // Cập nhật endTime của cuộc họp thành thời gian hiện tại
-    const updatedMeeting = {...data[currentMeetingIndex]};
+    const updatedMeeting = { ...data[currentMeetingIndex] };
     updatedMeeting.endTime = currentTime;
     updatedMeeting.isEnded = true; // Đánh dấu cuộc họp đã kết thúc
     updatedMeeting.lastUpdated = new Date().getTime(); // Thêm thuộc tính lastUpdated
@@ -1837,14 +1850,34 @@ function handleEndMeeting(event) {
     updatedData[currentMeetingIndex] = updatedMeeting;
 
     // Lưu dữ liệu đã cập nhật vào localStorage
-    localStorage.setItem("fileCache", JSON.stringify({
-      data: updatedData,
-      lastModified: new Date().getTime()
-    }));
+    localStorage.setItem(
+      "fileCache",
+      JSON.stringify({
+        data: updatedData,
+        lastModified: new Date().getTime(),
+      })
+    );
 
     // Cập nhật biến fileCache
     fileCache.data = updatedData;
     fileCache.lastModified = new Date().getTime();
+
+    // Tìm lịch họp vừa kết thúc end-meeting trong Today's meetings
+    const todayMeetings = updatedData.filter((meeting) => {
+      const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
+      const currentDateObj = new Date(
+        currentDate.split("/").reverse().join("-")
+      );
+      return meetingDate.toDateString() === currentDateObj.toDateString();
+    });
+
+    const endedMeeting = todayMeetings.find(
+      (meeting) => meeting.endTime === currentTime
+    );
+
+    if (endedMeeting) {
+      endedMeeting.endTime = currentTime;
+    }
 
     // Cập nhật giao diện
     updateRoomStatus(updatedData);
@@ -1862,7 +1895,7 @@ function handleEndMeeting(event) {
 // Thêm sự kiện cho nút "End Meeting"
 document.addEventListener("DOMContentLoaded", function () {
   const dynamicContent = document.getElementById("dynamicPageContent");
-  
+
   dynamicContent.addEventListener("click", function (event) {
     if (event.target.classList.contains("end-meeting")) {
       handleEndMeeting(event);

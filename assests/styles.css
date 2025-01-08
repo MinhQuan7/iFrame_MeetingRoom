@@ -464,11 +464,13 @@
     margin-top: 30px;
   }
 }
-.temperature,
-.humidity {
+.temperature {
   align-self: stretch;
   width: 150px;
   /* margin: auto 0; */
+}
+.humidity {
+  margin-left: -7%;
 }
 
 .curren {
