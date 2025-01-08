@@ -1817,6 +1817,7 @@ function handleEndMeeting(event) {
     // Cập nhật endTime của cuộc họp thành thời gian hiện tại
     const updatedMeeting = {...data[currentMeetingIndex]};
     updatedMeeting.endTime = currentTime;
+    updatedMeeting.isEnded = true; // Đánh dấu cuộc họp đã kết thúc
 
     // Thay thế cuộc họp cũ bằng cuộc họp đã cập nhật
     const updatedData = [...data];
@@ -1827,6 +1828,10 @@ function handleEndMeeting(event) {
       data: updatedData,
       lastModified: new Date().getTime()
     }));
+
+    // Cập nhật biến fileCache
+    fileCache.data = updatedData;
+    fileCache.lastModified = new Date().getTime();
 
     // Cập nhật giao diện
     updateRoomStatus(updatedData);
