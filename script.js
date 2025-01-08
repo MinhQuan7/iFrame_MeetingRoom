@@ -1194,6 +1194,102 @@ function startAutoUpdate(data) {
 }
 
 let previousStates = {};
+// function updateSingleRoomStatus(roomCode, meetings, currentTime) {
+//   console.log("Updating room status for:", roomCode);
+
+//   const roomSections = document.querySelectorAll(".room-section");
+//   const roomSection = Array.from(roomSections).find(
+//     (section) =>
+//       normalizeRoomName(section.querySelector(".room-number").textContent) ===
+//       normalizeRoomName(roomCode)
+//   );
+
+//   if (!roomSection) {
+//     console.warn(`No room section found for room code: ${roomCode}`);
+//     return;
+//   }
+
+//   const titleElement = roomSection.querySelector(".meeting-title");
+//   const startTimeElement = roomSection.querySelector(".start-time");
+//   const endTimeElement = roomSection.querySelector(".end-time");
+//   const statusIndicator = roomSection.querySelector(
+//     ".status-indicator .status-text"
+//   );
+//   const indicatorDot = roomSection.querySelector(
+//     ".status-indicator .indicator-dot"
+//   );
+
+//   // Lọc các cuộc họp cho phòng hiện tại
+//   const roomMeetings = meetings.filter(
+//     (meeting) => normalizeRoomName(meeting.room) === normalizeRoomName(roomCode)
+//   );
+
+//   const upcomingMeetings = roomMeetings.filter(
+//     (meeting) => !isTimeOverdue(meeting.endTime, currentTime)
+//   );
+
+//   const activeMeeting = upcomingMeetings.find((meeting) =>
+//     isTimeInRange(currentTime, meeting.startTime, meeting.endTime)
+//   );
+
+//   // Tạo key duy nhất cho phòng
+//   const roomKey = roomCode;
+
+//   // Tạo trạng thái mới
+//   const newState = {
+//     isActive: !!activeMeeting,
+//     content: activeMeeting
+//       ? activeMeeting.content || activeMeeting.purpose
+//       : upcomingMeetings.length > 0
+//       ? upcomingMeetings.map((m) => m.content || m.purpose).join(" | ")
+//       : "Trống",
+//     startTime: activeMeeting
+//       ? activeMeeting.startTime
+//       : upcomingMeetings.length > 0
+//       ? upcomingMeetings.map((m) => m.startTime).join(" | ")
+//       : "--:--",
+//     endTime: activeMeeting
+//       ? activeMeeting.endTime
+//       : upcomingMeetings.length > 0
+//       ? upcomingMeetings.map((m) => m.endTime).join(" | ")
+//       : "--:--",
+//   };
+//   // So sánh với trạng thái trước đó
+//   if (
+//     !previousStates[roomKey] ||
+//     JSON.stringify(previousStates[roomKey]) !== JSON.stringify(newState)
+//   ) {
+//     // Chỉ cập nhật DOM nếu có sự thay đổi
+//     if (activeMeeting) {
+//       titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${newState.content}`;
+//       startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${newState.startTime}`;
+//       endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${newState.endTime}`;
+//       statusIndicator.textContent = "Đang họp";
+//       indicatorDot.classList.remove("available");
+//       indicatorDot.classList.add("busy");
+//     } else {
+//       const nextThreeMeetings = upcomingMeetings
+//         .sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime))
+//         .slice(0, 3);
+
+//       if (nextThreeMeetings.length > 0) {
+//         titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${newState.content}`;
+//         startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${newState.startTime}`;
+//         endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${newState.endTime}`;
+//       } else {
+//         titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> Trống`;
+//         startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
+//         endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
+//       }
+//       statusIndicator.textContent = "Trống";
+//       indicatorDot.classList.remove("busy");
+//       indicatorDot.classList.add("available");
+//     }
+
+//     // Lưu trạng thái mới
+//     previousStates[roomKey] = newState;
+//   }
+// }
 function updateSingleRoomStatus(roomCode, meetings, currentTime) {
   console.log("Updating room status for:", roomCode);
 
@@ -1290,7 +1386,6 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
     previousStates[roomKey] = newState;
   }
 }
-
 if (!Element.prototype.contains) {
   Element.prototype.contains = function (text) {
     return this.textContent.trim().includes(text);
@@ -1709,3 +1804,67 @@ function loadDynamicPage(pageType) {
     console.error("Error loading dynamic page:", error);
   }
 }
+
+//======================End Meeting Feature==================
+function handleEndMeeting(event) {
+  // Lấy thông tin từ localStorage
+  const cachedData = JSON.parse(localStorage.getItem("fileCache"));
+  if (!cachedData || !cachedData.data) {
+    console.error("No meeting data found!");
+    return;
+  }
+
+  const data = cachedData.data;
+  const currentTime = getCurrentTime();
+  const currentDate = getCurrentDate();
+
+  // Lấy thông tin phòng từ tiêu đề
+  const roomName = event.target.closest(".main-panel").querySelector("h1").textContent;
+
+  // Tìm cuộc họp hiện tại
+  const currentMeetingIndex = data.findIndex(meeting => 
+    meeting.room.toLowerCase().includes(roomName.toLowerCase()) &&
+    meeting.date === currentDate &&
+    currentTime >= meeting.startTime &&
+    currentTime <= meeting.endTime
+  );
+
+  if (currentMeetingIndex !== -1) {
+    // Cập nhật endTime của cuộc họp thành thời gian hiện tại
+    const updatedMeeting = {...data[currentMeetingIndex]};
+    updatedMeeting.endTime = currentTime;
+
+    // Thay thế cuộc họp cũ bằng cuộc họp đã cập nhật
+    const updatedData = [...data];
+    updatedData[currentMeetingIndex] = updatedMeeting;
+
+    // Lưu dữ liệu đã cập nhật vào localStorage
+    localStorage.setItem("fileCache", JSON.stringify({
+      data: updatedData,
+      lastModified: new Date().getTime()
+    }));
+
+    // Cập nhật giao diện
+    updateRoomStatus(updatedData);
+    updateScheduleTable(updatedData);
+
+    // Render lại trang phòng với trạng thái mới
+    renderRoomPage(updatedData, roomName.toLowerCase(), roomName);
+
+    // Thông báo
+    alert(`Đã kết thúc cuộc họp tại phòng ${roomName} vào lúc ${currentTime}`);
+  } else {
+    alert("Không tìm thấy cuộc họp đang diễn ra.");
+  }
+}
+
+// Thêm sự kiện cho nút "End Meeting"
+document.addEventListener("DOMContentLoaded", function () {
+  const dynamicContent = document.getElementById("dynamicPageContent");
+  
+  dynamicContent.addEventListener("click", function (event) {
+    if (event.target.classList.contains("end-meeting")) {
+      handleEndMeeting(event);
+    }
+  });
+});
