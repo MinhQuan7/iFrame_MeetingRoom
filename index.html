@@ -333,7 +333,7 @@
   const currentIndex3 = document.getElementById("current-eRa3");
   const powerIndex3 = document.getElementById("power-eRa3");
 
-  const airConditioner = document.querySelector(".temperature-air");
+  const airConditioner = acCard.querySelector(".temperature-air");
 
   let configTemp = null,
     configHumi = null,
@@ -366,7 +366,7 @@
       configCurrent3 = configuration.realtime_configs[10]; // Lưu cấu hình power
       configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
 
-      configAirConditioner = configuration.realtime_configs[11];
+      configAirConditioner = configuration.realtime_configs[12];
     },
     // Hàm lấy giá trị từ các ID và cập nhật giao diện
     onValues: (values) => {

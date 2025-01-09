@@ -44,10 +44,12 @@ void timerEvent()
   float humidity = random(40, 81);
   ERa.virtualWrite(V10, humidity);
   
+  int airValue =random(16,30);
+  ERa.virtualWrite(V29, airValue);
   // In ra các giá trị lên Serial Monitor
   Serial.printf("Current: %.2f A, Voltage: %.2f V, Power Consumption: %.2f W\n", current, voltage, power_consumption);
   Serial.printf("Temperature: %.1f °C, Humidity: %.0f %%\n", temperature, humidity);
-
+  Serial.printf("Air Value: %.1d ",airValue);
   delay(2000);
 }
 
