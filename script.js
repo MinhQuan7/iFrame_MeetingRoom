@@ -1586,6 +1586,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
       if (temperatureDisplay) {
         updateTemperature(temperatureDisplay);
       }
+
       // const temperatureDisplay = acCard.querySelector(".temperature-air");
 
       // Xử lý nút power
@@ -1974,87 +1975,32 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Hàm cập nhật trạng thái điều hòa
-function updateACStatus(acCard) {
-  const statusDot = acCard.querySelector(".status-air-dot");
-  const statusText = acCard.querySelector(".status-air span");
-  const temperatureDisplay = acCard.querySelector(".temperature-air");
-  const controls = acCard.querySelectorAll(".btn, .btn-up");
+// Hàm cập nhật nhiệt độ
+// function updateTemperature(tempDisplay) {
+//   tempDisplay.textContent = `${acState.temperature}°C`;
+// }
 
-  if (isACOn) {
+// Hàm cập nhật trạng thái điều hòa
+function updateACStatus(container) {
+  const statusDot = container.querySelector(".status-air-dot");
+  const statusText = container.querySelector(".status-air span");
+  const powerButton = container.querySelector(".controls .btn");
+
+  if (acState.isOn) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
-    controls.forEach((control) => (control.style.opacity = "1"));
-    controls.forEach((control) => (control.style.pointerEvents = "auto"));
-    // Khi bật, lấy giá trị nhiệt độ từ IoT platform
-    if (configAirConditioner && configAirConditioner.value) {
-      currentACTemperature = parseFloat(configAirConditioner.value);
-      updateTemperature(temperatureDisplay);
-    }
+    powerButton.classList.add("active");
+    renderRoomPage();
+    startTemperatureUpdates(); //Start log value from Widget 
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
-    controls.forEach((control) => (control.style.opacity = "0.5"));
-    controls.forEach((control) => (control.style.pointerEvents = "none"));
-    // Khi tắt, hiển thị "OFF"
-    if (temperatureDisplay) {
-      temperatureDisplay.textContent = "OFF";
-    }
+    powerButton.classList.remove("active");
   }
 }
-
-// Trong event listener của container
-container.addEventListener("click", (e) => {
-  // Tìm chính xác card điều hòa
-  const acCard = e.target.closest(".ac-card");
-  if (!acCard) return;
-
-  // Xác định nút power cụ thể
-  const powerButton = e.target.closest(".btn");
-  if (powerButton) {
-    // Toggle trạng thái
-    isACOn = !isACOn;
-    // Cập nhật giao diện một cách chi tiết
-    const statusDot = acCard.querySelector(".status-air-dot");
-    const statusText = acCard.querySelector(".status-air span");
-    const temperatureDisplay = acCard.querySelector(".temperature-air");
-    const controls = acCard.querySelectorAll(".btn, .btn-up");
-
-    if (isACOn) {
-      // Trạng thái BẬT
-      statusDot.style.backgroundColor = "#4CAF50"; // Màu xanh
-      statusText.textContent = "Online";
-      controls.forEach((control) => {
-        control.style.opacity = "1";
-        control.style.pointerEvents = "auto";
-      });
-
-      // Khôi phục nhiệt độ từ IoT hoặc giá trị mặc định
-      currentACTemperature = 20; // Hoặc lấy từ IoT
-      updateTemperature(temperatureDisplay);
-    } else {
-      // Trạng thái TẮT
-      statusDot.style.backgroundColor = "#ff0000"; // Màu đỏ
-      statusText.textContent = "Offline";
-      controls.forEach((control) => {
-        control.style.opacity = "0.5";
-        control.style.pointerEvents = "none";
-        temperatureDisplay.textContent = "OFF";
-      });
-    }
-
-    // Ngăn chặn sự kiện lan truyền
-    e.stopPropagation();
-    e.preventDefault();
-  }
-});
 function updateTemperature(tempDisplay) {
-  if (!tempDisplay) return;
-
-  if (isACOn) {
+  if (tempDisplay) {
     tempDisplay.textContent = `${currentACTemperature}°C`;
-  } else {
-    tempDisplay.textContent = "OFF";
   }
 }
 /*===synchronize data from IoT Paltform with Air Conditioner====*/
@@ -2062,11 +2008,9 @@ function startTemperatureUpdates() {
   setInterval(() => {
     const temperatureDisplays = document.querySelectorAll(".temperature-air");
     temperatureDisplays.forEach((display) => {
-      if (isACOn) {
-        updateTemperature(display);
-      }
+      updateTemperature(display);
     });
-  }, 1000);
+  }, 1000); // Cập nhật mỗi giây
 }
 
 // Gọi hàm này sau khi trang đã load

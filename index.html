@@ -385,7 +385,6 @@
 
   const airConditioner = document.getElementById("temperature-airConditioner");
   let currentACTemperature = 20; // Giá trị mặc định
-  let isACOn = false; // Trạng thái mặc định là tắt
   let configTemp = null,
     configHumi = null,
     configCurrent = null,
@@ -503,16 +502,13 @@
 
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
-        // Chỉ cập nhật giá trị khi máy lạnh đang bật
-        if (isACOn) {
-          currentACTemperature = parseFloat(airValue);
-          if (airConditioner) {
-            airConditioner.textContent = airValue + "°C";
-            // Cập nhật nhiệt độ trong iframe nếu nó đã được render
-            const iframeTemp = document.querySelector(".temperature-air");
-            if (iframeTemp) {
-              iframeTemp.textContent = airValue + "°C";
-            }
+        currentACTemperature = parseFloat(airValue);
+        if (airConditioner) {
+          airConditioner.textContent = airValue + "°C";
+          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
+          const iframeTemp = document.querySelector(".temperature-air");
+          if (iframeTemp) {
+            iframeTemp.textContent = airValue + "°C";
           }
         }
       }
