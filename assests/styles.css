@@ -2066,7 +2066,7 @@ html {
 }
 .currentDateElement-1 {
   margin-left: 60%;
-  margin-top: 15%;
+  margin-top: 20%;
 }
 .time {
   font-size: var(--font-xlarge);
@@ -2268,7 +2268,7 @@ button:hover {
 }
 
 .time-1 {
-  margin-left: -17%;
+  margin-left: -30%;
   margin-top: 40px;
 }
 
@@ -2290,7 +2290,7 @@ button:hover {
 }
 @media (min-width: 1370px) and (max-width: 1700px) {
   .currentDateElement-1 {
-    margin-top: 15%;
+    margin-top: 25%;
   }
 }
 @media (min-width: 1750px) {
@@ -2298,7 +2298,8 @@ button:hover {
     margin-left: -10%;
   }
   .currentDateElement-1 {
-    margin-top: 15%;
+    margin-top: 17%;
+    margin-left: 63%;
   }
 }
 

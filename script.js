@@ -1233,57 +1233,23 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
     ".status-indicator .indicator-dot"
   );
 
-  // Lọc các cuộc họp cho phòng hiện tại
+  // Lọc các cuộc họp cho phòng hiện tại, bao gồm cả những cuộc họp đã kết thúc
   const roomMeetings = meetings.filter(
     (meeting) =>
       normalizeRoomName(meeting.room) === normalizeRoomName(roomCode) &&
-      !meeting.isEnded &&
-      !meeting.forceEndedByUser && // Kiểm tra flag mới
       !isTimeOverdue(meeting.endTime, currentTime)
   );
-  // Tìm cuộc họp đang diễn ra
-  // Tìm cuộc họp đang diễn ra
-  const activeMeeting = roomMeetings.find((meeting) =>
-    isValidMeetingState(meeting, currentTime)
-  );
 
-  // Kiểm tra xem có cuộc họp nào đã được kết thúc gần đây hay không
-  const recentEndedMeeting = roomMeetings.find(
+  // Tìm cuộc họp đang diễn ra và chưa bị kết thúc sớm
+  const activeMeeting = roomMeetings.find(
     (meeting) =>
-      meeting.isEnded &&
-      isTimeInRange(currentTime, meeting.endTime, currentTime)
+      isValidMeetingState(meeting, currentTime) &&
+      !meeting.isEnded &&
+      !meeting.forceEndedByUser
   );
-
-  // Nếu có cuộc họp đã được kết thúc gần đây, không cập nhật trạng thái phòng
-  if (recentEndedMeeting) {
-    return;
-  }
-
-  // Tạo key duy nhất cho phòng
-  const roomKey = roomCode;
-
-  // Tạo trạng thái mới
-  const newState = {
-    isActive: !!activeMeeting,
-    content: activeMeeting
-      ? activeMeeting.content || activeMeeting.purpose
-      : roomMeetings.length > 0
-      ? roomMeetings.map((m) => m.content || m.purpose).join(" | ")
-      : "Trống",
-    startTime: activeMeeting
-      ? activeMeeting.startTime
-      : roomMeetings.length > 0
-      ? roomMeetings.map((m) => m.startTime).join(" | ")
-      : "--:--",
-    endTime: activeMeeting
-      ? activeMeeting.endTime
-      : roomMeetings.length > 0
-      ? roomMeetings.map((m) => m.endTime).join(" | ")
-      : "--:--",
-  };
 
   // Cập nhật giao diện
-  if (activeMeeting && !activeMeeting.forceEndedByUser) {
+  if (activeMeeting) {
     titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${
       activeMeeting.content || activeMeeting.purpose
     }`;
@@ -1293,12 +1259,31 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
     indicatorDot.classList.remove("available");
     indicatorDot.classList.add("busy");
   } else {
-    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> Trống`;
-    startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
-    endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
-    statusIndicator.textContent = "Trống";
-    indicatorDot.classList.remove("busy");
-    indicatorDot.classList.add("available");
+    // Kiểm tra xem có cuộc họp sắp diễn ra không
+    const upcomingMeeting = roomMeetings.find(
+      (meeting) =>
+        !meeting.isEnded &&
+        !meeting.forceEndedByUser &&
+        meeting.startTime > currentTime
+    );
+
+    if (upcomingMeeting) {
+      titleElement.innerHTML = `<span>Thông tin cuộc họp sắp diễn ra:</span> ${
+        upcomingMeeting.content || upcomingMeeting.purpose
+      }`;
+      startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${upcomingMeeting.startTime}`;
+      endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${upcomingMeeting.endTime}`;
+      statusIndicator.textContent = "Sắp họp";
+      indicatorDot.classList.remove("busy");
+      indicatorDot.classList.add("available");
+    } else {
+      titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> Trống`;
+      startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> --:--`;
+      endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> --:--`;
+      statusIndicator.textContent = "Trống";
+      indicatorDot.classList.remove("busy");
+      indicatorDot.classList.add("available");
+    }
   }
 }
 if (!Element.prototype.contains) {
@@ -1327,29 +1312,22 @@ async function checkFileChanges() {
       return;
     }
 
-    // Lấy dữ liệu từ cache trước khi cập nhật
+    // Lấy dữ liệu từ cache
     const existingCache = JSON.parse(localStorage.getItem("fileCache")) || {
       data: [],
     };
-    const endedMeetings = existingCache.data
-      ? existingCache.data.filter(
-          (meeting) => meeting.isEnded && meeting.forceEndedByUser
-        )
-      : [];
+
+    // Lọc ra các cuộc họp đã kết thúc sớm
+    const endedMeetings = existingCache.data.filter(
+      (meeting) => meeting.isEnded && meeting.forceEndedByUser
+    );
 
     if (fileData !== lastFileData) {
       console.log("File đã thay đổi, đang cập nhật...");
-      const data = await processExcelFile(file);
-      const today = new Date();
-      const filteredData = data.filter((meeting) => {
-        const meetingDate = new Date(
-          meeting.date.split("/").reverse().join("-")
-        );
-        return meetingDate.toDateString() === today.toDateString();
-      });
+      const newData = await processExcelFile(file);
 
       // Merge dữ liệu mới với trạng thái các cuộc họp đã kết thúc
-      const mergedData = filteredData.map((meeting) => {
+      const mergedData = newData.map((meeting) => {
         const endedMeeting = endedMeetings.find(
           (ended) =>
             ended.id === meeting.id &&
@@ -1358,65 +1336,50 @@ async function checkFileChanges() {
         );
 
         if (endedMeeting) {
-          return {
-            ...meeting,
-            isEnded: true,
-            forceEndedByUser: true,
-            endTime: endedMeeting.endTime,
-            lastUpdated: endedMeeting.lastUpdated,
-            originalEndTime: endedMeeting.originalEndTime,
-          };
+          // Giữ nguyên thông tin của cuộc họp đã kết thúc
+          return endedMeeting;
         }
         return meeting;
       });
 
-      updateProgress(60, "Đang cập nhật bảng...");
-      console.log("Filtered and merged data:", mergedData);
-      updateScheduleTable(mergedData);
-      updateRoomStatus(mergedData);
+      // Lọc các cuộc họp trong ngày
+      const today = new Date();
+      const todayMeetings = mergedData.filter((meeting) => {
+        const meetingDate = new Date(
+          meeting.date.split("/").reverse().join("-")
+        );
+        return meetingDate.toDateString() === today.toDateString();
+      });
 
-      startAutoUpdate(mergedData);
-      lastFileData = fileData;
+      // Cập nhật UI và cache
+      updateScheduleTable(todayMeetings);
+      updateRoomStatus(todayMeetings);
 
-      // Cập nhật cache với dữ liệu đã merge
       fileCache.data = mergedData;
       fileCache.lastModified = new Date().getTime();
 
       localStorage.setItem(
         "fileCache",
         JSON.stringify({
-          data: fileCache.data,
+          data: mergedData,
           lastModified: fileCache.lastModified,
         })
       );
+
+      lastFileData = fileData;
     } else {
-      // Ngay cả khi file không thay đổi, vẫn sử dụng dữ liệu đã merge
+      // Khi file không thay đổi, sử dụng dữ liệu từ cache
       const today = new Date();
-      const filteredCache = existingCache.data.filter((meeting) => {
+      const todayMeetings = existingCache.data.filter((meeting) => {
         const meetingDate = new Date(
           meeting.date.split("/").reverse().join("-")
         );
         return meetingDate.toDateString() === today.toDateString();
       });
 
-      // Đảm bảo giữ nguyên trạng thái các cuộc họp đã kết thúc
-      const preservedData = filteredCache.map((meeting) => {
-        const endedMeeting = endedMeetings.find(
-          (ended) =>
-            ended.id === meeting.id &&
-            ended.room === meeting.room &&
-            ended.date === meeting.date
-        );
-
-        if (endedMeeting) {
-          return endedMeeting;
-        }
-        return meeting;
-      });
-
-      console.log("Cập nhật từ cached data (preserved):", preservedData);
-      updateScheduleTable(preservedData);
-      updateRoomStatus(preservedData);
+      console.log("Sử dụng dữ liệu từ cache:", todayMeetings);
+      updateScheduleTable(todayMeetings);
+      updateRoomStatus(todayMeetings);
     }
   } catch (error) {
     console.error("Lỗi khi kiểm tra file:", error);
