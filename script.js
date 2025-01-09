@@ -1586,6 +1586,8 @@ function renderRoomPage(data, roomKeyword, roomName) {
       if (temperatureDisplay) {
         updateTemperature(temperatureDisplay);
       }
+      
+      // const temperatureDisplay = acCard.querySelector(".temperature-air");
 
       // Xử lý nút power
       if (e.target.closest(".controls .btn:first-child")) {
@@ -1977,11 +1979,7 @@ document.head.appendChild(style);
 // function updateTemperature(tempDisplay) {
 //   tempDisplay.textContent = `${acState.temperature}°C`;
 // }
-function updateTemperature(tempDisplay) {
-  if (tempDisplay) {
-    tempDisplay.textContent = `${currentACTemperature}°C`;
-  }
-}
+
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container) {
   const statusDot = container.querySelector(".status-air-dot");
@@ -1999,7 +1997,11 @@ function updateACStatus(container) {
     powerButton.classList.remove("active");
   }
 }
-
+function updateTemperature(tempDisplay) {
+  if (tempDisplay) {
+    tempDisplay.textContent = `${currentACTemperature}°C`;
+  }
+}
 /*===synchronize data from IoT Paltform with Air Conditioner====*/
 function startTemperatureUpdates() {
   setInterval(() => {
