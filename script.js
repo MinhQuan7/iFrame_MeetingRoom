@@ -1974,7 +1974,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-let isACOn = false; // Trạng thái mặc định là tắt
+
 
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(acCard) {
