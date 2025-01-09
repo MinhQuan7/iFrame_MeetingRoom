@@ -1573,6 +1573,39 @@ function renderRoomPage(data, roomKeyword, roomName) {
     });
   console.log("Upcoming meetings:", upcomingMeetings);
 
+  setTimeout(() => {
+    const container = document.querySelector(".container");
+    if (!container) return;
+
+    container.addEventListener("click", (e) => {
+      const acCard = e.target.closest(".ac-card");
+      if (!acCard) return;
+
+      const temperatureDisplay = acCard.querySelector(".temperature-air");
+
+      // Xử lý nút power
+      if (e.target.closest(".controls .btn:first-child")) {
+        acState.isOn = !acState.isOn;
+        updateACStatus(acCard);
+      }
+
+      // Xử lý nút giảm nhiệt độ
+      if (e.target.closest(".controls .btn:nth-child(3)")) {
+        if (acState.isOn && acState.temperature > acState.minTemp) {
+          acState.temperature--;
+          updateTemperature(temperatureDisplay);
+        }
+      }
+
+      // Xử lý nút tăng nhiệt độ
+      if (e.target.closest(".btn-up")) {
+        if (acState.isOn && acState.temperature < acState.maxTemp) {
+          acState.temperature++;
+          updateTemperature(temperatureDisplay);
+        }
+      }
+    });
+  }, 0);
   return `
     <div class="container">
       <div class="left-panel">
@@ -1633,7 +1666,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
                         </svg>
                     </button>
 
-                    <span class="temperature">20°C</span>
+                    <span class="temperature-air">20°C</span>
 
                     <!-- Up Button -->
                     <button class="btn-up">
@@ -1911,3 +1944,52 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+// Khởi tạo trạng thái ban đầu
+let acState = {
+  isOn: false,
+  temperature: 20,
+  minTemp: 16,
+  maxTemp: 30,
+};
+
+// Thêm CSS cho styling
+const style = document.createElement("style");
+style.textContent = `
+    .controls .btn.active {
+        color: white;
+    }
+    .status-air-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #ff0000;
+        margin-right: 5px;
+    }
+`;
+document.head.appendChild(style);
+
+// Hàm cập nhật nhiệt độ
+function updateTemperature(tempDisplay) {
+  tempDisplay.textContent = `${acState.temperature}°C`;
+}
+
+// Hàm cập nhật trạng thái điều hòa
+function updateACStatus(container) {
+  const statusDot = container.querySelector(".status-air-dot");
+  const statusText = container.querySelector(".status-air span");
+  const powerButton = container.querySelector(".controls .btn");
+
+  if (acState.isOn) {
+    statusDot.style.backgroundColor = "#4CAF50";
+    statusText.textContent = "Online";
+    powerButton.classList.add("active");
+    renderRoomPage();
+  } else {
+    statusDot.style.backgroundColor = "#ff0000";
+    statusText.textContent = "Offline";
+    powerButton.classList.remove("active");
+  }
+}
+
+// export { renderRoomPage };
