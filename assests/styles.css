@@ -1961,7 +1961,7 @@ upload-icon-date {
   --secondary-gradient: linear-gradient(to bottom right, #20293cc4, #c6d9ff59);
   --panel-spacing: clamp(10px, 2vw, 20px);
   --font-small: clamp(0.8rem, 1.5vw, 1rem);
-  --font-medium: clamp(1rem, 2vw, 1.2rem);
+  /* --font-medium: clamp(1rem, 2vw, 1.2rem); */
   --font-large: clamp(1.5rem, 3vw, 2rem);
   --font-xlarge: clamp(2rem, 5vw, 5em);
 }
