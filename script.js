@@ -1980,6 +1980,9 @@ document.head.appendChild(style);
 //   tempDisplay.textContent = `${acState.temperature}°C`;
 // }
 
+let actionOn = null,
+  actionOff = null,
+  statusAirConditioner = null;
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container) {
   const statusDot = container.querySelector(".status-air-dot");
@@ -1992,10 +1995,12 @@ function updateACStatus(container) {
     statusText.textContent = "Online";
     powerButton.classList.add("active");
     startTemperatureUpdates();
+    eraWidget.triggerAction(actionOn.action, null);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
+    eraWidget.triggerAction(actionOff.action, null);
     // Display OFF when AC is turned off
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
@@ -2036,6 +2041,8 @@ function startTemperatureUpdates() {
       tempDisplays.forEach((display) => {
         if (display) {
           display.textContent = `${currentACTemperature}°C`;
+          //currentACTemperature is a variable of log data from Widget IoT platform
+          //" currentACTemperature = parseFloat(airValue)"
         }
       });
     }
