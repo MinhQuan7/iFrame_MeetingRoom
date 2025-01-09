@@ -1962,16 +1962,16 @@ let acState = {
 // Thêm CSS cho styling
 const style = document.createElement("style");
 style.textContent = `
-    .controls .btn.active {
-        color: white;
-    }
-    .status-air-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: #ff0000;
-        margin-right: 5px;
-    }
+  .controls .btn.active {
+    color: white;
+  }
+  .status-air-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ff0000;
+    margin-right: 5px;
+  }
 `;
 document.head.appendChild(style);
 
@@ -1985,33 +1985,61 @@ function updateACStatus(container) {
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
+  const tempDisplay = container.querySelector(".temperature-air");
 
   if (acState.isOn) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
-    renderRoomPage();
-    startTemperatureUpdates(); //Start log value from Widget 
+    startTemperatureUpdates();
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
+    // Display OFF when AC is turned off
+    if (tempDisplay) {
+      tempDisplay.textContent = "OFF";
+    }
+    stopTemperatureUpdates();
   }
 }
+
+let updateInterval;
+// Stop IoT temperature updates
+function stopTemperatureUpdates() {
+  if (updateInterval) {
+    clearInterval(updateInterval);
+    updateInterval = null;
+  }
+}
+
 function updateTemperature(tempDisplay) {
-  if (tempDisplay) {
+  if (!tempDisplay) return;
+
+  if (acState.isOn) {
     tempDisplay.textContent = `${currentACTemperature}°C`;
+  } else {
+    tempDisplay.textContent = "OFF";
   }
 }
 /*===synchronize data from IoT Paltform with Air Conditioner====*/
+// Start IoT temperature updates
 function startTemperatureUpdates() {
-  setInterval(() => {
-    const temperatureDisplays = document.querySelectorAll(".temperature-air");
-    temperatureDisplays.forEach((display) => {
-      updateTemperature(display);
-    });
-  }, 1000); // Cập nhật mỗi giây
-}
+  // Clear any existing interval
+  if (updateInterval) {
+    clearInterval(updateInterval);
+  }
 
+  updateInterval = setInterval(() => {
+    if (acState.isOn) {
+      const tempDisplays = document.querySelectorAll(".temperature-air");
+      tempDisplays.forEach((display) => {
+        if (display) {
+          display.textContent = `${currentACTemperature}°C`;
+        }
+      });
+    }
+  }, 1000);
+}
 // Gọi hàm này sau khi trang đã load
 // window.addEventListener("load", startTemperatureUpdates);
