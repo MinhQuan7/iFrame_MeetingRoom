@@ -1586,7 +1586,6 @@ function renderRoomPage(data, roomKeyword, roomName) {
       if (temperatureDisplay) {
         updateTemperature(temperatureDisplay);
       }
-
       // const temperatureDisplay = acCard.querySelector(".temperature-air");
 
       // Xử lý nút power
