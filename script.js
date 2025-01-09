@@ -1991,5 +1991,3 @@ function updateACStatus(container) {
     powerButton.classList.remove("active");
   }
 }
-
-// export { renderRoomPage };
