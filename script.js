@@ -1599,22 +1599,57 @@ function renderRoomPage(data, roomKeyword, roomName) {
               <span> Online </span>
             </div>
           </div>
-          <div class="device offline">
-            <img
+<div class="ac-card">
+        <div class="card-content">
+            <!-- AC Icon -->
+             <img
               alt="Air conditioner icon"
               height="30"
               src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg"
               width="30"
             />
-            <div>
-              <div>Máy lạnh 1</div>
-              <div>Nhiệt độ: 25.5 °C | Độ ẩm: 70 %</div>
+                <rect x="2" y="3" width="20" height="14" rx="2" stroke-width="2" />
+                <path d="M6 7h12" stroke-width="2" />
+                <path d="M6 11h12" stroke-width="2" />
+            </svg>
+
+            <div class="main-content">
+                <h3 class="title">Máy lạnh phòng họp 1</h3>
+
+                <div class="controls">
+                    <!-- Power Button -->
+                    <button class="btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10" stroke-width="2" />
+                        </svg>
+                    </button>
+
+                    <div class="divider"></div>
+
+                    <!-- Down Button -->
+                    <button class="btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M19 9l-7 7-7-7" stroke-width="2" />
+                        </svg>
+                    </button>
+
+                    <span class="temperature">20°C</span>
+
+                    <!-- Up Button -->
+                    <button class="btn-up">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M5 15l7-7 7 7" stroke-width="2" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="status-air">
+                    <div class="status-air-dot"></div>
+                    <span>Offline</span>
+                </div>
             </div>
-            <div class="status">
-              <i class="fas fa-circle"> </i>
-              <span> Offline </span>
-            </div>
-          </div>
+        </div>
+    </div>
         </div>
         <button class="home-button">
         <i class="fas fa-home"></i>
