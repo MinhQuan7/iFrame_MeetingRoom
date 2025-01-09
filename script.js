@@ -1974,29 +1974,74 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Hàm cập nhật trạng thái điều hòa
-function updateACStatus(container) {
-  const statusDot = container.querySelector(".status-air-dot");
-  const statusText = container.querySelector(".status-air span");
-  const powerButton = container.querySelector(".controls .btn");
+let isACOn = false; // Trạng thái mặc định là tắt
 
-  if (acState.isOn) {
+// Hàm cập nhật trạng thái điều hòa
+function updateACStatus(acCard) {
+  const statusDot = acCard.querySelector(".status-air-dot");
+  const statusText = acCard.querySelector(".status-air span");
+  const temperatureDisplay = acCard.querySelector(".temperature-air");
+  const controls = acCard.querySelectorAll(".btn, .btn-up");
+
+  if (isACOn) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
-    powerButton.classList.add("active");
-    console.log("Turn on Air Conditioner");
-    startTemperatureUpdates();
-    renderRoomPage();
+    controls.forEach((control) => (control.style.opacity = "1"));
+    controls.forEach((control) => (control.style.pointerEvents = "auto"));
+    // Khi bật, lấy giá trị nhiệt độ từ IoT platform
+    if (configAirConditioner && configAirConditioner.value) {
+      currentACTemperature = parseFloat(configAirConditioner.value);
+      updateTemperature(temperatureDisplay);
+    }
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
-    powerButton.classList.remove("active");
-    console.log("Turn off Air Conditioner");
+    controls.forEach((control) => (control.style.opacity = "0.5"));
+    controls.forEach((control) => (control.style.pointerEvents = "none"));
+    // Khi tắt, hiển thị "OFF"
+    if (temperatureDisplay) {
+      temperatureDisplay.textContent = "OFF";
+    }
   }
 }
+
+// Trong event listener của container
+container.addEventListener("click", (e) => {
+  const acCard = e.target.closest(".ac-card");
+  if (!acCard) return;
+
+  // Xử lý nút power
+  if (e.target.closest(".controls .btn:first-child")) {
+    isACOn = !isACOn;
+    updateACStatus(acCard);
+  }
+
+  // Chỉ cho phép điều chỉnh nhiệt độ khi máy lạnh đang bật
+  if (isACOn) {
+    const temperatureDisplay = acCard.querySelector(".temperature-air");
+
+    if (e.target.closest(".controls .btn:nth-child(3)")) {
+      if (currentACTemperature > acState.minTemp) {
+        currentACTemperature--;
+        updateTemperature(temperatureDisplay);
+      }
+    }
+
+    if (e.target.closest(".btn-up")) {
+      if (currentACTemperature < acState.maxTemp) {
+        currentACTemperature++;
+        updateTemperature(temperatureDisplay);
+      }
+    }
+  }
+});
 function updateTemperature(tempDisplay) {
-  if (tempDisplay) {
+  if (!tempDisplay) return;
+
+  if (isACOn) {
     tempDisplay.textContent = `${currentACTemperature}°C`;
+  } else {
+    tempDisplay.textContent = "OFF";
   }
 }
 /*===synchronize data from IoT Paltform with Air Conditioner====*/
@@ -2004,9 +2049,11 @@ function startTemperatureUpdates() {
   setInterval(() => {
     const temperatureDisplays = document.querySelectorAll(".temperature-air");
     temperatureDisplays.forEach((display) => {
-      updateTemperature(display);
+      if (isACOn) {
+        updateTemperature(display);
+      }
     });
-  }, 1000); // Cập nhật mỗi giây
+  }, 1000);
 }
 
 // Gọi hàm này sau khi trang đã load
