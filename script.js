@@ -2010,7 +2010,7 @@ container.addEventListener("click", (e) => {
   if (!acCard) return;
 
   // Xác định nút power cụ thể
-  const powerButton = e.target.closest(".controls .btn:first-child");
+  const powerButton = e.target.closest(".btn");
   if (powerButton) {
     // Toggle trạng thái
     isACOn = !isACOn;
@@ -2039,12 +2039,8 @@ container.addEventListener("click", (e) => {
       controls.forEach((control) => {
         control.style.opacity = "0.5";
         control.style.pointerEvents = "none";
-      });
-
-      // Hiển thị OFF
-      if (temperatureDisplay) {
         temperatureDisplay.textContent = "OFF";
-      }
+      });
     }
 
     // Ngăn chặn sự kiện lan truyền
