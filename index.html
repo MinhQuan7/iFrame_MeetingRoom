@@ -334,7 +334,7 @@
   const powerIndex3 = document.getElementById("power-eRa3");
 
   const airConditioner = document.getElementById("temperature-airConditioner");
-
+  let currentACTemperature = 20; // Giá trị mặc định
   let configTemp = null,
     configHumi = null,
     configCurrent = null,
@@ -450,9 +450,22 @@
         if (powerIndex3) powerIndex3.textContent = powerValue3;
       }
 
+      // if (configAirConditioner && values[configAirConditioner.id]) {
+      //   const airValue = values[configAirConditioner.id].value;
+      //   if (airConditioner) airConditioner.textContent = airValue;
+      // }
+
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
-        if (airConditioner) airConditioner.textContent = airValue;
+        currentACTemperature = parseFloat(airValue);
+        if (airConditioner) {
+          airConditioner.textContent = airValue + '°C';
+          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
+          const iframeTemp = document.querySelector('.temperature-air');
+          if (iframeTemp) {
+            iframeTemp.textContent = airValue + '°C';
+          }
+        }
       }
     },
   });
