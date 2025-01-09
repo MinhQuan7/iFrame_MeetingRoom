@@ -1581,8 +1581,6 @@ function renderRoomPage(data, roomKeyword, roomName) {
       const acCard = e.target.closest(".ac-card");
       if (!acCard) return;
 
-      // const temperatureDisplay = acCard.querySelector(".temperature-air");
-
       // Cập nhật nhiệt độ ban đầu
       const temperatureDisplay = container.querySelector(".temperature-air");
       if (temperatureDisplay) {
