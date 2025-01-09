@@ -1666,7 +1666,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
                         </svg>
                     </button>
 
-                    <span class="temperature-air">20°C</span>
+                    <span class="temperature-air" id ="temperature-airConditioner">20°C</span>
 
                     <!-- Up Button -->
                     <button class="btn-up">
