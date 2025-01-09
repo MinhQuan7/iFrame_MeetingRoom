@@ -1974,8 +1974,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-
-
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(acCard) {
   const statusDot = acCard.querySelector(".status-air-dot");
@@ -2007,32 +2005,51 @@ function updateACStatus(acCard) {
 
 // Trong event listener của container
 container.addEventListener("click", (e) => {
+  // Tìm chính xác card điều hòa
   const acCard = e.target.closest(".ac-card");
   if (!acCard) return;
 
-  // Xử lý nút power
-  if (e.target.closest(".controls .btn:first-child")) {
+  // Xác định nút power cụ thể
+  const powerButton = e.target.closest(".controls .btn:first-child");
+  if (powerButton) {
+    // Toggle trạng thái
     isACOn = !isACOn;
-    updateACStatus(acCard);
-  }
-
-  // Chỉ cho phép điều chỉnh nhiệt độ khi máy lạnh đang bật
-  if (isACOn) {
+    // Cập nhật giao diện một cách chi tiết
+    const statusDot = acCard.querySelector(".status-air-dot");
+    const statusText = acCard.querySelector(".status-air span");
     const temperatureDisplay = acCard.querySelector(".temperature-air");
+    const controls = acCard.querySelectorAll(".btn, .btn-up");
 
-    if (e.target.closest(".controls .btn:nth-child(3)")) {
-      if (currentACTemperature > acState.minTemp) {
-        currentACTemperature--;
-        updateTemperature(temperatureDisplay);
+    if (isACOn) {
+      // Trạng thái BẬT
+      statusDot.style.backgroundColor = "#4CAF50"; // Màu xanh
+      statusText.textContent = "Online";
+      controls.forEach((control) => {
+        control.style.opacity = "1";
+        control.style.pointerEvents = "auto";
+      });
+
+      // Khôi phục nhiệt độ từ IoT hoặc giá trị mặc định
+      currentACTemperature = 20; // Hoặc lấy từ IoT
+      updateTemperature(temperatureDisplay);
+    } else {
+      // Trạng thái TẮT
+      statusDot.style.backgroundColor = "#ff0000"; // Màu đỏ
+      statusText.textContent = "Offline";
+      controls.forEach((control) => {
+        control.style.opacity = "0.5";
+        control.style.pointerEvents = "none";
+      });
+
+      // Hiển thị OFF
+      if (temperatureDisplay) {
+        temperatureDisplay.textContent = "OFF";
       }
     }
 
-    if (e.target.closest(".btn-up")) {
-      if (currentACTemperature < acState.maxTemp) {
-        currentACTemperature++;
-        updateTemperature(temperatureDisplay);
-      }
-    }
+    // Ngăn chặn sự kiện lan truyền
+    e.stopPropagation();
+    e.preventDefault();
   }
 });
 function updateTemperature(tempDisplay) {
