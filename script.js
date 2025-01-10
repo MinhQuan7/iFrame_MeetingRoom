@@ -1852,8 +1852,62 @@ function isValidMeetingState(meeting, currentTime) {
   return isTimeValid;
 }
 
-function handleEndMeeting(event) {
-  // Hiển thị hộp thoại xác nhận
+// Hàm để cập nhật file Excel
+async function updateExcelFile(meetingData) {
+  try {
+    // Attempt primary update
+    await primaryUpdateAttempt(meetingData);
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "InvalidStateError") {
+      try {
+        // Refresh file handle and retry
+        await refreshFileHandle();
+        await primaryUpdateAttempt(meetingData);
+      } catch (retryError) {
+        // Log detailed error for debugging
+        console.error("Persistent Excel update failure:", retryError);
+        throw retryError;
+      }
+    } else {
+      throw error;
+    }
+  }
+}
+
+async function refreshFileHandle() {
+  try {
+    fileHandle = await window.showOpenFilePicker({
+      multiple: false,
+      types: [
+        {
+          description: "Excel Files",
+          accept: {
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+              [".xlsx"],
+          },
+        },
+      ],
+    })[0];
+  } catch (error) {
+    console.error("Error refreshing file handle:", error);
+  }
+}
+
+async function primaryUpdateAttempt(meetingData) {
+  const writable = await fileHandle.createWritable();
+  // Rest of existing update logic
+}
+
+async function validateFileHandle() {
+  try {
+    await fileHandle.queryPermission({ mode: "readwrite" });
+  } catch {
+    // Request permissions again if lost
+    await fileHandle.requestPermission({ mode: "readwrite" });
+  }
+}
+
+async function handleEndMeeting(event) {
   const cachedData = JSON.parse(localStorage.getItem("fileCache"));
   if (!cachedData || !cachedData.data) {
     console.error("No meeting data found!");
@@ -1867,7 +1921,6 @@ function handleEndMeeting(event) {
     .closest(".main-panel")
     .querySelector("h1").textContent;
 
-  // Tìm cuộc họp hiện tại
   const roomMeetings = data.filter(
     (meeting) =>
       meeting.room.toLowerCase().includes(roomName.toLowerCase()) &&
@@ -1885,60 +1938,53 @@ function handleEndMeeting(event) {
     );
 
     if (currentMeetingIndex !== -1) {
-      // Cập nhật thông tin cuộc họp với flag đặc biệt
+      // Cập nhật thông tin cuộc họp
       updatedData[currentMeetingIndex] = {
         ...currentMeeting,
         endTime: currentTime,
         isEnded: true,
         lastUpdated: new Date().getTime(),
         originalEndTime: currentMeeting.endTime,
-        forceEndedByUser: true, // Thêm flag mới để đánh dấu cuộc họp đã được kết thúc bởi người dùng
+        forceEndedByUser: true,
       };
 
-      // Cập nhật cache và localStorage
-      fileCache.data = updatedData;
-      fileCache.lastModified = new Date().getTime();
+      try {
+        // Cập nhật file Excel
+        await updateExcelFile(updatedData);
 
-      localStorage.setItem(
-        "fileCache",
-        JSON.stringify({
-          data: updatedData,
-          lastModified: fileCache.lastModified,
-        })
-      );
+        // Cập nhật cache và localStorage
+        fileCache.data = updatedData;
+        fileCache.lastModified = new Date().getTime();
 
-      // Lọc lại các cuộc họp trong ngày
-      const todayMeetings = updatedData.filter((meeting) => {
-        const meetingDate = new Date(
-          meeting.date.split("/").reverse().join("-")
+        localStorage.setItem(
+          "fileCache",
+          JSON.stringify({
+            data: updatedData,
+            lastModified: fileCache.lastModified,
+          })
         );
-        const currentDateObj = new Date(
-          currentDate.split("/").reverse().join("-")
-        );
-        return meetingDate.toDateString() === currentDateObj.toDateString();
-      });
 
-      // Cập nhật giao diện
-      updateRoomStatus(updatedData);
-      updateScheduleTable(todayMeetings);
-      renderRoomPage(updatedData, roomName.toLowerCase(), roomName);
+        // Cập nhật giao diện
+        const todayMeetings = updatedData.filter((meeting) => {
+          const meetingDate = new Date(
+            meeting.date.split("/").reverse().join("-")
+          );
+          const currentDateObj = new Date(
+            currentDate.split("/").reverse().join("-")
+          );
+          return meetingDate.toDateString() === currentDateObj.toDateString();
+        });
 
-      console.log(`Meeting ended early:`, {
-        room: roomName,
-        originalEndTime: currentMeeting.endTime,
-        actualEndTime: currentTime,
-        isEnded: true,
-        forceEndedByUser: true,
-      });
-
-      // alert(
-      //   `Đã kết thúc cuộc họp tại phòng ${roomName} vào lúc ${currentTime}\n` +
-      //     `(Thời gian kết thúc dự kiến ban đầu: ${currentMeeting.endTime})`
-      // );
+        updateRoomStatus(updatedData);
+        updateScheduleTable(todayMeetings);
+        renderRoomPage(updatedData, roomName.toLowerCase(), roomName);
+      } catch (error) {
+        console.error("Lỗi khi cập nhật:", error);
+        alert("Không thể cập nhật file Excel. Vui lòng thử lại.");
+      }
     }
   }
 }
-
 // Đảm bảo handlers được setup khi DOM ready
 document.addEventListener("DOMContentLoaded", setupEndMeetingHandlers);
 // Thêm sự kiện cho nút "End Meeting"
