@@ -61,6 +61,12 @@ void timerEvent()
   
   int airValue =random(16,30);
   ERa.virtualWrite(V29, airValue);
+
+    int airValue2 =random(25,30);
+  ERa.virtualWrite(V31, airValue2);
+
+    int airValue3 =random(16,20);
+  ERa.virtualWrite(V32, airValue3);
   // In ra các giá trị lên Serial Monitor
   Serial.printf("Current: %.2f A, Voltage: %.2f V, Power Consumption: %.2f W\n", current, voltage, power_consumption);
   Serial.printf("Temperature: %.1f °C, Humidity: %.0f %%\n", temperature, humidity);

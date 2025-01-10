@@ -1962,13 +1962,18 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Khởi tạo trạng thái ban đầu
-let acState = {
-  isOn: false,
-  temperature: 20,
-  minTemp: 16,
-  maxTemp: 30,
+const acStates = {
+  room1: { isOn: false, temperature: 20, minTemp: 16, maxTemp: 30 },
+  room2: { isOn: false, temperature: 20, minTemp: 16, maxTemp: 30 },
+  room3: { isOn: false, temperature: 20, minTemp: 16, maxTemp: 30 },
 };
-
+// Function to determine which AC state to use based on room
+function getAcStateForRoom(roomKeyword) {
+  if (roomKeyword.includes('1')) return 'room1';
+  if (roomKeyword.includes('2')) return 'room2';
+  if (roomKeyword.includes('3')) return 'room3';
+  return 'room1'; // Default fallback
+}
 // Thêm CSS cho styling
 const style = document.createElement("style");
 style.textContent = `
@@ -1990,67 +1995,138 @@ let actionOn = null,
   actionOff = null,
   statusAirConditioner = null;
 // Hàm cập nhật trạng thái điều hòa
-function updateACStatus(container) {
+function updateACStatus(container, roomKey) {
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
+  const state = acStates[roomKey];
 
-  if (acState.isOn) {
+  if (state.isOn) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
-    startTemperatureUpdates();
+    startTemperatureUpdates(roomKey);
     eraWidget.triggerAction(actionOn.action, null);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
     eraWidget.triggerAction(actionOff.action, null);
-    // Display OFF when AC is turned off
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
-    stopTemperatureUpdates();
+    stopTemperatureUpdates(roomKey);
   }
 }
 
-let updateInterval;
-// Stop IoT temperature updates
-function stopTemperatureUpdates() {
-  if (updateInterval) {
-    clearInterval(updateInterval);
-    updateInterval = null;
+const updateIntervals = {
+  room1: null,
+  room2: null,
+  room3: null,
+};
+
+function stopTemperatureUpdates(roomKey) {
+  if (updateIntervals[roomKey]) {
+    clearInterval(updateIntervals[roomKey]);
+    updateIntervals[roomKey] = null;
   }
 }
-
-function updateTemperature(tempDisplay) {
+function updateTemperature(tempDisplay, roomKey) {
   if (!tempDisplay) return;
 
-  if (acState.isOn) {
-    tempDisplay.textContent = `${currentACTemperature}°C`;
+  const state = acStates[roomKey];
+  if (state.isOn) {
+    // Use the appropriate temperature value based on room
+    let currentTemp;
+    switch (roomKey) {
+      case "room1":
+        currentTemp = currentACTemperature;
+        break;
+      case "room2":
+        currentTemp = currentACTemperature2;
+        break;
+      case "room3":
+        currentTemp = currentACTemperature3;
+        break;
+    }
+    tempDisplay.textContent = `${currentTemp}°C`;
   } else {
     tempDisplay.textContent = "OFF";
   }
 }
+
 /*===synchronize data from IoT Paltform with Air Conditioner====*/
 // Start IoT temperature updates
-function startTemperatureUpdates() {
-  // Clear any existing interval
-  if (updateInterval) {
-    clearInterval(updateInterval);
+function startTemperatureUpdates(roomKey) {
+  if (updateIntervals[roomKey]) {
+    clearInterval(updateIntervals[roomKey]);
   }
 
-  updateInterval = setInterval(() => {
-    if (acState.isOn) {
-      const tempDisplays = document.querySelectorAll(".temperature-air");
-      tempDisplays.forEach((display) => {
-        if (display) {
-          display.textContent = `${currentACTemperature}°C`;
-          //currentACTemperature is a variable of log data from Widget IoT platform
-          //" currentACTemperature = parseFloat(airValue)"
+  updateIntervals[roomKey] = setInterval(() => {
+    const state = acStates[roomKey];
+    if (state.isOn) {
+      const container = document.querySelector(".container");
+      const tempDisplay = container.querySelector(".temperature-air");
+      if (tempDisplay) {
+        let currentTemp;
+        switch (roomKey) {
+          case "room1":
+            currentTemp = currentACTemperature;
+            break;
+          case "room2":
+            currentTemp = currentACTemperature2;
+            break;
+          case "room3":
+            currentTemp = currentACTemperature3;
+            break;
         }
-      });
+        tempDisplay.textContent = `${currentTemp}°C`;
+      }
     }
   }, 100);
 }
+
+// Modify the renderRoomPage function to include AC handling
+function modifyRenderRoomPage(data, roomKeyword, roomName) {
+  const roomKey = getAcStateForRoom(roomKeyword);
+  const originalHtml = renderRoomPage(data, roomKeyword, roomName);
+
+  // After rendering, set up event listeners
+  setTimeout(() => {
+    const container = document.querySelector(".container");
+    if (!container) return;
+
+    container.addEventListener("click", (e) => {
+      const acCard = e.target.closest(".ac-card");
+      if (!acCard) return;
+
+      const temperatureDisplay = container.querySelector(".temperature-air");
+      if (temperatureDisplay) {
+        updateTemperature(temperatureDisplay, roomKey);
+      }
+
+      if (e.target.closest(".controls .btn:first-child")) {
+        acStates[roomKey].isOn = !acStates[roomKey].isOn;
+        updateACStatus(acCard, roomKey);
+      }
+
+      if (e.target.closest(".controls .btn:nth-child(3)")) {
+        if (acStates[roomKey].isOn && acStates[roomKey].temperature > acStates[roomKey].minTemp) {
+          acStates[roomKey].temperature--;
+          updateTemperature(temperatureDisplay, roomKey);
+        }
+      }
+
+      if (e.target.closest(".btn-up")) {
+        if (acStates[roomKey].isOn && acStates[roomKey].temperature < acStates[roomKey].maxTemp) {
+          acStates[roomKey].temperature++;
+          updateTemperature(temperatureDisplay, roomKey);
+        }
+      }
+    });
+  }, 0);
+
+  return originalHtml;
+}
+
