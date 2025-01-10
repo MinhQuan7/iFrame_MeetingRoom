@@ -1852,257 +1852,322 @@ function isValidMeetingState(meeting, currentTime) {
   return isTimeValid;
 }
 
-async function updateExcelFile(updatedData) {
+//===============Processing data of excel file when user press end meeting button=============
+// Helper function để kiểm tra và cập nhật Excel file
+async function writeExcelFile(file, updatedData) {
   try {
-    // Kiểm tra xem fileHandle có tồn tại không
-    if (!fileHandle) {
-      console.error("No file handle available");
-      return;
+    const workbook = XLSX.read(await file.arrayBuffer(), { type: "array" });
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+    // Convert worksheet to JSON để dễ xử lý
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+    // Tìm header row và các cột cần thiết
+    const headerRow = jsonData.find((row) =>
+      row.some((cell) => String(cell).toLowerCase().includes("giờ kết thúc"))
+    );
+    const headerIndex = jsonData.indexOf(headerRow);
+
+    const columns = {
+      date: headerRow.findIndex((cell) =>
+        String(cell).toLowerCase().includes("ngày")
+      ),
+      room: headerRow.findIndex((cell) =>
+        String(cell).toLowerCase().includes("phòng")
+      ),
+      startTime: headerRow.findIndex((cell) =>
+        String(cell).toLowerCase().includes("giờ bắt đầu")
+      ),
+      endTime: headerRow.findIndex((cell) =>
+        String(cell).toLowerCase().includes("giờ kết thúc")
+      ),
+    };
+
+    // Cập nhật dữ liệu trong Excel
+    for (let i = headerIndex + 1; i < jsonData.length; i++) {
+      const row = jsonData[i];
+      if (!row || row.length === 0) continue;
+
+      const matchingMeeting = updatedData.find(
+        (meeting) =>
+          meeting.date === row[columns.date] &&
+          meeting.room === row[columns.room] &&
+          meeting.startTime === row[columns.startTime]
+      );
+
+      if (matchingMeeting && matchingMeeting.isEnded) {
+        jsonData[i][columns.endTime] = matchingMeeting.endTime;
+      }
     }
 
-    // Mở file để ghi
-    const writable = await fileHandle.createWritable();
+    // Chuyển đổi lại thành worksheet
+    const newWorksheet = XLSX.utils.aoa_to_sheet(jsonData);
+    workbook.Sheets[workbook.SheetNames[0]] = newWorksheet;
 
-    // Đọc file hiện tại
+    // Tạo file mới và ghi
+    const newBuffer = XLSX.write(workbook, { type: "array" });
+    const newFile = new File([newBuffer], file.name, { type: file.type });
+
+    const writable = await fileHandle.createWritable();
+    await writable.write(newFile);
+    await writable.close();
+
+    return true;
+  } catch (error) {
+    console.error("Lỗi khi cập nhật Excel:", error);
+    return false;
+  }
+}
+
+async function updateExcelEndTime(fileHandle, meetingData) {
+  try {
+    // Đọc file Excel hiện tại
     const file = await fileHandle.getFile();
     const arrayBuffer = await file.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: "array" });
 
-    // Tìm sheet đầu tiên
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
+    // Lấy sheet đầu tiên
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-    // Log toàn bộ header để debug
-    const headers = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
-    console.log("Toàn bộ headers:", headers);
+    // Tìm index của header row và cột giờ kết thúc
+    const headerRowIndex = jsonData.findIndex((row) =>
+      row.some((cell) => String(cell).toLowerCase().includes("giờ kết thúc"))
+    );
+    const endTimeColIndex = jsonData[headerRowIndex].findIndex((cell) =>
+      String(cell).toLowerCase().includes("giờ kết thúc")
+    );
 
-    // Tìm vị trí các cột quan trọng
-    const columnIndices = {
-      date: headers.findIndex(
-        (header) =>
-          String(header).toLowerCase().includes("date") ||
-          String(header).toLowerCase().includes("ngày")
-      ),
-      room: headers.findIndex(
-        (header) =>
-          String(header).toLowerCase().includes("room") ||
-          String(header).toLowerCase().includes("phòng")
-      ),
-      startTime: headers.findIndex(
-        (header) =>
-          String(header).toLowerCase().includes("start") ||
-          String(header).toLowerCase().includes("bắt đầu")
-      ),
-      endTime: headers.findIndex(
-        (header) =>
-          String(header).toLowerCase().includes("end") ||
-          String(header).toLowerCase().includes("kết thúc")
-      ),
-    };
-
-    console.log("Các vị trí cột:", columnIndices);
-
-    // Kiểm tra và điều chỉnh nếu không tìm thấy
-    Object.keys(columnIndices).forEach((key) => {
-      if (columnIndices[key] === -1) {
-        console.warn(`Không tìm thấy cột ${key}`);
-
-        // Thử các fallback
-        switch (key) {
-          case "date":
-            columnIndices[key] = 0; // Thường date là cột đầu tiên
-            break;
-          case "room":
-            columnIndices[key] = 2; // Thường room là cột thứ 3
-            break;
-          case "startTime":
-            columnIndices[key] = 3; // Thường start time là cột thứ 4
-            break;
-          case "endTime":
-            columnIndices[key] = 4; // Thường end time là cột thứ 5
-            break;
-        }
-        console.log(
-          `Đã điều chỉnh vị trí cột ${key} thành ${columnIndices[key]}`
-        );
-      }
-    });
-
-    // Phân tích dữ liệu worksheet
-    const range = XLSX.utils.decode_range(worksheet["!ref"]);
-    console.log("Phạm vi worksheet:", range);
-
-    // Duyệt qua các dòng và cập nhật end time cho các cuộc họp được kết thúc
-    for (let rowIndex = range.s.r + 1; rowIndex <= range.e.r; rowIndex++) {
-      try {
-        // Lấy giá trị từng cột
-        const dateCell =
-          worksheet[
-            XLSX.utils.encode_cell({
-              c: columnIndices.date,
-              r: rowIndex,
-            })
-          ];
-        const roomCell =
-          worksheet[
-            XLSX.utils.encode_cell({
-              c: columnIndices.room,
-              r: rowIndex,
-            })
-          ];
-        const endTimeCell =
-          worksheet[
-            XLSX.utils.encode_cell({
-              c: columnIndices.endTime,
-              r: rowIndex,
-            })
-          ];
-
-        // Kiểm tra và bỏ qua các dòng trống
-        if (!dateCell || !roomCell) continue;
-
-        // Chuyển đổi giá trị
-        const cellDate = formatDate(dateCell.v);
-        const cellRoom = formatRoomName(roomCell.v);
-
-        // Tìm cuộc họp tương ứng
-        const matchingMeeting = updatedData.find(
-          (meeting) =>
-            meeting.forceEndedByUser &&
-            meeting.date === cellDate &&
-            meeting.room.toLowerCase() === cellRoom.toLowerCase()
-        );
-
-        // Nếu tìm thấy cuộc họp, cập nhật end time
-        if (matchingMeeting) {
-          const endTimeCellRef = XLSX.utils.encode_cell({
-            c: columnIndices.endTime,
-            r: rowIndex,
-          });
-
-          // Cập nhật end time
-          worksheet[endTimeCellRef] = {
-            v: matchingMeeting.endTime,
-            t: "s",
-          };
-
-          console.log(
-            `Đã cập nhật end time cho cuộc họp: ${cellRoom} - ${cellDate}`
-          );
-        }
-      } catch (rowError) {
-        console.error(`Lỗi khi xử lý dòng ${rowIndex}:`, rowError);
-        alert("Lỗi khi xử lý");
+    // Tìm và cập nhật row tương ứng
+    for (let i = headerRowIndex + 1; i < jsonData.length; i++) {
+      const row = jsonData[i];
+      if (
+        row[2] === meetingData.room && // Cột phòng họp
+        row[0] === meetingData.date && // Cột ngày
+        row[3] === meetingData.startTime // Cột giờ bắt đầu
+      ) {
+        // Cập nhật giờ kết thúc
+        jsonData[i][endTimeColIndex] = meetingData.endTime;
+        break;
       }
     }
 
-    // Cập nhật phạm vi worksheet
-    worksheet["!ref"] = XLSX.utils.encode_range(range);
+    // Chuyển đổi lại thành worksheet
+    const newWorksheet = XLSX.utils.aoa_to_sheet(jsonData);
+    workbook.Sheets[workbook.SheetNames[0]] = newWorksheet;
 
-    // Chuyển worksheet về dạng buffer để ghi
-    const updatedWorkbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(updatedWorkbook, worksheet, sheetName);
-    const excelBuffer = XLSX.write(updatedWorkbook, {
-      type: "array",
-      bookType: "xlsx",
-    });
+    // Tạo file mới
+    const newBuffer = XLSX.write(workbook, { type: "array" });
+    const newFile = new File([newBuffer], file.name, { type: file.type });
 
     // Ghi file
-    await writable.write(excelBuffer);
+    const writable = await fileHandle.createWritable();
+    await writable.write(newFile);
     await writable.close();
 
-    console.log("Đã cập nhật file Excel thành công");
+    console.log("Đã cập nhật giờ kết thúc trong file Excel thành công");
+    return true;
   } catch (error) {
     console.error("Lỗi khi cập nhật file Excel:", error);
+    return false;
   }
 }
 
 async function handleEndMeeting(event) {
-  // Hiển thị hộp thoại xác nhận
-  const cachedData = JSON.parse(localStorage.getItem("fileCache"));
-  if (!cachedData || !cachedData.data) {
-    console.error("No meeting data found!");
-    return;
-  }
+  try {
+    if (!fileHandle) {
+      throw new Error("Không tìm thấy file handle");
+    }
 
-  const data = cachedData.data;
-  const currentTime = getCurrentTime();
-  const currentDate = getCurrentDate();
-  const roomName = event.target
-    .closest(".main-panel")
-    .querySelector("h1").textContent;
+    const cachedData = JSON.parse(localStorage.getItem("fileCache"));
+    if (!cachedData || !cachedData.data) {
+      throw new Error("Không tìm thấy dữ liệu cache");
+    }
 
-  // Tìm cuộc họp hiện tại
-  const roomMeetings = data.filter(
-    (meeting) =>
-      meeting.room.toLowerCase().includes(roomName.toLowerCase()) &&
-      meeting.date === currentDate
-  );
+    const data = cachedData.data;
+    const currentTime = getCurrentTime();
+    const currentDate = getCurrentDate();
+    const roomName = event.target
+      .closest(".main-panel")
+      .querySelector("h1").textContent;
 
-  const currentMeeting = roomMeetings.find((meeting) =>
-    isValidMeetingState(meeting, currentTime)
-  );
+    // Hiển thị loading
+    showProgressBar();
+    updateProgress(20, "Đang xử lý yêu cầu kết thúc cuộc họp...");
 
-  if (currentMeeting) {
-    const updatedData = [...data];
-    const currentMeetingIndex = updatedData.findIndex(
-      (meeting) => meeting.id === currentMeeting.id
+    // Tìm cuộc họp hiện tại
+    const currentMeeting = data.find(
+      (meeting) =>
+        meeting.room.toLowerCase().includes(roomName.toLowerCase()) &&
+        meeting.date === currentDate &&
+        isValidMeetingState(meeting, currentTime)
     );
 
-    if (currentMeetingIndex !== -1) {
-      // Cập nhật thông tin cuộc họp với flag đặc biệt
-      updatedData[currentMeetingIndex] = {
-        ...currentMeeting,
-        endTime: currentTime,
-        isEnded: true,
-        lastUpdated: new Date().getTime(),
-        originalEndTime: currentMeeting.endTime,
-        forceEndedByUser: true, // Thêm flag mới để đánh dấu cuộc họp đã được kết thúc bởi người dùng
-      };
-
-      // Cập nhật cache và localStorage
-      fileCache.data = updatedData;
-      fileCache.lastModified = new Date().getTime();
-
-      localStorage.setItem(
-        "fileCache",
-        JSON.stringify({
-          data: updatedData,
-          lastModified: fileCache.lastModified,
-        })
-      );
-
-      // Lọc lại các cuộc họp trong ngày
-      const todayMeetings = updatedData.filter((meeting) => {
-        const meetingDate = new Date(
-          meeting.date.split("/").reverse().join("-")
-        );
-        const currentDateObj = new Date(
-          currentDate.split("/").reverse().join("-")
-        );
-        return meetingDate.toDateString() === currentDateObj.toDateString();
-      });
-
-      // Cập nhật giao diện
-      updateRoomStatus(updatedData);
-      updateScheduleTable(todayMeetings);
-      renderRoomPage(updatedData, roomName.toLowerCase(), roomName);
-
-      console.log(`Meeting ended early:`, {
-        room: roomName,
-        originalEndTime: currentMeeting.endTime,
-        actualEndTime: currentTime,
-        isEnded: true,
-        forceEndedByUser: true,
-      });
-
-      // alert(
-      //   `Đã kết thúc cuộc họp tại phòng ${roomName} vào lúc ${currentTime}\n` +
-      //     `(Thời gian kết thúc dự kiến ban đầu: ${currentMeeting.endTime})`
-      // );
-      await updateExcelFile(updatedData);
+    if (!currentMeeting) {
+      throw new Error("Không tìm thấy cuộc họp đang diễn ra");
     }
+
+    // Cập nhật dữ liệu
+    const updatedData = data.map((meeting) => {
+      if (meeting.id === currentMeeting.id) {
+        return {
+          ...meeting,
+          endTime: currentTime,
+          isEnded: true,
+          lastUpdated: new Date().getTime(),
+          originalEndTime: meeting.endTime,
+          forceEndedByUser: true,
+        };
+      }
+      return meeting;
+    });
+
+    updateProgress(40, "Đang cập nhật file Excel...");
+
+    // Cập nhật Excel file
+    const file = await fileHandle.getFile();
+    const excelUpdated = await writeExcelFile(file, updatedData);
+
+    if (!excelUpdated) {
+      throw new Error("Không thể cập nhật file Excel");
+    }
+
+    updateProgress(60, "Đang cập nhật cache...");
+
+    // Cập nhật cache
+    fileCache.data = updatedData;
+    fileCache.lastModified = new Date().getTime();
+    localStorage.setItem(
+      "fileCache",
+      JSON.stringify({
+        data: updatedData,
+        lastModified: fileCache.lastModified,
+      })
+    );
+
+    updateProgress(80, "Đang cập nhật giao diện...");
+
+    // Cập nhật UI
+    const todayMeetings = updatedData.filter((meeting) => {
+      const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
+      const currentDateObj = new Date(
+        currentDate.split("/").reverse().join("-")
+      );
+      return meetingDate.toDateString() === currentDateObj.toDateString();
+    });
+
+    updateRoomStatus(updatedData);
+    updateScheduleTable(todayMeetings);
+    renderRoomPage(updatedData, roomName.toLowerCase(), roomName);
+
+    updateProgress(100, "Hoàn tất!");
+    setTimeout(hideProgressBar, 1000);
+
+    // Log thành công
+    console.log("Đã kết thúc và cập nhật thành công:", {
+      room: roomName,
+      originalEndTime: currentMeeting.endTime,
+      newEndTime: currentTime,
+      excelUpdated: true,
+    });
+
+    // Thông báo thành công
+    showSuccessToast(
+      `Đã kết thúc cuộc họp tại phòng ${roomName} vào lúc ${currentTime}`
+    );
+  } catch (error) {
+    console.error("Lỗi:", error);
+    hideProgressBar();
+    showErrorToast(`Lỗi: ${error.message}`);
   }
+}
+
+async function validateNewBooking(bookingData) {
+  try {
+    const file = await fileHandle.getFile();
+    const workbook = XLSX.read(await file.arrayBuffer(), { type: "array" });
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const existingBookings = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+    // Tìm header row
+    const headerRow = existingBookings.find((row) =>
+      row.some((cell) => String(cell).toLowerCase().includes("giờ kết thúc"))
+    );
+    const headerIndex = existingBookings.indexOf(headerRow);
+
+    // Lấy index các cột
+    const columns = {
+      date: headerRow.findIndex((cell) =>
+        String(cell).toLowerCase().includes("ngày")
+      ),
+      room: headerRow.findIndex((cell) =>
+        String(cell).toLowerCase().includes("phòng")
+      ),
+      startTime: headerRow.findIndex((cell) =>
+        String(cell).toLowerCase().includes("giờ bắt đầu")
+      ),
+      endTime: headerRow.findIndex((cell) =>
+        String(cell).toLowerCase().includes("giờ kết thúc")
+      ),
+    };
+
+    // Kiểm tra trùng lặp
+    for (let i = headerIndex + 1; i < existingBookings.length; i++) {
+      const booking = existingBookings[i];
+      if (!booking || booking.length === 0) continue;
+
+      if (
+        booking[columns.date] === bookingData.date &&
+        booking[columns.room] === bookingData.room
+      ) {
+        const existingStart = convertTimeToMinutes(booking[columns.startTime]);
+        const existingEnd = convertTimeToMinutes(booking[columns.endTime]);
+        const newStart = convertTimeToMinutes(bookingData.startTime);
+        const newEnd = convertTimeToMinutes(bookingData.endTime);
+
+        if (hasTimeOverlap(existingStart, existingEnd, newStart, newEnd)) {
+          return {
+            isValid: false,
+            message: `Phòng ${bookingData.room} đã được đặt từ ${
+              booking[columns.startTime]
+            } đến ${booking[columns.endTime]} vào ngày ${
+              booking[columns.date]
+            }`,
+          };
+        }
+      }
+    }
+
+    return { isValid: true };
+  } catch (error) {
+    console.error("Lỗi khi validate booking:", error);
+    return {
+      isValid: false,
+      message: "Không thể kiểm tra trùng lặp lịch họp. Vui lòng thử lại.",
+    };
+  }
+}
+
+// Helper function để chuyển đổi thời gian thành phút
+function convertTimeToMinutes(timeString) {
+  const [hours, minutes] = timeString.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+// Helper function để kiểm tra trùng lặp thời gian
+function hasTimeOverlap(start1, end1, start2, end2) {
+  return start1 < end2 && start2 < end1;
+}
+
+// Thêm các hàm helper để hiển thị thông báo
+function showSuccessToast(message) {
+  // Implement toast notification
+  console.log("Success:", message);
+}
+
+function showErrorToast(message) {
+  // Implement toast notification
+  console.error("Error:", message);
 }
 
 // Đảm bảo handlers được setup khi DOM ready
