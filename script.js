@@ -1853,6 +1853,7 @@ function isValidMeetingState(meeting, currentTime) {
 }
 
 function handleEndMeeting(event) {
+  // Hiển thị hộp thoại xác nhận
   const cachedData = JSON.parse(localStorage.getItem("fileCache"));
   if (!cachedData || !cachedData.data) {
     console.error("No meeting data found!");
@@ -1930,10 +1931,10 @@ function handleEndMeeting(event) {
         forceEndedByUser: true,
       });
 
-      alert(
-        `Đã kết thúc cuộc họp tại phòng ${roomName} vào lúc ${currentTime}\n` +
-          `(Thời gian kết thúc dự kiến ban đầu: ${currentMeeting.endTime})`
-      );
+      // alert(
+      //   `Đã kết thúc cuộc họp tại phòng ${roomName} vào lúc ${currentTime}\n` +
+      //     `(Thời gian kết thúc dự kiến ban đầu: ${currentMeeting.endTime})`
+      // );
     }
   }
 }
@@ -1947,6 +1948,15 @@ document.addEventListener("DOMContentLoaded", function () {
   dynamicContent.addEventListener("click", function (event) {
     if (event.target.classList.contains("end-meeting")) {
       handleEndMeeting(event);
+      const isConfirmed = confirm(
+        "Bạn có chắc chắn muốn kết thúc cuộc họp này không?"
+      );
+
+      // Nếu người dùng chọn "No", thoát khỏi hàm
+      if (!isConfirmed) {
+        console.log("Reject end meeting");
+        return;
+      }
     }
   });
 });
