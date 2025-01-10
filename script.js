@@ -1854,18 +1854,60 @@ function isValidMeetingState(meeting, currentTime) {
 
 //===============Processing data of excel file when user press end meeting button=============
 // Helper function để kiểm tra và cập nhật Excel file
+// Biến global để lưu trữ permission state
+let hasFilePermission = false;
+
+// Hàm kiểm tra và yêu cầu quyền truy cập file
+async function requestFilePermission(fileHandle) {
+  try {
+    // Kiểm tra xem đã có quyền chưa
+    const opts = {
+      mode: "readwrite",
+    };
+
+    // Yêu cầu quyền
+    const permission = await fileHandle.queryPermission(opts);
+
+    if (permission === "granted") {
+      hasFilePermission = true;
+      return true;
+    }
+
+    // Nếu chưa có quyền, yêu cầu quyền mới
+    const newPermission = await fileHandle.requestPermission(opts);
+    hasFilePermission = newPermission === "granted";
+    return hasFilePermission;
+  } catch (error) {
+    console.error("Lỗi khi yêu cầu quyền:", error);
+    return false;
+  }
+}
+
 async function writeExcelFile(file, updatedData) {
   try {
+    if (!fileHandle) {
+      throw new Error("Không tìm thấy file handle");
+    }
+
+    // Kiểm tra và yêu cầu quyền
+    const hasPermission = await requestFilePermission(fileHandle);
+    if (!hasPermission) {
+      throw new Error("Không có quyền truy cập file");
+    }
+
     const workbook = XLSX.read(await file.arrayBuffer(), { type: "array" });
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-    // Convert worksheet to JSON để dễ xử lý
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
     // Tìm header row và các cột cần thiết
     const headerRow = jsonData.find((row) =>
       row.some((cell) => String(cell).toLowerCase().includes("giờ kết thúc"))
     );
+    if (!headerRow) {
+      throw new Error("Không tìm thấy cột giờ kết thúc trong file Excel");
+    }
+
     const headerIndex = jsonData.indexOf(headerRow);
 
     const columns = {
@@ -1883,7 +1925,13 @@ async function writeExcelFile(file, updatedData) {
       ),
     };
 
-    // Cập nhật dữ liệu trong Excel
+    // Kiểm tra tất cả các cột cần thiết
+    if (Object.values(columns).some((index) => index === -1)) {
+      throw new Error("Không tìm thấy đủ các cột cần thiết trong file Excel");
+    }
+
+    // Cập nhật dữ liệu
+    let updated = false;
     for (let i = headerIndex + 1; i < jsonData.length; i++) {
       const row = jsonData[i];
       if (!row || row.length === 0) continue;
@@ -1897,25 +1945,51 @@ async function writeExcelFile(file, updatedData) {
 
       if (matchingMeeting && matchingMeeting.isEnded) {
         jsonData[i][columns.endTime] = matchingMeeting.endTime;
+        updated = true;
       }
     }
 
-    // Chuyển đổi lại thành worksheet
+    if (!updated) {
+      console.warn("Không tìm thấy cuộc họp cần cập nhật trong Excel");
+    }
+
+    // Cập nhật worksheet
     const newWorksheet = XLSX.utils.aoa_to_sheet(jsonData);
     workbook.Sheets[workbook.SheetNames[0]] = newWorksheet;
 
-    // Tạo file mới và ghi
+    // Tạo file mới
     const newBuffer = XLSX.write(workbook, { type: "array" });
     const newFile = new File([newBuffer], file.name, { type: file.type });
 
-    const writable = await fileHandle.createWritable();
-    await writable.write(newFile);
-    await writable.close();
+    try {
+      // Tạo writable stream với timeout
+      const writable = await Promise.race([
+        fileHandle.createWritable(),
+        new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error("Timeout khi tạo writable stream")),
+            5000
+          )
+        ),
+      ]);
 
-    return true;
+      // Ghi file với timeout
+      await Promise.race([
+        writable.write(newFile),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Timeout khi ghi file")), 10000)
+        ),
+      ]);
+
+      await writable.close();
+      return true;
+    } catch (writeError) {
+      console.error("Lỗi khi ghi file:", writeError);
+      throw new Error("Không thể ghi file Excel: " + writeError.message);
+    }
   } catch (error) {
     console.error("Lỗi khi cập nhật Excel:", error);
-    return false;
+    throw error;
   }
 }
 
@@ -1973,10 +2047,50 @@ async function updateExcelEndTime(fileHandle, meetingData) {
   }
 }
 
+// Thêm hàm hiển thị modal yêu cầu quyền
+function showPermissionModal(title, message, retryCallback) {
+  const modal = document.createElement("div");
+  modal.className = "permission-modal";
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h2>${title}</h2>
+      <p>${message}</p>
+      <div class="modal-buttons">
+        <button class="retry-btn">Thử lại</button>
+        <button class="cancel-btn">Hủy</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector(".retry-btn").onclick = async () => {
+    try {
+      await retryCallback();
+      modal.remove();
+    } catch (error) {
+      showErrorToast(error.message);
+    }
+  };
+
+  modal.querySelector(".cancel-btn").onclick = () => {
+    modal.remove();
+  };
+}
+
 async function handleEndMeeting(event) {
   try {
     if (!fileHandle) {
       throw new Error("Không tìm thấy file handle");
+    }
+
+    showProgressBar();
+    updateProgress(10, "Đang kiểm tra quyền truy cập file...");
+
+    // Kiểm tra quyền trước khi thực hiện
+    const hasPermission = await requestFilePermission(fileHandle);
+    if (!hasPermission) {
+      throw new Error("Vui lòng cấp quyền truy cập file để cập nhật lịch họp");
     }
 
     const cachedData = JSON.parse(localStorage.getItem("fileCache"));
@@ -2025,13 +2139,29 @@ async function handleEndMeeting(event) {
     updateProgress(40, "Đang cập nhật file Excel...");
 
     // Cập nhật Excel file
-    const file = await fileHandle.getFile();
-    const excelUpdated = await writeExcelFile(file, updatedData);
-
-    if (!excelUpdated) {
-      throw new Error("Không thể cập nhật file Excel");
+    try {
+      const file = await fileHandle.getFile();
+      await writeExcelFile(file, updatedData);
+    } catch (excelError) {
+      console.error("Lỗi khi cập nhật Excel:", excelError);
+      // Hiển thị modal yêu cầu quyền truy cập
+      showPermissionModal(
+        "Cần quyền truy cập",
+        "Vui lòng cấp quyền truy cập file để cập nhật lịch họp. " +
+          'Nhấn "Thử lại" để yêu cầu quyền.',
+        async () => {
+          const newPermission = await requestFilePermission(fileHandle);
+          if (newPermission) {
+            // Thử cập nhật lại
+            const file = await fileHandle.getFile();
+            await writeExcelFile(file, updatedData);
+          } else {
+            throw new Error("Không được cấp quyền truy cập file");
+          }
+        }
+      );
+      return;
     }
-
     updateProgress(60, "Đang cập nhật cache...");
 
     // Cập nhật cache
