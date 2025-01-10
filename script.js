@@ -1854,23 +1854,88 @@ function isValidMeetingState(meeting, currentTime) {
 
 // Hàm để cập nhật file Excel
 async function updateExcelFile(meetingData) {
-  try {
-    // Attempt primary update
-    await primaryUpdateAttempt(meetingData);
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "InvalidStateError") {
-      try {
-        // Refresh file handle and retry
-        await refreshFileHandle();
-        await primaryUpdateAttempt(meetingData);
-      } catch (retryError) {
-        // Log detailed error for debugging
-        console.error("Persistent Excel update failure:", retryError);
-        throw retryError;
-      }
-    } else {
-      throw error;
+  // Kiểm tra các điều kiện quan trọng
+  if (!meetingData || meetingData.length === 0) {
+    console.error("Không có dữ liệu cuộc họp để cập nhật");
+    return false;
+  }
+
+  if (!fileHandle) {
+    try {
+      // Nếu không có file handle, yêu cầu người dùng chọn file
+      fileHandle = await window.showOpenFilePicker({
+        multiple: false,
+        types: [
+          {
+            description: "Excel Files",
+            accept: {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                [".xlsx"],
+            },
+          },
+        ],
+      })[0];
+    } catch (error) {
+      console.error("Không thể lấy file handle:", error);
+      alert("Vui lòng chọn file Excel để đồng bộ");
+      return false;
     }
+  }
+
+  try {
+    // Thêm log chi tiết để debugging
+    console.log("Dữ liệu cuộc họp để cập nhật:", meetingData);
+
+    // Tạo workbook và worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(meetingData);
+
+    // Thêm tiêu đề cột rõ ràng
+    const headers = [
+      "STT",
+      "Ngày",
+      "Thứ",
+      "Phòng",
+      "Giờ bắt đầu",
+      "Giờ kết thúc",
+      "Thời gian sử dụng",
+      "Mục đích",
+      "Nội dung",
+    ];
+    XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: "A1" });
+
+    // Thêm worksheet vào workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Meetings");
+
+    // Ghi file
+    const excelBuffer = XLSX.write(workbook, {
+      type: "array",
+      bookType: "xlsx",
+    });
+
+    // Ghi file với writable stream
+    const writable = await fileHandle.createWritable();
+    await writable.write(excelBuffer);
+    await writable.close();
+
+    console.log("Đã cập nhật file Excel thành công");
+    return true;
+  } catch (error) {
+    console.error("Chi tiết lỗi khi cập nhật Excel:", error);
+    alert(`Lỗi đồng bộ: ${error.message}`);
+    return false;
+  }
+}
+async function checkFilePermissions() {
+  try {
+    // Kiểm tra và yêu cầu quyền nếu cần
+    const permission = await fileHandle.queryPermission({ mode: "readwrite" });
+    if (permission !== "granted") {
+      await fileHandle.requestPermission({ mode: "readwrite" });
+    }
+  } catch (error) {
+    console.error("Lỗi quyền truy cập file:", error);
+    alert("Không có quyền ghi file. Vui lòng thử lại.");
   }
 }
 
@@ -1949,8 +2014,12 @@ async function handleEndMeeting(event) {
       };
 
       try {
+        // Kiểm tra và xin quyền
+        await checkFilePermissions();
+
         // Cập nhật file Excel
-        await updateExcelFile(updatedData);
+        // Gọi update Excel với log chi tiết
+        const updateResult = await updateExcelFile(updatedData);
 
         // Cập nhật cache và localStorage
         fileCache.data = updatedData;
@@ -1978,6 +2047,9 @@ async function handleEndMeeting(event) {
         updateRoomStatus(updatedData);
         updateScheduleTable(todayMeetings);
         renderRoomPage(updatedData, roomName.toLowerCase(), roomName);
+        if (!updateResult) {
+          throw new Error("Không thể cập nhật file Excel");
+        }
       } catch (error) {
         console.error("Lỗi khi cập nhật:", error);
         alert("Không thể cập nhật file Excel. Vui lòng thử lại.");
