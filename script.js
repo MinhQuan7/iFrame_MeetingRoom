@@ -1301,7 +1301,7 @@ let fileCache = {
 };
 // Hàm kiểm tra thay đổi từ input element
 async function checkFileChanges() {
-  if (!fileHandle) return;
+  if (!fileHandle || isUpdatingExcel) return;
 
   try {
     const file = await fileHandle.getFile();
@@ -1854,6 +1854,44 @@ function isValidMeetingState(meeting, currentTime) {
 
 //===============Processing data of excel file when user press end meeting button=============
 // Helper function để kiểm tra và cập nhật Excel file
+// Thêm hàm kiểm tra links trong Excel
+async function checkExcelLinks(fileHandle) {
+  try {
+    const file = await fileHandle.getFile();
+    const workbook = XLSX.read(await file.arrayBuffer(), { type: "array" });
+
+    // Kiểm tra và log ra các external references
+    if (workbook.Workbook && workbook.Workbook.ExternalLinks) {
+      console.log("External links found:", workbook.Workbook.ExternalLinks);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra links:", error);
+    return false;
+  }
+}
+// Thêm kiểm tra trước khi cập nhật Excel
+async function prepareExcelUpdate(fileHandle) {
+  const hasLinks = await checkExcelLinks(fileHandle);
+  if (hasLinks) {
+    showWarningToast("File Excel có chứa external links. Vui lòng kiểm tra và cập nhật links trước khi tiếp tục.");
+    return false;
+  }
+  return true;
+}
+
+async function checkFileWritable(fileHandle) {
+  try {
+    const writable = await fileHandle.createWritable();
+    await writable.close();
+    return true;
+  } catch (error) {
+    console.error("File không thể ghi:", error);
+    return false;
+  }
+}
+
 // Biến global để lưu trữ permission state
 let hasFilePermission = false;
 
@@ -1904,156 +1942,108 @@ async function retryOperation(operation, maxAttempts = 3, delay = 1000) {
 }
 
 // Enhanced Excel update handler with better error detection and logging
-async function writeExcelFile(file, updatedData) {
-  return retryOperation(async () => {
-    try {
-      // Get latest file state
-      const latestFile = await fileHandle.getFile();
-      const workbook = XLSX.read(await latestFile.arrayBuffer(), {
-        type: "array",
-      });
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+async function writeExcelFile(fileHandle, updatedData) {
+  try {
+    // Kiểm tra file có thể ghi
+    if (!(await checkFileWritable(fileHandle))) {
+      throw new Error("File đang bị khóa hoặc không có quyền ghi");
+    }
 
-      // Add detailed logging for debugging
-      console.log("Processing update for meetings:", updatedData);
+    // Đọc file hiện tại
+    const file = await fileHandle.getFile();
+    const fileContent = await file.arrayBuffer();
+    const workbook = XLSX.read(fileContent, { type: "array" });
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-      // Find header row with additional validation
-      const headerRowIndex = jsonData.findIndex(
-        (row) =>
-          row &&
-          Array.isArray(row) &&
-          row.some((cell) =>
-            String(cell || "")
-              .toLowerCase()
-              .includes("giờ kết thúc")
-          )
-      );
+    // Convert to JSON để dễ xử lý
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      if (headerRowIndex === -1) {
-        throw new Error("Header row not found in Excel file");
-      }
-
-      const headerRow = jsonData[headerRowIndex];
-      console.log("Found header row at index:", headerRowIndex);
-
-      // Enhanced column detection with validation
-      const columns = {
-        date: headerRow.findIndex((cell) =>
-          String(cell || "")
-            .toLowerCase()
-            .includes("ngày")
-        ),
-        room: headerRow.findIndex((cell) =>
-          String(cell || "")
-            .toLowerCase()
-            .includes("phòng")
-        ),
-        startTime: headerRow.findIndex((cell) =>
-          String(cell || "")
-            .toLowerCase()
-            .includes("giờ bắt đầu")
-        ),
-        endTime: headerRow.findIndex((cell) =>
+    // Tìm vị trí các cột
+    const headerRowIndex = jsonData.findIndex(
+      (row) =>
+        row &&
+        row.some((cell) =>
           String(cell || "")
             .toLowerCase()
             .includes("giờ kết thúc")
-        ),
-      };
+        )
+    );
 
-      // Validate all required columns are found
-      const missingColumns = Object.entries(columns)
-        .filter(([_, index]) => index === -1)
-        .map(([name]) => name);
+    if (headerRowIndex === -1) {
+      throw new Error("Không tìm thấy header trong file Excel");
+    }
 
-      if (missingColumns.length > 0) {
-        throw new Error(
-          `Missing required columns: ${missingColumns.join(", ")}`
-        );
-      }
+    const headerRow = jsonData[headerRowIndex];
+    const columns = {
+      date: headerRow.findIndex((cell) =>
+        String(cell || "")
+          .toLowerCase()
+          .includes("ngày")
+      ),
+      room: headerRow.findIndex((cell) =>
+        String(cell || "")
+          .toLowerCase()
+          .includes("phòng")
+      ),
+      startTime: headerRow.findIndex((cell) =>
+        String(cell || "")
+          .toLowerCase()
+          .includes("giờ bắt đầu")
+      ),
+      endTime: headerRow.findIndex((cell) =>
+        String(cell || "")
+          .toLowerCase()
+          .includes("giờ kết thúc")
+      ),
+    };
 
-      console.log("Column mapping:", columns);
-
-      let updated = false;
-      let updateAttempts = 0;
-
-      // Enhanced data update with validation
-      for (let i = headerRowIndex + 1; i < jsonData.length; i++) {
-        const row = jsonData[i];
-        if (!row || row.length === 0) continue;
-
-        updateAttempts++;
-
-        const matchingMeeting = updatedData.find((meeting) => {
-          const dateMatch = meeting.date === row[columns.date];
-          const roomMatch = meeting.room === row[columns.room];
-          const timeMatch = meeting.startTime === row[columns.startTime];
-
-          console.log(`Row ${i} comparison:`, {
-            dateMatch,
-            roomMatch,
-            timeMatch,
-            rowData: {
-              date: row[columns.date],
-              room: row[columns.room],
-              startTime: row[columns.startTime],
-            },
-            meetingData: {
-              date: meeting.date,
-              room: meeting.room,
-              startTime: meeting.startTime,
-            },
-          });
-
-          return dateMatch && roomMatch && timeMatch;
-        });
-
-        if (matchingMeeting && matchingMeeting.isEnded) {
-          console.log("Updating meeting at row:", i, matchingMeeting);
-          jsonData[i][columns.endTime] = matchingMeeting.endTime;
-          updated = true;
+    // Cập nhật dữ liệu
+    let updated = false;
+    for (const meeting of updatedData) {
+      if (meeting.isEnded && meeting.forceEndedByUser) {
+        for (let i = headerRowIndex + 1; i < jsonData.length; i++) {
+          const row = jsonData[i];
+          if (
+            row[columns.date] === meeting.date &&
+            row[columns.room] === meeting.room &&
+            row[columns.startTime] === meeting.startTime
+          ) {
+            jsonData[i][columns.endTime] = meeting.endTime;
+            updated = true;
+            console.log("Đã cập nhật cuộc họp:", meeting);
+            break;
+          }
         }
       }
-
-      console.log(
-        `Update attempts: ${updateAttempts}, Successfully updated: ${updated}`
-      );
-
-      if (!updated) {
-        console.warn("No matching meetings found for update");
-        return false;
-      }
-
-      // Create new worksheet and write file
-      const newWorksheet = XLSX.utils.aoa_to_sheet(jsonData);
-      workbook.Sheets[workbook.SheetNames[0]] = newWorksheet;
-
-      // Write with additional error handling
-      const newBuffer = XLSX.write(workbook, { type: "array" });
-      const newFile = new File([newBuffer], latestFile.name, {
-        type: latestFile.type,
-      });
-
-      // Verify permissions
-      const permission = await fileHandle.queryPermission({
-        mode: "readwrite",
-      });
-      if (permission !== "granted") {
-        throw new Error("Write permission not granted");
-      }
-
-      const writable = await fileHandle.createWritable();
-      await writable.write(newFile);
-      await writable.close();
-
-      console.log("Excel update completed successfully");
-      return true;
-    } catch (error) {
-      console.error("Excel update error:", error);
-      throw error;
     }
-  });
+
+    if (!updated) {
+      console.warn("Không tìm thấy cuộc họp cần cập nhật");
+      return false;
+    }
+
+    // Ghi file
+    const newWorksheet = XLSX.utils.aoa_to_sheet(jsonData);
+    workbook.Sheets[workbook.SheetNames[0]] = newWorksheet;
+
+    const newBuffer = XLSX.write(workbook, { type: "array" });
+    const newFile = new File([newBuffer], file.name, { type: file.type });
+
+    const writable = await fileHandle.createWritable();
+    await writable.write(newFile);
+    await writable.close();
+
+    // Cập nhật lastFileData để tránh trigger checkFileChanges
+    lastFileData = await newFile.text();
+
+    console.log("Cập nhật Excel thành công");
+    return true;
+  } catch (error) {
+    console.error("Lỗi khi cập nhật Excel:", error);
+    throw error;
+  }
 }
+
 
 async function updateExcelEndTime(fileHandle, meetingData) {
   try {
@@ -2142,6 +2132,8 @@ function showPermissionModal(title, message, retryCallback) {
 
 async function handleEndMeeting(event) {
   try {
+    isUpdatingExcel = true; // Thêm flag để đánh dấu đang update Excel
+
     if (!fileHandle) {
       throw new Error("Không tìm thấy file handle");
     }
@@ -2168,7 +2160,6 @@ async function handleEndMeeting(event) {
 
     updateProgress(20, "Đang xử lý yêu cầu kết thúc cuộc họp...");
 
-    // Tìm cuộc họp hiện tại với điều kiện chính xác hơn
     const currentMeeting = data.find((meeting) => {
       const isCorrectRoom = meeting.room
         .toLowerCase()
@@ -2229,12 +2220,10 @@ async function handleEndMeeting(event) {
           }
         );
       }
-      // Tiếp tục thực hiện các bước còn lại ngay cả khi không cập nhật được Excel
     }
 
     updateProgress(60, "Đang cập nhật cache...");
 
-    // Cập nhật cache và UI như bình thường
     fileCache.data = updatedData;
     fileCache.lastModified = new Date().getTime();
     localStorage.setItem(
@@ -2269,6 +2258,8 @@ async function handleEndMeeting(event) {
     console.error("Lỗi:", error);
     hideProgressBar();
     showErrorToast(`Lỗi: ${error.message}`);
+  } finally {
+    isUpdatingExcel = false; // Đảm bảo reset flag kể cả khi có lỗi
   }
 }
 
