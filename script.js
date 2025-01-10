@@ -1975,11 +1975,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Hàm cập nhật nhiệt độ
-// function updateTemperature(tempDisplay) {
-//   tempDisplay.textContent = `${acState.temperature}°C`;
-// }
-
+//=================Air Conditioner ===
 let actionOn = null,
   actionOff = null,
   statusAirConditioner = null;
@@ -2046,7 +2042,5 @@ function startTemperatureUpdates() {
         }
       });
     }
-  }, 1000);
+  }, 100);
 }
-// Gọi hàm này sau khi trang đã load
-// window.addEventListener("load", startTemperatureUpdates);
