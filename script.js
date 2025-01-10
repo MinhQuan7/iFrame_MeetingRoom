@@ -1903,34 +1903,41 @@ async function retryOperation(operation, maxAttempts = 3, delay = 1000) {
   throw lastError;
 }
 
+// Enhanced Excel update handler with better error detection and logging
 async function writeExcelFile(file, updatedData) {
   return retryOperation(async () => {
     try {
-      // Lấy file mới nhất mỗi lần thử
+      // Get latest file state
       const latestFile = await fileHandle.getFile();
       const workbook = XLSX.read(await latestFile.arrayBuffer(), {
         type: "array",
       });
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      // Tìm header row
-      const headerRowIndex = jsonData.findIndex((row) =>
-        row.some((cell) =>
-          String(cell || "")
-            .toLowerCase()
-            .includes("giờ kết thúc")
-        )
+      // Add detailed logging for debugging
+      console.log("Processing update for meetings:", updatedData);
+
+      // Find header row with additional validation
+      const headerRowIndex = jsonData.findIndex(
+        (row) =>
+          row &&
+          Array.isArray(row) &&
+          row.some((cell) =>
+            String(cell || "")
+              .toLowerCase()
+              .includes("giờ kết thúc")
+          )
       );
 
       if (headerRowIndex === -1) {
-        throw new Error("Không tìm thấy header row trong file Excel");
+        throw new Error("Header row not found in Excel file");
       }
 
       const headerRow = jsonData[headerRowIndex];
+      console.log("Found header row at index:", headerRowIndex);
 
-      // Xác định vị trí các cột
+      // Enhanced column detection with validation
       const columns = {
         date: headerRow.findIndex((cell) =>
           String(cell || "")
@@ -1954,65 +1961,95 @@ async function writeExcelFile(file, updatedData) {
         ),
       };
 
-      let updated = false;
+      // Validate all required columns are found
+      const missingColumns = Object.entries(columns)
+        .filter(([_, index]) => index === -1)
+        .map(([name]) => name);
 
-      // Cập nhật dữ liệu
+      if (missingColumns.length > 0) {
+        throw new Error(
+          `Missing required columns: ${missingColumns.join(", ")}`
+        );
+      }
+
+      console.log("Column mapping:", columns);
+
+      let updated = false;
+      let updateAttempts = 0;
+
+      // Enhanced data update with validation
       for (let i = headerRowIndex + 1; i < jsonData.length; i++) {
         const row = jsonData[i];
         if (!row || row.length === 0) continue;
 
-        const matchingMeeting = updatedData.find(
-          (meeting) =>
-            meeting.date === row[columns.date] &&
-            meeting.room === row[columns.room] &&
-            meeting.startTime === row[columns.startTime]
-        );
+        updateAttempts++;
 
-        if (matchingMeeting && matchingMeeting.isEnded) {
-          console.log("Cập nhật cuộc họp:", {
-            date: row[columns.date],
-            room: row[columns.room],
-            startTime: row[columns.startTime],
-            newEndTime: matchingMeeting.endTime,
+        const matchingMeeting = updatedData.find((meeting) => {
+          const dateMatch = meeting.date === row[columns.date];
+          const roomMatch = meeting.room === row[columns.room];
+          const timeMatch = meeting.startTime === row[columns.startTime];
+
+          console.log(`Row ${i} comparison:`, {
+            dateMatch,
+            roomMatch,
+            timeMatch,
+            rowData: {
+              date: row[columns.date],
+              room: row[columns.room],
+              startTime: row[columns.startTime],
+            },
+            meetingData: {
+              date: meeting.date,
+              room: meeting.room,
+              startTime: meeting.startTime,
+            },
           });
 
+          return dateMatch && roomMatch && timeMatch;
+        });
+
+        if (matchingMeeting && matchingMeeting.isEnded) {
+          console.log("Updating meeting at row:", i, matchingMeeting);
           jsonData[i][columns.endTime] = matchingMeeting.endTime;
           updated = true;
         }
       }
 
+      console.log(
+        `Update attempts: ${updateAttempts}, Successfully updated: ${updated}`
+      );
+
       if (!updated) {
-        console.warn("Không tìm thấy cuộc họp cần cập nhật trong Excel");
+        console.warn("No matching meetings found for update");
         return false;
       }
 
-      // Tạo worksheet mới
+      // Create new worksheet and write file
       const newWorksheet = XLSX.utils.aoa_to_sheet(jsonData);
       workbook.Sheets[workbook.SheetNames[0]] = newWorksheet;
 
-      // Tạo file mới
+      // Write with additional error handling
       const newBuffer = XLSX.write(workbook, { type: "array" });
       const newFile = new File([newBuffer], latestFile.name, {
         type: latestFile.type,
       });
 
-      // Verify permissions trước khi ghi
+      // Verify permissions
       const permission = await fileHandle.queryPermission({
         mode: "readwrite",
       });
       if (permission !== "granted") {
-        throw new Error("Không có quyền ghi file");
+        throw new Error("Write permission not granted");
       }
 
-      // Ghi file với writable stream mới
       const writable = await fileHandle.createWritable();
       await writable.write(newFile);
       await writable.close();
 
-      console.log("Cập nhật Excel thành công");
+      console.log("Excel update completed successfully");
       return true;
     } catch (error) {
-      console.error("Lỗi trong quá trình cập nhật Excel:", error);
+      console.error("Excel update error:", error);
       throw error;
     }
   });
