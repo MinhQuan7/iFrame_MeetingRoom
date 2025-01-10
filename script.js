@@ -1872,50 +1872,132 @@ async function updateExcelFile(updatedData) {
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
 
-    // Tìm vị trí cột end time
+    // Log toàn bộ header để debug
     const headers = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
-    const endTimeColumnIndex = headers.findIndex(
-      (header) =>
-        String(header).toLowerCase().includes("end") ||
-        String(header).toLowerCase().includes("kết thúc")
-    );
+    console.log("Toàn bộ headers:", headers);
 
-    if (endTimeColumnIndex === -1) {
-      console.error("Không tìm thấy cột kết thúc");
-      return;
-    }
+    // Tìm vị trí các cột quan trọng
+    const columnIndices = {
+      date: headers.findIndex(
+        (header) =>
+          String(header).toLowerCase().includes("date") ||
+          String(header).toLowerCase().includes("ngày")
+      ),
+      room: headers.findIndex(
+        (header) =>
+          String(header).toLowerCase().includes("room") ||
+          String(header).toLowerCase().includes("phòng")
+      ),
+      startTime: headers.findIndex(
+        (header) =>
+          String(header).toLowerCase().includes("start") ||
+          String(header).toLowerCase().includes("bắt đầu")
+      ),
+      endTime: headers.findIndex(
+        (header) =>
+          String(header).toLowerCase().includes("end") ||
+          String(header).toLowerCase().includes("kết thúc")
+      ),
+    };
 
-    // Duyệt qua các dòng và cập nhật end time cho các cuộc họp được kết thúc
-    updatedData.forEach((meeting) => {
-      if (meeting.forceEndedByUser) {
-        // Tìm dòng tương ứng trong sheet
-        for (
-          let rowIndex = 1;
-          rowIndex < worksheet["!ref"].split(":")[1].substring(1);
-          rowIndex++
-        ) {
-          const cellRef = XLSX.utils.encode_cell({
-            c: endTimeColumnIndex,
-            r: rowIndex,
-          });
-          const currentRowDate = XLSX.utils.encode_cell({ c: 0, r: rowIndex });
-          const currentRowRoom = XLSX.utils.encode_cell({ c: 2, r: rowIndex });
+    console.log("Các vị trí cột:", columnIndices);
 
-          // So sánh ngày và phòng để tìm đúng cuộc họp
-          if (
-            worksheet[currentRowDate] &&
-            worksheet[currentRowRoom] &&
-            worksheet[currentRowDate].v === meeting.date &&
-            worksheet[currentRowRoom].v.toLowerCase() ===
-              meeting.room.toLowerCase()
-          ) {
-            // Cập nhật end time
-            worksheet[cellRef] = { v: meeting.endTime, t: "s" };
+    // Kiểm tra và điều chỉnh nếu không tìm thấy
+    Object.keys(columnIndices).forEach((key) => {
+      if (columnIndices[key] === -1) {
+        console.warn(`Không tìm thấy cột ${key}`);
+
+        // Thử các fallback
+        switch (key) {
+          case "date":
+            columnIndices[key] = 0; // Thường date là cột đầu tiên
             break;
-          }
+          case "room":
+            columnIndices[key] = 2; // Thường room là cột thứ 3
+            break;
+          case "startTime":
+            columnIndices[key] = 3; // Thường start time là cột thứ 4
+            break;
+          case "endTime":
+            columnIndices[key] = 4; // Thường end time là cột thứ 5
+            break;
         }
+        console.log(
+          `Đã điều chỉnh vị trí cột ${key} thành ${columnIndices[key]}`
+        );
       }
     });
+
+    // Phân tích dữ liệu worksheet
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+    console.log("Phạm vi worksheet:", range);
+
+    // Duyệt qua các dòng và cập nhật end time cho các cuộc họp được kết thúc
+    for (let rowIndex = range.s.r + 1; rowIndex <= range.e.r; rowIndex++) {
+      try {
+        // Lấy giá trị từng cột
+        const dateCell =
+          worksheet[
+            XLSX.utils.encode_cell({
+              c: columnIndices.date,
+              r: rowIndex,
+            })
+          ];
+        const roomCell =
+          worksheet[
+            XLSX.utils.encode_cell({
+              c: columnIndices.room,
+              r: rowIndex,
+            })
+          ];
+        const endTimeCell =
+          worksheet[
+            XLSX.utils.encode_cell({
+              c: columnIndices.endTime,
+              r: rowIndex,
+            })
+          ];
+
+        // Kiểm tra và bỏ qua các dòng trống
+        if (!dateCell || !roomCell) continue;
+
+        // Chuyển đổi giá trị
+        const cellDate = formatDate(dateCell.v);
+        const cellRoom = formatRoomName(roomCell.v);
+
+        // Tìm cuộc họp tương ứng
+        const matchingMeeting = updatedData.find(
+          (meeting) =>
+            meeting.forceEndedByUser &&
+            meeting.date === cellDate &&
+            meeting.room.toLowerCase() === cellRoom.toLowerCase()
+        );
+
+        // Nếu tìm thấy cuộc họp, cập nhật end time
+        if (matchingMeeting) {
+          const endTimeCellRef = XLSX.utils.encode_cell({
+            c: columnIndices.endTime,
+            r: rowIndex,
+          });
+
+          // Cập nhật end time
+          worksheet[endTimeCellRef] = {
+            v: matchingMeeting.endTime,
+            t: "s",
+          };
+
+          console.log(
+            `Đã cập nhật end time cho cuộc họp: ${cellRoom} - ${cellDate}`
+          );
+        }
+      } catch (rowError) {
+        console.error(`Lỗi khi xử lý dòng ${rowIndex}:`, rowError);
+        alert("Lỗi khi xử lý");
+      }
+    }
+
+    // Cập nhật phạm vi worksheet
+    worksheet["!ref"] = XLSX.utils.encode_range(range);
 
     // Chuyển worksheet về dạng buffer để ghi
     const updatedWorkbook = XLSX.utils.book_new();
@@ -1930,10 +2012,8 @@ async function updateExcelFile(updatedData) {
     await writable.close();
 
     console.log("Đã cập nhật file Excel thành công");
-    alert("Đã cập nhật file Excel thành công");
   } catch (error) {
     console.error("Lỗi khi cập nhật file Excel:", error);
-    alert("Lỗi khi cập nhật file Excel:", error);
   }
 }
 
