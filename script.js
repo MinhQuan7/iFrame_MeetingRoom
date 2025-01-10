@@ -1672,7 +1672,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
                         </svg>
                     </button>
 
-                    <span class="temperature-air" id ="temperature-airConditioner">20°C</span>
+                   <span class="temperature-air" data-room="room${roomNumber}">${currentACTemperature}°C</span>
 
                     <!-- Up Button -->
                     <button class="btn-up">
@@ -1969,10 +1969,10 @@ const acStates = {
 };
 // Function to determine which AC state to use based on room
 function getAcStateForRoom(roomKeyword) {
-  if (roomKeyword.includes('1')) return 'room1';
-  if (roomKeyword.includes('2')) return 'room2';
-  if (roomKeyword.includes('3')) return 'room3';
-  return 'room1'; // Default fallback
+  if (roomKeyword.includes("1")) return "room1";
+  if (roomKeyword.includes("2")) return "room2";
+  if (roomKeyword.includes("3")) return "room3";
+  return "room1"; // Default fallback
 }
 // Thêm CSS cho styling
 const style = document.createElement("style");
@@ -2112,14 +2112,20 @@ function modifyRenderRoomPage(data, roomKeyword, roomName) {
       }
 
       if (e.target.closest(".controls .btn:nth-child(3)")) {
-        if (acStates[roomKey].isOn && acStates[roomKey].temperature > acStates[roomKey].minTemp) {
+        if (
+          acStates[roomKey].isOn &&
+          acStates[roomKey].temperature > acStates[roomKey].minTemp
+        ) {
           acStates[roomKey].temperature--;
           updateTemperature(temperatureDisplay, roomKey);
         }
       }
 
       if (e.target.closest(".btn-up")) {
-        if (acStates[roomKey].isOn && acStates[roomKey].temperature < acStates[roomKey].maxTemp) {
+        if (
+          acStates[roomKey].isOn &&
+          acStates[roomKey].temperature < acStates[roomKey].maxTemp
+        ) {
           acStates[roomKey].temperature++;
           updateTemperature(temperatureDisplay, roomKey);
         }
@@ -2129,4 +2135,3 @@ function modifyRenderRoomPage(data, roomKeyword, roomName) {
 
   return originalHtml;
 }
-
