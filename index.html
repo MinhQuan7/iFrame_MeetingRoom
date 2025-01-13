@@ -2,7 +2,6 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
@@ -318,74 +317,156 @@
 <script src="script.js"></script>
 <script>
   const eraWidget = new EraWidget();
+  // Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
+  const temp = document.getElementById("temperature-eRa");
+  const humi = document.getElementById("humidity-eRa");
+  const currentIndex = document.getElementById("current-eRa");
+  const powerIndex = document.getElementById("power-eRa");
 
-  // Elements for all rooms
-  const airConditioner1 = document.getElementById("temperature-airConditioner");
-  const airConditioner2 = document.getElementById("temperature-airConditioner2");
-  const airConditioner3 = document.getElementById("temperature-airConditioner3");
+  const temp2 = document.getElementById("temperature-eRa2");
+  const humi2 = document.getElementById("humidity-eRa2");
+  const currentIndex2 = document.getElementById("current-eRa2");
+  const powerIndex2 = document.getElementById("power-eRa2");
 
-  // Temperature state variables
-  let currentACTemperature = 20;
-  let currentACTemperature2 = 20;
-  let currentACTemperature3 = 20;
+  const temp3 = document.getElementById("temperature-eRa3");
+  const humi3 = document.getElementById("humidity-eRa3");
+  const currentIndex3 = document.getElementById("current-eRa3");
+  const powerIndex3 = document.getElementById("power-eRa3");
 
-  // Configuration variables
-  let configAirConditioner = null;
-  let configAirConditioner2 = null;
-  let configAirConditioner3 = null;
-  let actionOn = null;
-  let actionOff = null;
+  const airConditioner = document.getElementById("temperature-airConditioner");
+  let currentACTemperature = 20; // Giá trị mặc định
+  let configTemp = null,
+    configHumi = null,
+    configCurrent = null,
+    configPower = null,
+    configTemp2 = null,
+    configHumi2 = null,
+    configCurrent2 = null,
+    configPower2 = null,
+    configTemp3 = null,
+    configHumi3 = null,
+    configCurrent3 = null,
+    configPower3 = null,
+    configAirConditioner = null;
+
 
   eraWidget.init({
     onConfiguration: (configuration) => {
-      // Save AC configurations
+      // Lưu các cấu hình khi nhận được từ widget
+      configTemp = configuration.realtime_configs[0]; // Lưu cấu hình nhiệt độ
+      configHumi = configuration.realtime_configs[1]; // Lưu cấu hình độ ẩm
+      configCurrent = configuration.realtime_configs[2]; // Lưu cấu hình power
+      configPower = configuration.realtime_configs[3]; // Lưu cấu hình toggle light
+
+      configTemp2 = configuration.realtime_configs[4]; // Lưu cấu hình nhiệt độ
+      configHumi2 = configuration.realtime_configs[5]; // Lưu cấu hình độ ẩm
+      configCurrent2 = configuration.realtime_configs[6]; // Lưu cấu hình power
+      configPower2 = configuration.realtime_configs[7]; // Lưu cấu hình toggle light
+
+      configTemp3 = configuration.realtime_configs[8]; // Lưu cấu hình nhiệt độ
+      configHumi3 = configuration.realtime_configs[9]; // Lưu cấu hình độ ẩm
+      configCurrent3 = configuration.realtime_configs[10]; // Lưu cấu hình power
+      configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
+
       configAirConditioner = configuration.realtime_configs[12];
-      configAirConditioner2 = configuration.realtime_configs[13];
-      configAirConditioner3 = configuration.realtime_configs[14];
 
-      // Save action configurations
-      actionOn = configuration.actions[0];
-      actionOff = configuration.actions[1];
+      actionOn = configuration.actions[0]; // Lưu cấu hình hành động : On
+      actionOff = configuration.actions[1]; // Lưu cấu hình hành động : Off
     },
+    // Hàm lấy giá trị từ các ID và cập nhật giao diện
     onValues: (values) => {
-      // Helper function to update temperature displays
-      const updateTempDisplays = (acNumber, tempValue) => {
-        // Get all temperature displays for this room
-        const displays = document.querySelectorAll(`.temperature-air[data-room="room${acNumber}"]`);
-        displays.forEach(display => {
-          display.textContent = tempValue + "°C";
-        });
-      };
+      console.log("Configuration:", {
+        configTemp,
+        configHumi,
+        configCurrent,
+        configPower,
 
-      // Handle AC 1
+        configTemp2,
+        configHumi2,
+        configCurrent2,
+        configPower2,
+
+        configTemp3,
+        configHumi3,
+        configCurrent3,
+        configPower3,
+        configAirConditioner,
+      });
+
+      console.log("Current values:", values);
+
+      if (configTemp && values[configTemp.id]) {
+        const tempValue = values[configTemp.id].value;
+        if (temp) temp.textContent = tempValue;
+      }
+
+      if (configHumi && values[configHumi.id]) {
+        const humidValue = values[configHumi.id].value;
+        if (humi) humi.textContent = humidValue;
+      }
+
+      if (configCurrent && values[configCurrent.id]) {
+        const currentValue = values[configCurrent.id].value;
+        if (currentIndex) currentIndex.textContent = currentValue;
+      }
+
+      if (configPower && values[configPower.id]) {
+        const powerValue = values[configPower.id].value;
+        if (powerIndex) powerIndex.textContent = powerValue;
+      }
+
+      if (configTemp2 && values[configTemp2.id]) {
+        const tempValue2 = values[configTemp2.id].value;
+        if (temp2) temp2.textContent = tempValue2;
+      }
+
+      if (configHumi2 && values[configHumi2.id]) {
+        const humidValue2 = values[configHumi2.id].value;
+        if (humi2) humi2.textContent = humidValue2;
+      }
+
+      if (configCurrent2 && values[configCurrent2.id]) {
+        const currentValue2 = values[configCurrent2.id].value;
+        if (currentIndex2) currentIndex2.textContent = currentValue2;
+      }
+
+      if (configPower2 && values[configPower2.id]) {
+        const powerValue2 = values[configPower2.id].value;
+        if (powerIndex2) powerIndex2.textContent = powerValue2;
+      }
+
+      if (configTemp3 && values[configTemp3.id]) {
+        const tempValue3 = values[configTemp3.id].value;
+        if (temp3) temp3.textContent = tempValue3;
+      }
+
+      if (configHumi3 && values[configHumi3.id]) {
+        const humidValue3 = values[configHumi3.id].value;
+        if (humi3) humi3.textContent = humidValue3;
+      }
+
+      if (configCurrent3 && values[configCurrent3.id]) {
+        const currentValue3 = values[configCurrent3.id].value;
+        if (currentIndex3) currentIndex3.textContent = currentValue3;
+      }
+
+      if (configPower3 && values[configPower3.id]) {
+        const powerValue3 = values[configPower3.id].value;
+        if (powerIndex3) powerIndex3.textContent = powerValue3;
+      }
+
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
         currentACTemperature = parseFloat(airValue);
-        if (airConditioner1) {
-          airConditioner1.textContent = airValue + "°C";
+        if (airConditioner) {
+          airConditioner.textContent = airValue + "°C";
+          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
+          const iframeTemp = document.querySelector(".temperature-air");
+          if (iframeTemp) {
+            iframeTemp.textContent = airValue + "°C";
+          }
         }
-        updateTempDisplays(1, airValue);
       }
-
-      // Handle AC 2
-      if (configAirConditioner2 && values[configAirConditioner2.id]) {
-        const airValue2 = values[configAirConditioner2.id].value;
-        currentACTemperature2 = parseFloat(airValue2);
-        if (airConditioner2) {
-          airConditioner2.textContent = airValue2 + "°C";
-        }
-        updateTempDisplays(2, airValue2);
-      }
-
-      // Handle AC 3
-      if (configAirConditioner3 && values[configAirConditioner3.id]) {
-        const airValue3 = values[configAirConditioner3.id].value;
-        currentACTemperature3 = parseFloat(airValue3);
-        if (airConditioner3) {
-          airConditioner3.textContent = airValue3 + "°C";
-        }
-        updateTempDisplays(3, airValue3);
-      }
-    }
+    },
   });
 </script>
