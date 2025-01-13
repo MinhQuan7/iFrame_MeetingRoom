@@ -1998,6 +1998,7 @@ function updateACStatus(container, roomKey) {
   }
 
   if (state.isOn) {
+    console.log("Access to state.isOn");
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
@@ -2039,29 +2040,6 @@ function stopTemperatureUpdates(roomNumber) {
     updateIntervals[roomKey] = null;
   }
 }
-
-// function updateTemperature(tempDisplay, roomKey) {
-//   if (!tempDisplay) return;
-
-//   const state = acStates[roomKey];
-//   if (state.isOn) {
-//     let currentTemp;
-//     switch (roomKey) {
-//       case "room2":
-//         currentTemp = currentACTemperature2;
-//         break;
-//       case "room3":
-//         currentTemp = currentACTemperature3;
-//         break;
-//       default:
-//         currentTemp = currentACTemperature;
-//     }
-//     tempDisplay.textContent = `${currentTemp}°C`;
-//     tempDisplay.dataset.currentTemp = currentTemp;
-//   } else {
-//     tempDisplay.textContent = "OFF";
-//   }
-// }
 
 /*===synchronize data from IoT Paltform with Air Conditioner====*/
 // Start IoT temperature updates
@@ -2113,15 +2091,17 @@ function getRoomKey(roomNumber) {
 // 2. Sửa lại hàm startTemperatureUpdates
 function startTemperatureUpdates(roomNumber) {
   const roomKey = getRoomKey(roomNumber);
+  console.log(`Starting temperature updates for ${roomKey}`);
 
   if (updateIntervals[roomKey]) {
+    console.log(`Clearing existing interval for ${roomKey}`);
     clearInterval(updateIntervals[roomKey]);
   }
 
   updateIntervals[roomKey] = setInterval(() => {
     const state = acStates[roomKey];
     if (state?.isOn) {
-      // Tìm element dựa trên data-room attribute
+      console.log(`Updating temperature display for ${roomKey}`);
       const tempDisplay = document.querySelector(`[data-room="${roomKey}"]`);
 
       if (tempDisplay) {
@@ -2129,20 +2109,80 @@ function startTemperatureUpdates(roomNumber) {
         switch (roomNumber) {
           case 1:
             currentTemp = currentACTemperature;
-            tempDisplay.textContent = `${currentTemp}°C`;
+            console.log(`Room 1 current temperature: ${currentTemp}`);
+            eraWidget.triggerAction(actionOn.action, currentTemp.toString());
             break;
           case 2:
             currentTemp = currentACTemperature2;
-            tempDisplay.textContent = `${currentTemp}°C`;
+            console.log(`Room 2 current temperature: ${currentTemp}`);
+            eraWidget.triggerAction(actionOn2.action, currentTemp.toString());
             break;
           case 3:
             currentTemp = currentACTemperature3;
-            tempDisplay.textContent = `${currentTemp}°C`;
+            console.log(`Room 3 current temperature: ${currentTemp}`);
+            eraWidget.triggerAction(actionOn3.action, currentTemp.toString());
             break;
         }
+        tempDisplay.textContent = `${currentTemp}°C`;
+      } else {
+        console.error(`Temperature display element not found for ${roomKey}`);
       }
     }
-  }, 100);
+  }, 1000); // Tăng interval lên 1000ms để tránh quá tải
+}
+function verifyTemperatureData() {
+  console.log("Verifying temperature data:");
+  console.log("Room 1:", {
+    config: configAirConditioner,
+    currentTemp: currentACTemperature,
+    state: acStates.room1,
+  });
+  console.log("Room 2:", {
+    config: configAirConditioner2,
+    currentTemp: currentACTemperature2,
+    state: acStates.room2,
+  });
+  console.log("Room 3:", {
+    config: configAirConditioner3,
+    currentTemp: currentACTemperature3,
+    state: acStates.room3,
+  });
+}
+
+// Gọi hàm verify mỗi 5 giây
+setInterval(verifyTemperatureData, 5000);
+function handleTemperatureUpdate(roomNumber, temperature) {
+  try {
+    const roomKey = getRoomKey(roomNumber);
+    if (!acStates[roomKey]) {
+      throw new Error(`Invalid room key: ${roomKey}`);
+    }
+
+    console.log(`Updating temperature for ${roomKey} to ${temperature}°C`);
+
+    switch (roomNumber) {
+      case 1:
+        currentACTemperature = temperature;
+        break;
+      case 2:
+        currentACTemperature2 = temperature;
+        break;
+      case 3:
+        currentACTemperature3 = temperature;
+        break;
+      default:
+        throw new Error(`Invalid room number: ${roomNumber}`);
+    }
+
+    const tempDisplay = document.querySelector(`[data-room="${roomKey}"]`);
+    if (tempDisplay) {
+      tempDisplay.textContent = `${temperature}°C`;
+    } else {
+      console.error(`Display element not found for ${roomKey}`);
+    }
+  } catch (error) {
+    console.error("Error updating temperature:", error);
+  }
 }
 // Modify the renderRoomPage function to include AC handling
 function modifyRenderRoomPage(data, roomKeyword, roomName) {

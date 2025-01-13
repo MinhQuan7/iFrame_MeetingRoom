@@ -478,6 +478,7 @@
         if (tempDisplay) {
           tempDisplay.textContent = `${airValue}°C`;
         }
+        console.log("Room 1 AC temperature:", values[configAirConditioner.id].value);
       }
 
       if (configAirConditioner2 && values[configAirConditioner2.id]) {
@@ -487,6 +488,7 @@
         if (tempDisplay2) {
           tempDisplay2.textContent = `${airValue2}°C`;
         }
+        console.log("Room 2 AC temperature:", values[configAirConditioner2.id].value);
       }
 
       if (configAirConditioner3 && values[configAirConditioner3.id]) {
@@ -496,6 +498,7 @@
         if (tempDisplay3) {
           tempDisplay3.textContent = `${airValue3}°C`;
         }
+        console.log("Room 3 AC temperature:", values[configAirConditioner3.id].value);
       }
     }
   });
