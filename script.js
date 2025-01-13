@@ -2052,16 +2052,29 @@ document.addEventListener("click", (e) => {
 
   const container = e.target.closest(".container");
   if (!container) return;
-  const roomKey = getAcStateForRoom(roomNumber);
-  // Determine which room this is for
-  const tempDisplay = document.querySelector(`[data-room="${roomKey}"]`);
-  const roomNumber = tempDisplay?.dataset?.room;
+
+  // Lấy tempDisplay trước
+  const tempDisplay = acCard.querySelector(".temperature-air");
+  if (!tempDisplay) return;
+
+  // Sau đó mới lấy roomNumber từ dataset
+  const roomNumber = tempDisplay.dataset.room;
   if (!roomNumber) return;
 
+  const roomKey = getAcStateForRoom(roomNumber);
+
   // Toggle state and update UI
-  acStates[roomKey].isOn = !acStates[roomKey].isOn;
-  updateACStatus(acCard, roomKey);
-  console.log("Toggle state and update UI");
+  if (acStates[roomKey]) {
+    acStates[roomKey].isOn = !acStates[roomKey].isOn;
+    updateACStatus(acCard, roomKey);
+    console.log("Toggle state and update UI", {
+      roomNumber,
+      roomKey,
+      isOn: acStates[roomKey].isOn,
+    });
+  } else {
+    console.error(`No state found for room ${roomKey}`);
+  }
 });
 // 1. Thêm hàm helper để chuyển đổi số phòng thành room key
 function getRoomKey(roomNumber) {
