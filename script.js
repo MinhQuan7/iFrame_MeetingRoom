@@ -1956,20 +1956,30 @@ let actionOn = null,
   actionOff3 = null,
   statusAirConditioner = null;
 // Hàm cập nhật trạng thái điều hòa
-function updateACStatus(container, roomKey) {
-  if (!container) return;
+function updateACStatus(container, roomNumber) {
+  if (!container) {
+    console.error("Container not found");
+    return;
+  }
+
+  const roomKey = getRoomKey(roomNumber);
+  const state = acStates[roomKey];
+
+  if (!state) {
+    console.error(`State not found for room ${roomNumber}`);
+    return;
+  }
 
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
-  const state = acStates[roomKey];
 
   if (state.isOn) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
-    startTemperatureUpdates(roomKey);
+    startTemperatureUpdates(roomNumber);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
@@ -1977,7 +1987,7 @@ function updateACStatus(container, roomKey) {
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
-    stopTemperatureUpdates(roomKey);
+    stopTemperatureUpdates(roomNumber);
   }
 }
 
@@ -1986,27 +1996,26 @@ const updateIntervals = {
   room2: null,
   room3: null,
 };
+function stopTemperatureUpdates(roomNumber) {
+  const roomKey = getRoomKey(roomNumber);
 
-function stopTemperatureUpdates(roomKey) {
   if (updateIntervals[roomKey]) {
     clearInterval(updateIntervals[roomKey]);
-    switch (roomKey) {
-      case "room1":
-        currentTemp = currentACTemperature;
-        // eraWidget.triggerAction(actionOff.action, null);
+    switch (roomNumber) {
+      case 1:
+        eraWidget.triggerAction(actionOff.action, null);
         break;
-      case "room2":
-        currentTemp = currentACTemperature2;
-        // eraWidget.triggerAction(actionOff2.action, null);
+      case 2:
+        eraWidget.triggerAction(actionOff2.action, null);
         break;
-      case "room3":
-        currentTemp = currentACTemperature3;
-        // eraWidget.triggerAction(actionOff3.action, null);
+      case 3:
+        eraWidget.triggerAction(actionOff3.action, null);
         break;
     }
     updateIntervals[roomKey] = null;
   }
 }
+
 // function updateTemperature(tempDisplay, roomKey) {
 //   if (!tempDisplay) return;
 
@@ -2054,41 +2063,45 @@ document.addEventListener("click", (e) => {
   updateACStatus(acCard, roomKey);
   console.log("Toggle state and update UI");
 });
+// 1. Thêm hàm helper để chuyển đổi số phòng thành room key
+function getRoomKey(roomNumber) {
+  return `room${roomNumber}`;
+}
 
-function startTemperatureUpdates(roomKey) {
+// 2. Sửa lại hàm startTemperatureUpdates
+function startTemperatureUpdates(roomNumber) {
+  const roomKey = getRoomKey(roomNumber);
+
   if (updateIntervals[roomKey]) {
     clearInterval(updateIntervals[roomKey]);
   }
 
   updateIntervals[roomKey] = setInterval(() => {
     const state = acStates[roomKey];
-    if (state.isOn) {
-      const container = document.querySelector(".container");
+    if (state?.isOn) {
+      // Tìm element dựa trên data-room attribute
       const tempDisplay = document.querySelector(`[data-room="${roomKey}"]`);
+
       if (tempDisplay) {
         let currentTemp;
-        switch (roomKey) {
-          case "room1":
+        switch (roomNumber) {
+          case 1:
             currentTemp = currentACTemperature;
             tempDisplay.textContent = `${currentTemp}°C`;
-            // eraWidget.triggerAction(actionOn.action, null);
             break;
-          case "room2":
+          case 2:
             currentTemp = currentACTemperature2;
             tempDisplay.textContent = `${currentTemp}°C`;
-            // eraWidget.triggerAction(actionOn2.action, null);
             break;
-          case "room3":
+          case 3:
             currentTemp = currentACTemperature3;
             tempDisplay.textContent = `${currentTemp}°C`;
-            // eraWidget.triggerAction(actionOn3.action, null);
             break;
         }
       }
     }
   }, 100);
 }
-
 // Modify the renderRoomPage function to include AC handling
 function modifyRenderRoomPage(data, roomKeyword, roomName) {
   const roomKey = getAcStateForRoom(roomKeyword);
