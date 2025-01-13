@@ -347,7 +347,10 @@
     configHumi3 = null,
     configCurrent3 = null,
     configPower3 = null,
-    configAirConditioner = null;
+    configAirConditioner = null,
+    configAirConditioner2 = null,
+    configAirConditioner3 = null;
+
 
 
   eraWidget.init({
@@ -369,6 +372,8 @@
       configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
 
       configAirConditioner = configuration.realtime_configs[12];
+      configAirConditioner2 = configuration.realtime_configs[13];
+      configAirConditioner3 = configuration.realtime_configs[14];
 
       actionOn = configuration.actions[0]; // Lưu cấu hình hành động : On
       actionOff = configuration.actions[1]; // Lưu cấu hình hành động : Off
@@ -391,6 +396,8 @@
         configCurrent3,
         configPower3,
         configAirConditioner,
+        configAirConditioner2,
+        configAirConditioner3,
       });
 
       console.log("Current values:", values);
@@ -455,18 +462,36 @@
         if (powerIndex3) powerIndex3.textContent = powerValue3;
       }
 
+      // Handle AC 1
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
         currentACTemperature = parseFloat(airValue);
-        if (airConditioner) {
-          airConditioner.textContent = airValue + "°C";
-          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
-          const iframeTemp = document.querySelector(".temperature-air");
-          if (iframeTemp) {
-            iframeTemp.textContent = airValue + "°C";
-          }
+        if (airConditioner1) {
+          airConditioner1.textContent = airValue + "°C";
         }
+        startTemperatureUpdates(1, airValue);
       }
+
+      // Handle AC 2
+      if (configAirConditioner2 && values[configAirConditioner2.id]) {
+        const airValue2 = values[configAirConditioner2.id].value;
+        currentACTemperature2 = parseFloat(airValue2);
+        if (airConditioner2) {
+          airConditioner2.textContent = airValue2 + "°C";
+        }
+        startTemperatureUpdates(2, airValue2);
+      }
+
+      // Handle AC 3
+      if (configAirConditioner3 && values[configAirConditioner3.id]) {
+        const airValue3 = values[configAirConditioner3.id].value;
+        currentACTemperature3 = parseFloat(airValue3);
+        if (airConditioner3) {
+          airConditioner3.textContent = airValue3 + "°C";
+        }
+        startTemperatureUpdates(3, airValue3);
+      }
+
     },
   });
 </script>
