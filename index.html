@@ -335,6 +335,8 @@
 
   const airConditioner = document.getElementById("data-current-temp");
   let currentACTemperature = 20; // Giá trị mặc định
+  let currentACTemperature2 = 19;
+  let currentACTemperature3 = 18;
   let configTemp = null,
     configHumi = null,
     configCurrent = null,
@@ -469,36 +471,32 @@
         if (powerIndex3) powerIndex3.textContent = powerValue3;
       }
 
-      // Handle AC 1
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
         currentACTemperature = parseFloat(airValue);
-        if (airConditioner1) {
-          airConditioner1.textContent = airValue + "°C";
+        const tempDisplay = document.querySelector('[data-room="room1"]');
+        if (tempDisplay) {
+          tempDisplay.textContent = `${airValue}°C`;
         }
-        startTemperatureUpdates(1, airValue);
       }
 
-      // Handle AC 2
       if (configAirConditioner2 && values[configAirConditioner2.id]) {
         const airValue2 = values[configAirConditioner2.id].value;
         currentACTemperature2 = parseFloat(airValue2);
-        if (airConditioner2) {
-          airConditioner2.textContent = airValue2 + "°C";
+        const tempDisplay2 = document.querySelector('[data-room="room2"]');
+        if (tempDisplay2) {
+          tempDisplay2.textContent = `${airValue2}°C`;
         }
-        startTemperatureUpdates(2, airValue2);
       }
 
-      // Handle AC 3
       if (configAirConditioner3 && values[configAirConditioner3.id]) {
         const airValue3 = values[configAirConditioner3.id].value;
         currentACTemperature3 = parseFloat(airValue3);
-        if (airConditioner3) {
-          airConditioner3.textContent = airValue3 + "°C";
+        const tempDisplay3 = document.querySelector('[data-room="room3"]');
+        if (tempDisplay3) {
+          tempDisplay3.textContent = `${airValue3}°C`;
         }
-        startTemperatureUpdates(3, airValue3);
       }
-
-    },
+    }
   });
 </script>

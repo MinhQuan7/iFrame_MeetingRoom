@@ -2066,7 +2066,7 @@ function startTemperatureUpdates(roomKey) {
     const state = acStates[roomKey];
     if (state.isOn) {
       const container = document.querySelector(".container");
-      const tempDisplay = container.querySelector(".temperature-air");
+      const tempDisplay = document.querySelector(`[data-room="${roomKey}"]`);
       if (tempDisplay) {
         let currentTemp;
         switch (roomKey) {
@@ -2109,3 +2109,8 @@ function modifyRenderRoomPage(data, roomKeyword, roomName) {
 
   return originalHtml;
 }
+console.log("Room temperatures:", {
+  room1: currentACTemperature,
+  room2: currentACTemperature2,
+  room3: currentACTemperature3,
+});
