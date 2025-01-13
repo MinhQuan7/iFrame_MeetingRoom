@@ -1919,10 +1919,20 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Khởi tạo trạng thái ban đầu
+// 1. Đảm bảo acStates được khởi tạo global và sớm nhất có thể
 const acStates = {
-  room1: { isOn: false, temperature: 20, minTemp: 16, maxTemp: 30 },
-  room2: { isOn: false, temperature: 20, minTemp: 16, maxTemp: 30 },
-  room3: { isOn: false, temperature: 20, minTemp: 16, maxTemp: 30 },
+  room1: {
+    isOn: false,
+    temperature: 20,
+  },
+  room2: {
+    isOn: false,
+    temperature: 19,
+  },
+  room3: {
+    isOn: false,
+    temperature: 18,
+  },
 };
 // Function to determine which AC state to use based on room
 function getAcStateForRoom(roomKeyword) {
@@ -1956,29 +1966,42 @@ let actionOn = null,
   actionOff3 = null,
   statusAirConditioner = null;
 // Hàm cập nhật trạng thái điều hòa
-function updateACStatus(container, roomNumber) {
+function updateACStatus(container, roomKey) {
+  console.log("Updating AC status for:", roomKey, "Container:", container);
+  console.log("Current states:", acStates);
+
   if (!container) {
     console.error("Container not found");
     return;
   }
 
-  const roomKey = getRoomKey(roomNumber);
-  const state = acStates[roomKey];
-
-  if (!state) {
-    console.error(`State not found for room ${roomNumber}`);
-    return;
+  if (!acStates[roomKey]) {
+    console.error(`State not found for room ${roomKey}`);
+    // Khởi tạo state nếu chưa tồn tại
+    acStates[roomKey] = {
+      isOn: false,
+      temperature: 20,
+    };
   }
+
+  const state = acStates[roomKey];
+  console.log("Current state for room:", state);
 
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
 
+  if (!statusDot || !statusText || !powerButton) {
+    console.error("Required elements not found in container");
+    return;
+  }
+
   if (state.isOn) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
+    const roomNumber = parseInt(roomKey.replace("room", ""));
     startTemperatureUpdates(roomNumber);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
@@ -1987,6 +2010,7 @@ function updateACStatus(container, roomNumber) {
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
+    const roomNumber = parseInt(roomKey.replace("room", ""));
     stopTemperatureUpdates(roomNumber);
   }
 }
@@ -2050,31 +2074,36 @@ document.addEventListener("click", (e) => {
   const powerBtn = e.target.closest(".controls .btn:first-child");
   if (!powerBtn) return;
 
-  const container = e.target.closest(".container");
-  if (!container) return;
-
-  // Lấy tempDisplay trước
   const tempDisplay = acCard.querySelector(".temperature-air");
-  if (!tempDisplay) return;
-
-  // Sau đó mới lấy roomNumber từ dataset
-  const roomNumber = tempDisplay.dataset.room;
-  if (!roomNumber) return;
-
-  const roomKey = getAcStateForRoom(roomNumber);
-
-  // Toggle state and update UI
-  if (acStates[roomKey]) {
-    acStates[roomKey].isOn = !acStates[roomKey].isOn;
-    updateACStatus(acCard, roomKey);
-    console.log("Toggle state and update UI", {
-      roomNumber,
-      roomKey,
-      isOn: acStates[roomKey].isOn,
-    });
-  } else {
-    console.error(`No state found for room ${roomKey}`);
+  if (!tempDisplay) {
+    console.error("Temperature display not found");
+    return;
   }
+
+  const roomKey = tempDisplay.dataset.room;
+  console.log("Room key from dataset:", roomKey);
+
+  if (!acStates[roomKey]) {
+    console.log("Initializing state for room:", roomKey);
+    acStates[roomKey] = {
+      isOn: false,
+      temperature: 20,
+    };
+  }
+
+  acStates[roomKey].isOn = !acStates[roomKey].isOn;
+  console.log(`Toggled ${roomKey} to:`, acStates[roomKey].isOn);
+  updateACStatus(acCard, roomKey);
+});
+
+// 4. Thêm hàm để kiểm tra trạng thái
+function checkAcStates() {
+  console.log("Current AC states:", acStates);
+}
+
+// 5. Gọi kiểm tra khi load trang
+document.addEventListener("DOMContentLoaded", () => {
+  checkAcStates();
 });
 // 1. Thêm hàm helper để chuyển đổi số phòng thành room key
 function getRoomKey(roomNumber) {
