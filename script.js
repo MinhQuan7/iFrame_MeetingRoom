@@ -1946,6 +1946,7 @@ let actionOn = null,
   statusAirConditioner = null;
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container, roomKey) {
+  if (!container) return;
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
@@ -2008,6 +2009,30 @@ function updateTemperature(tempDisplay, roomKey) {
 
 /*===synchronize data from IoT Paltform with Air Conditioner====*/
 // Start IoT temperature updates
+
+// Add event listener to document for AC controls
+document.addEventListener("click", (e) => {
+  const acCard = e.target.closest(".ac-card");
+  if (!acCard) return;
+
+  const powerBtn = e.target.closest(".controls .btn:first-child");
+  if (!powerBtn) return;
+
+  const container = e.target.closest(".container");
+  if (!container) return;
+
+  // Determine which room this is for
+  const tempDisplay = acCard.querySelector(".temperature-air");
+  const roomNumber = tempDisplay?.dataset?.room;
+  if (!roomNumber) return;
+
+  const roomKey = getAcStateForRoom(roomNumber);
+
+  // Toggle state and update UI
+  acStates[roomKey].isOn = !acStates[roomKey].isOn;
+  updateACStatus(acCard, roomKey);
+});
+
 function startTemperatureUpdates(roomKey) {
   if (updateIntervals[roomKey]) {
     clearInterval(updateIntervals[roomKey]);
@@ -2042,45 +2067,15 @@ function modifyRenderRoomPage(data, roomKeyword, roomName) {
   const roomKey = getAcStateForRoom(roomKeyword);
   const originalHtml = renderRoomPage(data, roomKeyword, roomName);
 
-  // After rendering, set up event listeners
+  // Initialize AC status after render
   setTimeout(() => {
     const container = document.querySelector(".container");
     if (!container) return;
 
-    container.addEventListener("click", (e) => {
-      const acCard = e.target.closest(".ac-card");
-      if (!acCard) return;
-
-      const temperatureDisplay = container.querySelector(".temperature-air");
-      if (temperatureDisplay) {
-        updateTemperature(temperatureDisplay, roomKey);
-      }
-
-      if (e.target.closest(".controls .btn:first-child")) {
-        acStates[roomKey].isOn = !acStates[roomKey].isOn;
-        updateACStatus(acCard, roomKey);
-      }
-
-      if (e.target.closest(".controls .btn:nth-child(3)")) {
-        if (
-          acStates[roomKey].isOn &&
-          acStates[roomKey].temperature > acStates[roomKey].minTemp
-        ) {
-          acStates[roomKey].temperature--;
-          updateTemperature(temperatureDisplay, roomKey);
-        }
-      }
-
-      if (e.target.closest(".btn-up")) {
-        if (
-          acStates[roomKey].isOn &&
-          acStates[roomKey].temperature < acStates[roomKey].maxTemp
-        ) {
-          acStates[roomKey].temperature++;
-          updateTemperature(temperatureDisplay, roomKey);
-        }
-      }
-    });
+    const acCard = container.querySelector(".ac-card");
+    if (acCard) {
+      updateACStatus(acCard, roomKey);
+    }
   }, 0);
 
   return originalHtml;
