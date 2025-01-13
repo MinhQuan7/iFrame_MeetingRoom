@@ -2073,17 +2073,17 @@ function startTemperatureUpdates(roomKey) {
           case "room1":
             currentTemp = currentACTemperature;
             tempDisplay.textContent = `${currentTemp}°C`;
-            eraWidget.triggerAction(actionOn.action, null);
+            // eraWidget.triggerAction(actionOn.action, null);
             break;
           case "room2":
             currentTemp = currentACTemperature2;
             tempDisplay.textContent = `${currentTemp}°C`;
-            eraWidget.triggerAction(actionOn2.action, null);
+            // eraWidget.triggerAction(actionOn2.action, null);
             break;
           case "room3":
             currentTemp = currentACTemperature3;
             tempDisplay.textContent = `${currentTemp}°C`;
-            eraWidget.triggerAction(actionOn3.action, null);
+            // eraWidget.triggerAction(actionOn3.action, null);
             break;
         }
       }
