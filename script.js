@@ -1627,7 +1627,12 @@ function renderRoomPage(data, roomKeyword, roomName) {
                     <path d="M19 9l-7 7-7-7" stroke-width="2" />
                   </svg>
                 </button>
-                <span class="temperature-air" data-room="room${roomNumber}" id="temperature-airConditioner${roomNumber}">${currentTemp}°C</span>
+                  <span class="temperature-air" 
+                    data-room="room${roomNumber}" 
+                    id="temperature-airConditioner${roomNumber}"
+                    data-current-temp="${currentTemp}">
+                    ${currentTemp}°C
+                  </span>
                 <button class="btn-up">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M5 15l7-7 7 7" stroke-width="2" />
@@ -1949,6 +1954,7 @@ let actionOn = null,
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container, roomKey) {
   if (!container) return;
+
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
@@ -1960,12 +1966,21 @@ function updateACStatus(container, roomKey) {
     statusText.textContent = "Online";
     powerButton.classList.add("active");
     startTemperatureUpdates(roomKey);
-    eraWidget.triggerAction(actionOn.action, null);
+
+    // Only trigger action if it exists
+    if (actionOn && typeof actionOn.action !== "undefined") {
+      eraWidget.triggerAction(actionOn.action, null);
+    }
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
-    eraWidget.triggerAction(actionOff.action, null);
+
+    // Only trigger action if it exists
+    if (actionOff && typeof actionOff.action !== "undefined") {
+      eraWidget.triggerAction(actionOff.action, null);
+    }
+
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
@@ -1990,20 +2005,19 @@ function updateTemperature(tempDisplay, roomKey) {
 
   const state = acStates[roomKey];
   if (state.isOn) {
-    // Use the appropriate temperature value based on room
     let currentTemp;
     switch (roomKey) {
-      case "room1":
-        currentTemp = currentACTemperature;
-        break;
       case "room2":
         currentTemp = currentACTemperature2;
         break;
       case "room3":
         currentTemp = currentACTemperature3;
         break;
+      default:
+        currentTemp = currentACTemperature;
     }
     tempDisplay.textContent = `${currentTemp}°C`;
+    tempDisplay.dataset.currentTemp = currentTemp;
   } else {
     tempDisplay.textContent = "OFF";
   }
