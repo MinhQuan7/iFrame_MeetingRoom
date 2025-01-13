@@ -1526,8 +1526,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 let currentACTemperature = 20;
-let currentACTemperature2 = 20;
-let currentACTemperature3 = 20;
+let currentACTemperature2 = 19;
+let currentACTemperature3 = 18;
 // Hàm render trang động riêng biệt
 function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Rendering room page for:", roomName);
@@ -1551,10 +1551,12 @@ function renderRoomPage(data, roomKeyword, roomName) {
   let currentTemp;
   switch (roomNumber) {
     case "2":
-      currentTemp = currentACTemperature2 || 20;
+      currentTemp = currentACTemperature2 || 19;
+      console.log("Current temp of room 2:", currentTemp);
       break;
     case "3":
-      currentTemp = currentACTemperature3 || 20;
+      currentTemp = currentACTemperature3 || 18;
+      console.log("Current temp of room 3:", currentTemp);
       break;
     default:
       currentTemp = currentACTemperature || 20;
@@ -2031,6 +2033,7 @@ document.addEventListener("click", (e) => {
   // Toggle state and update UI
   acStates[roomKey].isOn = !acStates[roomKey].isOn;
   updateACStatus(acCard, roomKey);
+  console.log("Toggle state and update UI");
 });
 
 function startTemperatureUpdates(roomKey) {
