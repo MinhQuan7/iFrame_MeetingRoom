@@ -1993,15 +1993,15 @@ function stopTemperatureUpdates(roomKey) {
     switch (roomKey) {
       case "room1":
         currentTemp = currentACTemperature;
-        eraWidget.triggerAction(actionOff.action, null);
+        // eraWidget.triggerAction(actionOff.action, null);
         break;
       case "room2":
         currentTemp = currentACTemperature2;
-        eraWidget.triggerAction(actionOff2.action, null);
+        // eraWidget.triggerAction(actionOff2.action, null);
         break;
       case "room3":
         currentTemp = currentACTemperature3;
-        eraWidget.triggerAction(actionOff3.action, null);
+        // eraWidget.triggerAction(actionOff3.action, null);
         break;
     }
     updateIntervals[roomKey] = null;
@@ -2045,7 +2045,7 @@ document.addEventListener("click", (e) => {
   if (!container) return;
 
   // Determine which room this is for
-  const tempDisplay = acCard.querySelector(".temperature-air");
+  const tempDisplay = document.querySelector(`[data-room="${roomKey}"]`);
   const roomNumber = tempDisplay?.dataset?.room;
   if (!roomNumber) return;
 
