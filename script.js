@@ -1947,7 +1947,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-//=================Air Conditioner ===
+//=================Air Conditioner ==============
 let actionOn = null,
   actionOff = null,
   statusAirConditioner = null;
@@ -1966,21 +1966,10 @@ function updateACStatus(container, roomKey) {
     statusText.textContent = "Online";
     powerButton.classList.add("active");
     startTemperatureUpdates(roomKey);
-
-    // Only trigger action if it exists
-    if (actionOn && typeof actionOn.action !== "undefined") {
-      eraWidget.triggerAction(actionOn.action, null);
-    }
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
-
-    // Only trigger action if it exists
-    if (actionOff && typeof actionOff.action !== "undefined") {
-      eraWidget.triggerAction(actionOff.action, null);
-    }
-
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
@@ -1997,31 +1986,45 @@ const updateIntervals = {
 function stopTemperatureUpdates(roomKey) {
   if (updateIntervals[roomKey]) {
     clearInterval(updateIntervals[roomKey]);
-    updateIntervals[roomKey] = null;
-  }
-}
-function updateTemperature(tempDisplay, roomKey) {
-  if (!tempDisplay) return;
-
-  const state = acStates[roomKey];
-  if (state.isOn) {
-    let currentTemp;
     switch (roomKey) {
+      case "room1":
+        currentTemp = currentACTemperature;
+        eraWidget.triggerAction(actionOff.action, null);
+        break;
       case "room2":
         currentTemp = currentACTemperature2;
+        eraWidget.triggerAction(actionOff2.action, null);
         break;
       case "room3":
         currentTemp = currentACTemperature3;
+        eraWidget.triggerAction(actionOff3.action, null);
         break;
-      default:
-        currentTemp = currentACTemperature;
     }
-    tempDisplay.textContent = `${currentTemp}°C`;
-    tempDisplay.dataset.currentTemp = currentTemp;
-  } else {
-    tempDisplay.textContent = "OFF";
+    updateIntervals[roomKey] = null;
   }
 }
+// function updateTemperature(tempDisplay, roomKey) {
+//   if (!tempDisplay) return;
+
+//   const state = acStates[roomKey];
+//   if (state.isOn) {
+//     let currentTemp;
+//     switch (roomKey) {
+//       case "room2":
+//         currentTemp = currentACTemperature2;
+//         break;
+//       case "room3":
+//         currentTemp = currentACTemperature3;
+//         break;
+//       default:
+//         currentTemp = currentACTemperature;
+//     }
+//     tempDisplay.textContent = `${currentTemp}°C`;
+//     tempDisplay.dataset.currentTemp = currentTemp;
+//   } else {
+//     tempDisplay.textContent = "OFF";
+//   }
+// }
 
 /*===synchronize data from IoT Paltform with Air Conditioner====*/
 // Start IoT temperature updates
@@ -2065,12 +2068,15 @@ function startTemperatureUpdates(roomKey) {
         switch (roomKey) {
           case "room1":
             currentTemp = currentACTemperature;
+            eraWidget.triggerAction(actionOn.action, null);
             break;
           case "room2":
             currentTemp = currentACTemperature2;
+            eraWidget.triggerAction(actionOn2.action, null);
             break;
           case "room3":
             currentTemp = currentACTemperature3;
+            eraWidget.triggerAction(actionOn3.action, null);
             break;
         }
         tempDisplay.textContent = `${currentTemp}°C`;
