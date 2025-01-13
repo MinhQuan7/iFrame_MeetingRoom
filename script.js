@@ -1533,30 +1533,17 @@ function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Rendering room page for:", roomName);
   console.log("Room keyword:", roomKeyword);
 
-  // Xử lý an toàn để lấy số phòng
-  let roomNumber = "1"; // Giá trị mặc định
-  const matches = roomKeyword.match(/\d+/);
-  if (matches && matches.length > 0) {
-    roomNumber = matches[0];
-  } else {
-    // Thử lấy số từ roomName nếu không tìm thấy trong roomKeyword
-    const nameMatches = roomName.match(/\d+/);
-    if (nameMatches && nameMatches.length > 0) {
-      roomNumber = nameMatches[0];
-    }
-  }
-  console.log("Detected room number:", roomNumber);
+  const roomKey = getAcStateForRoom(roomKeyword);
+  console.log("Room key for rendering:", roomKey);
 
-  // Lấy nhiệt độ tương ứng với số phòng
+  // Lấy nhiệt độ tương ứng
   let currentTemp;
-  switch (roomNumber) {
-    case "2":
+  switch (roomKey) {
+    case "room2":
       currentTemp = currentACTemperature2 || 19;
-      console.log("Current temp of room 2:", currentTemp);
       break;
-    case "3":
+    case "room3":
       currentTemp = currentACTemperature3 || 18;
-      console.log("Current temp of room 3:", currentTemp);
       break;
     default:
       currentTemp = currentACTemperature || 20;
@@ -1627,12 +1614,12 @@ function renderRoomPage(data, roomKeyword, roomName) {
                     <path d="M19 9l-7 7-7-7" stroke-width="2" />
                   </svg>
                 </button>
-                  <span class="temperature-air" 
-                    data-room="room${roomNumber}" 
-                    id="temperature-airConditioner${roomNumber}"
-                    data-current-temp="${currentTemp}">
-                    ${currentTemp}°C
-                  </span>
+    <span class="temperature-air" 
+      data-room="${roomKey}" 
+      id="temperature-airConditioner${roomKey.slice(-1)}"
+      data-current-temp="${currentTemp}">
+      ${currentTemp}°C
+    </span>
                 <button class="btn-up">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M5 15l7-7 7 7" stroke-width="2" />
@@ -1919,18 +1906,46 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Khởi tạo trạng thái ban đầu
+// Khởi tạo trạng thái cho các phòng
 const acStates = {
-  room1: { isOn: false, temperature: 20, minTemp: 16, maxTemp: 30 },
-  room2: { isOn: false, temperature: 20, minTemp: 16, maxTemp: 30 },
-  room3: { isOn: false, temperature: 20, minTemp: 16, maxTemp: 30 },
+  room1: {
+    isOn: false,
+    temperature: currentACTemperature || 20,
+  },
+  room2: {
+    isOn: false,
+    temperature: currentACTemperature2 || 19,
+  },
+  room3: {
+    isOn: false,
+    temperature: currentACTemperature3 || 18,
+  },
 };
+
 // Function to determine which AC state to use based on room
 function getAcStateForRoom(roomKeyword) {
-  if (roomKeyword.includes("1")) return "room1";
-  if (roomKeyword.includes("2")) return "room2";
-  if (roomKeyword.includes("3")) return "room3";
-  return "room1"; // Default fallback
+  // Nếu roomKeyword đã là dạng "room1", "room2", "room3"
+  if (roomKeyword.startsWith("room")) {
+    return roomKeyword;
+  }
+
+  // Xử lý các trường hợp khác
+  let roomNumber;
+  if (roomKeyword.toLowerCase() === "lotus") {
+    roomNumber = 1;
+  } else if (roomKeyword.toLowerCase() === "rose") {
+    roomNumber = 2;
+  } else if (roomKeyword.toLowerCase() === "sunflower") {
+    roomNumber = 3;
+  } else {
+    // Thử lấy số từ roomKeyword
+    const matches = roomKeyword.match(/\d+/);
+    roomNumber = matches ? parseInt(matches[0]) : 1;
+  }
+
+  return `room${roomNumber}`;
 }
+
 // Thêm CSS cho styling
 const style = document.createElement("style");
 style.textContent = `
@@ -2053,27 +2068,24 @@ document.addEventListener("click", (e) => {
   const container = e.target.closest(".container");
   if (!container) return;
 
-  // Lấy tempDisplay trước
   const tempDisplay = acCard.querySelector(".temperature-air");
   if (!tempDisplay) return;
 
-  // Sau đó mới lấy roomNumber từ dataset
-  const roomNumber = tempDisplay.dataset.room;
-  if (!roomNumber) return;
+  const roomKeyword = tempDisplay.dataset.room;
+  console.log("Room keyword from dataset:", roomKeyword);
 
-  const roomKey = getAcStateForRoom(roomNumber);
+  const roomKey = getAcStateForRoom(roomKeyword);
+  console.log("Converted room key:", roomKey);
 
-  // Toggle state and update UI
   if (acStates[roomKey]) {
     acStates[roomKey].isOn = !acStates[roomKey].isOn;
+    console.log(`Toggled ${roomKey} to:`, acStates[roomKey].isOn);
     updateACStatus(acCard, roomKey);
-    console.log("Toggle state and update UI", {
-      roomNumber,
-      roomKey,
-      isOn: acStates[roomKey].isOn,
-    });
   } else {
-    console.error(`No state found for room ${roomKey}`);
+    console.error(
+      `No state found for room ${roomKey}. Available states:`,
+      acStates
+    );
   }
 });
 // 1. Thêm hàm helper để chuyển đổi số phòng thành room key
