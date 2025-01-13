@@ -2043,13 +2043,11 @@ document.addEventListener("click", (e) => {
 
   const container = e.target.closest(".container");
   if (!container) return;
-
+  const roomKey = getAcStateForRoom(roomNumber);
   // Determine which room this is for
   const tempDisplay = document.querySelector(`[data-room="${roomKey}"]`);
   const roomNumber = tempDisplay?.dataset?.room;
   if (!roomNumber) return;
-
-  const roomKey = getAcStateForRoom(roomNumber);
 
   // Toggle state and update UI
   acStates[roomKey].isOn = !acStates[roomKey].isOn;
