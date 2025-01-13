@@ -1950,6 +1950,10 @@ document.head.appendChild(style);
 //=================Air Conditioner ==============
 let actionOn = null,
   actionOff = null,
+  actionOn2 = null,
+  actionOff2 = null,
+  actionOn3 = null,
+  actionOff3 = null,
   statusAirConditioner = null;
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container, roomKey) {
