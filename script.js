@@ -1629,8 +1629,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
                 </button>
                   <span class="temperature-air" 
                     data-room="room${roomNumber}" 
-                    id="temperature-airConditioner${currentTemp}"
-                    data-current-temp="${currentTemp}">
+                    id="temperature-airConditioner">
                     ${currentTemp}°C
                   </span>
                 <button class="btn-up">
