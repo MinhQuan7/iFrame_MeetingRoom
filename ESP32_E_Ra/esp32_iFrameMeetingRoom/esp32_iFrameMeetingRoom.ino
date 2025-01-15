@@ -3,8 +3,9 @@
 #define ERA_LOCATION_VN
 // #define ERA_LOCATION_SG
 // You should get Auth Token in the ERa App or ERa Dashboard
-#define ERA_AUTH_TOKEN "ca614c19-2a5c-4a12-9cd8-895cf754d84e"
-
+#define ERA_AUTH_TOKEN "8006f911-4542-4ecf-a1ad-dcd561b0596e"
+#define LEDPIN 32
+#define LEDPIN1 33
 #include <Arduino.h>
 #include <ERa.hpp>
 
@@ -20,6 +21,20 @@ ERA_CONNECTED()
 ERA_DISCONNECTED()
 {
   ERA_LOG("ERa", "ERa disconnected!");
+}
+
+ERA_WRITE(V30) {
+    /* Get value from Virtual Pin 0 and write LED */
+    uint8_t value = param.getInt();
+    if(value == 1)
+    {
+      digitalWrite(LEDPIN,HIGH);
+      digitalWrite(LEDPIN1,LOW);
+    }else{
+      digitalWrite(LEDPIN1,HIGH);
+      digitalWrite(LEDPIN,LOW);
+    }
+
 }
 
 /* This function send uptime every second to Virtual Pin 1 */
@@ -64,6 +79,10 @@ void setup()
   ERa.begin(ssid, pass);
   /* Setup timer called function every second */
   ERa.addInterval(1000L, timerEvent);
+  pinMode(LEDPIN,OUTPUT);
+  pinMode(LEDPIN1,OUTPUT);
+  digitalWrite(LEDPIN,LOW);
+  digitalWrite(LEDPIN1,LOW);
 }
 
 void loop()
