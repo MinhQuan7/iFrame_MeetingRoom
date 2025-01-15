@@ -2158,10 +2158,10 @@ function handleTemperatureUpdate(roomNumber, temperature) {
 
     switch (roomNumber) {
       case 1:
-        currentACTemperature = temperature;
+        temperature = currentACTemperature;
         break;
       case 2:
-        currentACTemperature2 = temperature;
+        temperature = currentACTemperature2;
         break;
       case 3:
         currentACTemperature3 = temperature;
@@ -2170,12 +2170,14 @@ function handleTemperatureUpdate(roomNumber, temperature) {
         throw new Error(`Invalid room number: ${roomNumber}`);
     }
 
-    const tempDisplay = document.querySelector(`[data-room="${roomKey}"]`);
-    if (tempDisplay) {
-      tempDisplay.textContent = `${temperature}°C`;
-    } else {
-      console.error(`Display element not found for ${roomKey}`);
-    }
+    const tempDisplay = document.querySelector("temperature-air");
+    tempDisplay.forEach((display) => {
+      if (display) {
+        display.textContent = `${temperature}°C`;
+        //currentACTemperature is a variable of log data from Widget IoT platform
+        //" currentACTemperature = parseFloat(airValue)"
+      }
+    });
   } catch (error) {
     console.error("Error updating temperature:", error);
   }
