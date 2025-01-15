@@ -1957,13 +1957,7 @@ style.textContent = `
 document.head.appendChild(style);
 
 //=================Air Conditioner ==============
-let actionOn = null,
-  actionOff = null,
-  actionOn2 = null,
-  actionOff2 = null,
-  actionOn3 = null,
-  actionOff3 = null,
-  statusAirConditioner = null;
+let statusAirConditioner = null;
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container, roomKey) {
   console.log("Updating AC status for:", roomKey, "Container:", container);
@@ -2025,18 +2019,6 @@ function stopTemperatureUpdates(roomNumber) {
 
   if (updateIntervals[roomKey]) {
     clearInterval(updateIntervals[roomKey]);
-    // switch (roomNumber) {
-    //   case 1:
-    //     eraWidget.triggerAction(actionOff.action, null);
-    //     break;
-    //   case 2:
-    //     eraWidget.triggerAction(actionOff2.action, null);
-    //     break;
-    //   case 3:
-    //     eraWidget.triggerAction(actionOff3.action, null);
-    //     break;
-    // }
-    // updateIntervals[roomKey] = null;
   }
 }
 

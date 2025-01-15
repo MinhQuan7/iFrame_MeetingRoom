@@ -425,6 +425,26 @@
       configAirConditioner2 = configuration.realtime_configs[13];
       configAirConditioner3 = configuration.realtime_configs[14];
 
+      console.log("Full configuration:", configuration);
+
+      // Verify the realtime_configs array exists and has enough elements
+      if (
+        configuration.realtime_configs &&
+        configuration.realtime_configs.length >= 15
+      ) {
+        configAirConditioner = configuration.realtime_configs[12];
+        configAirConditioner2 = configuration.realtime_configs[13];
+        configAirConditioner3 = configuration.realtime_configs[14];
+
+        // Log the assigned configurations
+        console.log("Assigned configurations:", {
+          room1: configAirConditioner,
+          room2: configAirConditioner2,
+          room3: configAirConditioner3,
+        });
+      } else {
+        console.error("Invalid configuration structure:", configuration);
+      }
       actionOn = configuration.actions[0]; // Lưu cấu hình hành động : On
       actionOff = configuration.actions[1]; // Lưu cấu hình hành động : Off
 
@@ -518,44 +538,64 @@
         if (powerIndex3) powerIndex3.textContent = powerValue3;
       }
 
+      console.log("Received values:", values);
+
+      // Room 1
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
         currentACTemperature = parseFloat(airValue);
         const tempDisplay = document.querySelector('[data-room="room1"]');
-        if (airConditioner) {
-          airConditioner.textContent = `${airValue}°C`;
+        if (tempDisplay) {
+          tempDisplay.textContent = `${airValue}°C`;
+          console.log("Updated Room 1 temperature to:", airValue);
+        } else {
+          console.warn("Room 1 temperature display element not found");
         }
-        console.log(
-          "Room 1 AC temperature:",
-          values[configAirConditioner.id].value
-        );
       }
 
+      // Room 2
       if (configAirConditioner2 && values[configAirConditioner2.id]) {
         const airValue2 = values[configAirConditioner2.id].value;
         currentACTemperature2 = parseFloat(airValue2);
-        const tempDisplay = document.querySelector('[data-room="room2"]');
+        const tempDisplay2 = document.querySelector('[data-room="room2"]');
         if (tempDisplay2) {
           tempDisplay2.textContent = `${airValue2}°C`;
+          console.log("Updated Room 2 temperature to:", airValue2);
+        } else {
+          console.warn("Room 2 temperature display element not found");
         }
-        console.log(
-          "Room 2 AC temperature:",
-          values[configAirConditioner2.id].value
-        );
       }
 
+      // Room 3
       if (configAirConditioner3 && values[configAirConditioner3.id]) {
         const airValue3 = values[configAirConditioner3.id].value;
         currentACTemperature3 = parseFloat(airValue3);
         const tempDisplay3 = document.querySelector('[data-room="room3"]');
         if (tempDisplay3) {
           tempDisplay3.textContent = `${airValue3}°C`;
+          console.log("Updated Room 3 temperature to:", airValue3);
+        } else {
+          console.warn("Room 3 temperature display element not found");
         }
-        console.log(
-          "Room 3 AC temperature:",
-          values[configAirConditioner3.id].value
-        );
       }
+
+      // Verify all current temperatures
+      console.log("Current temperatures:", {
+        room1: currentACTemperature,
+        room2: currentACTemperature2,
+        room3: currentACTemperature3,
+      });
     },
   });
+  // Add a function to verify DOM elements are properly set up
+  function verifyDOMElements() {
+    const rooms = ["room1", "room2", "room3"];
+    rooms.forEach((room) => {
+      const element = document.querySelector(`[data-room="${room}"]`);
+      console.log(`${room} element:`, element);
+    });
+  }
+
+  // Call verification function when DOM is loaded
+  document.addEventListener("DOMContentLoaded", verifyDOMElements);
 </script>
