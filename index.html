@@ -2,13 +2,35 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
-<div class="dynamic-page-container" id="dynamicPageContent" style="display: none"></div>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+/>
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  rel="stylesheet"
+/>
+<div
+  class="dynamic-page-container"
+  id="dynamicPageContent"
+  style="display: none"
+></div>
 
 <div class="meeting-page">
   <div class="meeting-screen">
@@ -180,8 +202,15 @@
                 <div class="settings-icon">
                   <i class="fas fa-cog"></i>
                 </div>
-                <div class="background-upload-container main-bg-container hidden">
-                  <input type="file" id="mainBackgroundUpload" accept="image/*" style="display: none" />
+                <div
+                  class="background-upload-container main-bg-container hidden"
+                >
+                  <input
+                    type="file"
+                    id="mainBackgroundUpload"
+                    accept="image/*"
+                    style="display: none"
+                  />
                   <button class="background-upload-button main-background-btn">
                     <div class="button-icon-wrapper">
                       <i class="fas fa-desktop"></i>
@@ -190,9 +219,18 @@
                   </button>
                 </div>
 
-                <div class="background-upload-container schedule-bg-container hidden">
-                  <input type="file" id="scheduleBackgroundUpload" accept="image/*" style="display: none" />
-                  <button class="background-upload-button schedule-background-btn">
+                <div
+                  class="background-upload-container schedule-bg-container hidden"
+                >
+                  <input
+                    type="file"
+                    id="scheduleBackgroundUpload"
+                    accept="image/*"
+                    style="display: none"
+                  />
+                  <button
+                    class="background-upload-button schedule-background-btn"
+                  >
                     <div class="button-icon-wrapper">
                       <i class="fas fa-table"></i>
                     </div>
@@ -218,16 +256,24 @@
               <div class="schedule-actions">
                 <button class="upload-button">
                   Upload Meeting From
-                  <img class="upload-icon"
+                  <img
+                    class="upload-icon"
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/63b8f295cfd8166b173b26ae08d375f7f940976a41ab185ea145bd917523e537?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
-                    alt="Upload icon" />
+                    alt="Upload icon"
+                  />
                 </button>
                 <input type="date" id="meetingDate" class="date-picker" />
-                <img class="upload-icon-date"
+                <img
+                  class="upload-icon-date"
                   src="https://cdn.builder.io/api/v1/image/assets/TEMP/c0a4e8a69fa64878bebad21d5087b0ff9a059ee566216f2bb71511caa204eaa7?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
-                  alt="Additional action icon" />
+                  alt="Additional action icon"
+                />
               </div>
-              <div class="schedule-table" role="table" aria-label="Meeting Schedule">
+              <div
+                class="schedule-table"
+                role="table"
+                aria-label="Meeting Schedule"
+              >
                 <div class="table-header" role="row">
                   <div role="columnheader">TT</div>
                   <div role="columnheader">Ngày</div>
@@ -264,7 +310,11 @@
               </div>
             </div>
             <div class="fullscreen-toggle">
-              <button id="fullscreenBtn" class="fullscreen-button" aria-label="Toggle Fullscreen">
+              <button
+                id="fullscreenBtn"
+                class="fullscreen-button"
+                aria-label="Toggle Fullscreen"
+              >
                 <i class="fas fa-expand"></i>
               </button>
             </div>
@@ -353,8 +403,6 @@
     configAirConditioner2 = null,
     configAirConditioner3 = null;
 
-
-
   eraWidget.init({
     onConfiguration: (configuration) => {
       // Lưu các cấu hình khi nhận được từ widget
@@ -385,7 +433,6 @@
 
       actionOn3 = configuration.actions[4]; // Lưu cấu hình hành động : On
       actionOff3 = configuration.actions[5]; // Lưu cấu hình hành động : Off
-
     },
     // Hàm lấy giá trị từ các ID và cập nhật giao diện
     onValues: (values) => {
@@ -478,17 +525,23 @@
         if (tempDisplay) {
           tempDisplay.textContent = `${airValue}°C`;
         }
-        console.log("Room 1 AC temperature:", values[configAirConditioner.id].value);
+        console.log(
+          "Room 1 AC temperature:",
+          values[configAirConditioner.id].value
+        );
       }
 
       if (configAirConditioner2 && values[configAirConditioner2.id]) {
         const airValue2 = values[configAirConditioner2.id].value;
         currentACTemperature2 = parseFloat(airValue2);
-        const tempDisplay2 = document.querySelector('[data-room="room2"]');
+        const tempDisplay = document.querySelector('[data-room="room2"]');
         if (tempDisplay2) {
           tempDisplay2.textContent = `${airValue2}°C`;
         }
-        console.log("Room 2 AC temperature:", values[configAirConditioner2.id].value);
+        console.log(
+          "Room 2 AC temperature:",
+          values[configAirConditioner2.id].value
+        );
       }
 
       if (configAirConditioner3 && values[configAirConditioner3.id]) {
@@ -498,8 +551,11 @@
         if (tempDisplay3) {
           tempDisplay3.textContent = `${airValue3}°C`;
         }
-        console.log("Room 3 AC temperature:", values[configAirConditioner3.id].value);
+        console.log(
+          "Room 3 AC temperature:",
+          values[configAirConditioner3.id].value
+        );
       }
-    }
+    },
   });
 </script>

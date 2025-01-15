@@ -1629,7 +1629,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
                 </button>
                   <span class="temperature-air" 
                     data-room="room${roomNumber}" 
-                    id="temperature-airConditioner${roomNumber}"
+                    id="temperature-airConditioner${currentTemp}"
                     data-current-temp="${currentTemp}">
                     ${currentTemp}°C
                   </span>
@@ -1990,7 +1990,7 @@ function updateACStatus(container, roomKey) {
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
-  const tempDisplay = container.querySelector(".temperature-air");
+  const tempDisplay = container.querySelector(".temperature-airConditioner");
 
   if (!statusDot || !statusText || !powerButton) {
     console.error("Required elements not found in container");
