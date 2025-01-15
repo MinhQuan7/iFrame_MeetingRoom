@@ -1525,66 +1525,42 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-let currentACTemperature = 20;
-let currentACTemperature2 = 19;
-let currentACTemperature3 = 18;
+
 // Hàm render trang động riêng biệt
 function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Rendering room page for:", roomName);
-  console.log("Room keyword:", roomKeyword);
+  console.log("Data received:", data);
 
-  // Xử lý an toàn để lấy số phòng
-  let roomNumber = "1"; // Giá trị mặc định
-  const matches = roomKeyword.match(/\d+/);
-  if (matches && matches.length > 0) {
-    roomNumber = matches[0];
-  } else {
-    // Thử lấy số từ roomName nếu không tìm thấy trong roomKeyword
-    const nameMatches = roomName.match(/\d+/);
-    if (nameMatches && nameMatches.length > 0) {
-      roomNumber = nameMatches[0];
-    }
-  }
-  console.log("Detected room number:", roomNumber);
-
-  // Lấy nhiệt độ tương ứng với số phòng
-  let currentTemp;
-  switch (roomNumber) {
-    case "2":
-      currentTemp = currentACTemperature2 || 19;
-      console.log("Current temp of room 2:", currentTemp);
-      break;
-    case "3":
-      currentTemp = currentACTemperature3 || 18;
-      console.log("Current temp of room 3:", currentTemp);
-      break;
-    default:
-      currentTemp = currentACTemperature || 20;
-  }
-
-  // Phần còn lại của code giữ nguyên...
+  // Lọc các cuộc họp cho phòng
   const roomMeetings = data.filter((meeting) =>
     meeting.room.toLowerCase().includes(roomKeyword.toLowerCase())
   );
+  console.log("Filtered room meetings:", roomMeetings);
 
+  // Lọc các cuộc họp diễn ra trong ngày
   const today = new Date();
   const filteredData = roomMeetings.filter((meeting) => {
     const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
     return meetingDate.toDateString() === today.toDateString();
   });
+  console.log("Today's meetings:", filteredData);
 
+  // Lấy thời gian hiện tại
   const currentTime = new Date();
   const currentTimeStr = `${String(currentTime.getHours()).padStart(
     2,
     "0"
   )}:${String(currentTime.getMinutes()).padStart(2, "0")}`;
 
+  // Tìm cuộc họp đang diễn ra
   const currentMeeting = filteredData.find((meeting) => {
     const startTime = meeting.startTime;
     const endTime = meeting.endTime;
     return currentTimeStr >= startTime && currentTimeStr <= endTime;
   });
+  console.log("Current meeting:", currentMeeting);
 
+  // Lọc các cuộc họp sắp diễn ra
   const upcomingMeetings = filteredData
     .filter((meeting) => {
       const startTime = meeting.startTime;
@@ -1595,7 +1571,47 @@ function renderRoomPage(data, roomKeyword, roomName) {
       const timeB = b.startTime.split(":").map(Number);
       return timeA[0] * 60 + timeA[1] - (timeB[0] * 60 + timeB[1]);
     });
+  console.log("Upcoming meetings:", upcomingMeetings);
 
+  setTimeout(() => {
+    const container = document.querySelector(".container");
+    if (!container) return;
+
+    container.addEventListener("click", (e) => {
+      const acCard = e.target.closest(".ac-card");
+      if (!acCard) return;
+
+      // Cập nhật nhiệt độ ban đầu
+      const temperatureDisplay = container.querySelector(".temperature-air");
+      if (temperatureDisplay) {
+        updateTemperature(temperatureDisplay);
+      }
+
+      // const temperatureDisplay = acCard.querySelector(".temperature-air");
+
+      // Xử lý nút power
+      if (e.target.closest(".controls .btn:first-child")) {
+        acState.isOn = !acState.isOn;
+        updateACStatus(acCard);
+      }
+
+      // Xử lý nút giảm nhiệt độ
+      if (e.target.closest(".controls .btn:nth-child(3)")) {
+        if (acState.isOn && acState.temperature > acState.minTemp) {
+          acState.temperature--;
+          updateTemperature(temperatureDisplay);
+        }
+      }
+
+      // Xử lý nút tăng nhiệt độ
+      if (e.target.closest(".btn-up")) {
+        if (acState.isOn && acState.temperature < acState.maxTemp) {
+          acState.temperature++;
+          updateTemperature(temperatureDisplay);
+        }
+      }
+    });
+  }, 0);
   return `
     <div class="container">
       <div class="left-panel">
@@ -1605,50 +1621,78 @@ function renderRoomPage(data, roomKeyword, roomName) {
           </div>
           <div class="currentDateElement-1" id="currentDate-1"></div>
         </div>
-        <div class="ac-card">
-          <div class="card-content">
+        <div>
+          <div class="device online">
             <img
+              alt="Power meter icon"
+              height="30"
+              src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
+              width="30"
+            />
+            <div>
+              <div>Power meter AC 1</div>
+              <div>Dòng điện: 8.5 A | Công suất: 0.56 KW</div>
+            </div>
+            <div class="status">
+              <i class="fas fa-circle"> </i>
+              <span> Online </span>
+            </div>
+          </div>
+<div class="ac-card" data-room="${roomKeyword}">
+        <div class="card-content">
+            <!-- AC Icon -->
+             <img
               alt="Air conditioner icon"
               height="30"
               src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg"
               width="30"
             />
+                <rect x="2" y="3" width="20" height="14" rx="2" stroke-width="2" />
+                <path d="M6 7h12" stroke-width="2" />
+                <path d="M6 11h12" stroke-width="2" />
+            </svg>
+
             <div class="main-content">
-              <h3 class="title">Máy lạnh ${roomName}</h3>
-              <div class="controls">
-                <button class="btn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10" stroke-width="2" />
-                  </svg>
-                </button>
-                <div class="divider"></div>
-                <button class="btn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M19 9l-7 7-7-7" stroke-width="2" />
-                  </svg>
-                </button>
-                  <span class="temperature-air" 
-                    data-room="room${roomNumber}" 
-                    id="temperature-airConditioner">
-                    ${currentTemp}°C
-                  </span>
-                <button class="btn-up">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M5 15l7-7 7 7" stroke-width="2" />
-                  </svg>
-                </button>
-              </div>
-              <div class="status-air">
-                <div class="status-air-dot"></div>
-                <span>Offline</span>
-              </div>
+                <h3 class="title">Máy lạnh phòng họp 1</h3>
+
+                <div class="controls">
+                    <!-- Power Button -->
+                    <button class="btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10" stroke-width="2" />
+                        </svg>
+                    </button>
+
+                    <div class="divider"></div>
+
+                    <!-- Down Button -->
+                    <button class="btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M19 9l-7 7-7-7" stroke-width="2" />
+                        </svg>
+                    </button>
+
+                    <span class="temperature-air" id ="temperature-airConditioner">20°C</span>
+
+                    <!-- Up Button -->
+                    <button class="btn-up">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M5 15l7-7 7 7" stroke-width="2" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="status-air">
+                    <div class="status-air-dot"></div>
+                    <span>Offline</span>
+                </div>
             </div>
-          </div>
+        </div>
+    </div>
         </div>
         <button class="home-button">
-          <i class="fas fa-home"></i>
-          TRANG CHỦ
-        </button>
+        <i class="fas fa-home"></i>
+  TRANG CHỦ</button>
       </div>
       <div class="main-panel">
         <div>
@@ -1918,28 +1962,26 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Khởi tạo trạng thái ban đầu
-// 1. Đảm bảo acStates được khởi tạo global và sớm nhất có thể
-const acStates = {
-  room1: {
+let acStates = {
+  lotus: {
     isOn: false,
     temperature: 20,
+    minTemp: 16,
+    maxTemp: 30,
   },
-  room2: {
+  lavender1: {
     isOn: false,
-    temperature: 19,
+    temperature: 20,
+    minTemp: 16,
+    maxTemp: 30,
   },
-  room3: {
+  lavender2: {
     isOn: false,
-    temperature: 18,
+    temperature: 20,
+    minTemp: 16,
+    maxTemp: 30,
   },
 };
-// Function to determine which AC state to use based on room
-function getAcStateForRoom(roomKeyword) {
-  if (roomKeyword.includes("1")) return "room1";
-  if (roomKeyword.includes("2")) return "room2";
-  if (roomKeyword.includes("3")) return "room3";
-  return "room1"; // Default fallback
-}
 // Thêm CSS cho styling
 const style = document.createElement("style");
 style.textContent = `
@@ -1956,234 +1998,114 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-//=================Air Conditioner ==============
-let statusAirConditioner = null;
+//=================Air Conditioner ===
+let actionOn = null,
+  actionOff = null,
+  statusAirConditioner = null;
 // Hàm cập nhật trạng thái điều hòa
-function updateACStatus(container, roomKey) {
-  console.log("Updating AC status for:", roomKey, "Container:", container);
-  console.log("Current states:", acStates);
-
-  if (!container) {
-    console.error("Container not found");
-    return;
-  }
-
-  if (!acStates[roomKey]) {
-    console.error(`State not found for room ${roomKey}`);
-    // Khởi tạo state nếu chưa tồn tại
-    acStates[roomKey] = {
-      isOn: false,
-      temperature: 20,
-    };
-  }
-
-  const state = acStates[roomKey];
-  console.log("Current state for room:", state);
-
+function updateACStatus(container, room) {
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
-  const tempDisplay = container.querySelector(".temperature-airConditioner");
+  const tempDisplay = container.querySelector(".temperature-air");
 
-  if (!statusDot || !statusText || !powerButton) {
-    console.error("Required elements not found in container");
-    return;
-  }
-
-  if (state.isOn) {
-    console.log("Access to state.isOn");
+  if (acStates[room].isOn) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
-    const roomNumber = parseInt(roomKey.replace("room", ""));
-    startTemperatureUpdates(roomNumber);
+    startTemperatureUpdates(room);
+    eraWidget.triggerAction(actions[room].on, null);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
+    eraWidget.triggerAction(actions[room].off, null);
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
-    const roomNumber = parseInt(roomKey.replace("room", ""));
-    stopTemperatureUpdates(roomNumber);
+    stopTemperatureUpdates(room);
   }
 }
 
-const updateIntervals = {
-  room1: null,
-  room2: null,
-  room3: null,
-};
-function stopTemperatureUpdates(roomNumber) {
-  const roomKey = getRoomKey(roomNumber);
-
-  if (updateIntervals[roomKey]) {
-    clearInterval(updateIntervals[roomKey]);
+let updateInterval;
+// Stop IoT temperature updates
+function stopTemperatureUpdates() {
+  if (updateInterval) {
+    clearInterval(updateInterval);
+    updateInterval = null;
   }
 }
 
-/*=====Synchronize data from IoT Paltform with Air Conditioner====*/
-// Add event listener to document for AC controls
-document.addEventListener("click", (e) => {
+function updateTemperature(tempDisplay) {
+  if (!tempDisplay) return;
+
+  if (acState.isOn) {
+    tempDisplay.textContent = `${currentACTemperature}°C`;
+  } else {
+    tempDisplay.textContent = "OFF";
+  }
+}
+/*===synchronize data from IoT Paltform with Air Conditioner====*/
+// Start IoT temperature updates
+function startTemperatureUpdates(room) {
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
+  }
+
+  updateIntervals[room] = setInterval(() => {
+    if (acStates[room].isOn) {
+      const tempDisplay = document.querySelector(`#${room} .temperature-air`);
+      if (tempDisplay) {
+        // Lấy nhiệt độ từ IoT platform theo phòng
+        const temperature = getTemperatureFromIoT(room);
+        tempDisplay.textContent = `${temperature}°C`;
+      }
+    }
+  }, 100);
+}
+function getTemperatureFromIoT(room) {
+  // Gọi API hoặc lấy dữ liệu từ IoT platform theo phòng
+  switch (room) {
+    case "lotus":
+      return currentACTemperatureLotus;
+    case "lavender1":
+      return currentACTemperatureLavender1;
+    case "lavender2":
+      return currentACTemperatureLavender2;
+    default:
+      return 20;
+  }
+}
+
+container.addEventListener("click", (e) => {
   const acCard = e.target.closest(".ac-card");
   if (!acCard) return;
 
-  const powerBtn = e.target.closest(".controls .btn:first-child");
-  if (!powerBtn) return;
-
+  const room = acCard.dataset.room; // Thêm data-room attribute vào HTML
   const tempDisplay = acCard.querySelector(".temperature-air");
-  if (!tempDisplay) {
-    console.error("Temperature display not found");
-    return;
+
+  if (e.target.closest(".controls .btn:first-child")) {
+    acStates[room].isOn = !acStates[room].isOn;
+    updateACStatus(acCard, room);
   }
 
-  const roomKey = tempDisplay.dataset.room;
-  console.log("Room key from dataset:", roomKey);
-
-  if (!acStates[roomKey]) {
-    console.log("Initializing state for room:", roomKey);
-    acStates[roomKey] = {
-      isOn: false,
-      temperature: 20,
-    };
+  if (e.target.closest(".controls .btn:nth-child(3)")) {
+    if (
+      acStates[room].isOn &&
+      acStates[room].temperature > acStates[room].minTemp
+    ) {
+      acStates[room].temperature--;
+      updateTemperature(tempDisplay, room);
+    }
   }
 
-  acStates[roomKey].isOn = !acStates[roomKey].isOn;
-  console.log(`Toggled ${roomKey} to:`, acStates[roomKey].isOn);
-  updateACStatus(acCard, roomKey);
-});
-
-// 4. Thêm hàm để kiểm tra trạng thái
-function checkAcStates() {
-  console.log("Current AC states:", acStates);
-}
-
-// 5. Gọi kiểm tra khi load trang
-document.addEventListener("DOMContentLoaded", () => {
-  checkAcStates();
-});
-// 1. Thêm hàm helper để chuyển đổi số phòng thành room key
-function getRoomKey(roomNumber) {
-  return `room${roomNumber}`;
-}
-let configAirConditioner = null,
-  configAirConditioner2 = null,
-  configAirConditioner3 = null;
-// 2. Sửa lại hàm startTemperatureUpdates
-function startTemperatureUpdates(roomNumber) {
-  const roomKey = getRoomKey(roomNumber);
-  console.log(`Starting temperature updates for ${roomKey}`);
-
-  if (updateIntervals[roomKey]) {
-    console.log(`Clearing existing interval for ${roomKey}`);
-    clearInterval(updateIntervals[roomKey]);
+  if (e.target.closest(".btn-up")) {
+    if (
+      acStates[room].isOn &&
+      acStates[room].temperature < acStates[room].maxTemp
+    ) {
+      acStates[room].temperature++;
+      updateTemperature(tempDisplay, room);
+    }
   }
-
-  updateIntervals[roomKey] = setInterval(() => {
-    const state = acStates[roomKey];
-    if (state?.isOn) {
-      console.log(`Updating temperature display for ${roomKey}`);
-      const tempDisplay = document.querySelector(`[data-room="${roomKey}"]`);
-
-      if (tempDisplay) {
-        let currentTemp;
-        switch (roomNumber) {
-          case 1:
-            currentTemp = currentACTemperature;
-            console.log(`Room 1 current temperature: ${currentTemp}`);
-            break;
-          case 2:
-            currentTemp = currentACTemperature2;
-            console.log(`Room 2 current temperature: ${currentTemp}`);
-            break;
-          case 3:
-            currentTemp = currentACTemperature3;
-            console.log(`Room 3 current temperature: ${currentTemp}`);
-            break;
-        }
-        tempDisplay.textContent = `${currentTemp}°C`;
-      } else {
-        console.error(`Temperature display element not found for ${roomKey}`);
-      }
-    }
-  }, 1000); // Tăng interval lên 1000ms để tránh quá tải
-}
-function verifyTemperatureData() {
-  console.log("Verifying temperature data:");
-  console.log("Room 1:", {
-    config: configAirConditioner,
-    currentTemp: currentACTemperature,
-    state: acStates.room1,
-  });
-  console.log("Room 2:", {
-    config: configAirConditioner2,
-    currentTemp: currentACTemperature2,
-    state: acStates.room2,
-  });
-  console.log("Room 3:", {
-    config: configAirConditioner3,
-    currentTemp: currentACTemperature3,
-    state: acStates.room3,
-  });
-}
-
-// Gọi hàm verify mỗi 5 giây
-setInterval(verifyTemperatureData, 5000);
-function handleTemperatureUpdate(roomNumber, temperature) {
-  try {
-    const roomKey = getRoomKey(roomNumber);
-    if (!acStates[roomKey]) {
-      throw new Error(`Invalid room key: ${roomKey}`);
-    }
-
-    console.log(`Updating temperature for ${roomKey} to ${temperature}°C`);
-
-    switch (roomNumber) {
-      case 1:
-        temperature = currentACTemperature;
-        break;
-      case 2:
-        temperature = currentACTemperature2;
-        break;
-      case 3:
-        currentACTemperature3 = temperature;
-        break;
-      default:
-        throw new Error(`Invalid room number: ${roomNumber}`);
-    }
-
-    const tempDisplay = document.querySelector("temperature-air");
-    tempDisplay.forEach((display) => {
-      if (display) {
-        display.textContent = `${temperature}°C`;
-        //currentACTemperature is a variable of log data from Widget IoT platform
-        //" currentACTemperature = parseFloat(airValue)"
-      }
-    });
-  } catch (error) {
-    console.error("Error updating temperature:", error);
-  }
-}
-// Modify the renderRoomPage function to include AC handling
-function modifyRenderRoomPage(data, roomKeyword, roomName) {
-  const roomKey = getAcStateForRoom(roomKeyword);
-  const originalHtml = renderRoomPage(data, roomKeyword, roomName);
-
-  // Initialize AC status after render
-  setTimeout(() => {
-    const container = document.querySelector(".container");
-    if (!container) return;
-
-    const acCard = container.querySelector(".ac-card");
-    if (acCard) {
-      updateACStatus(acCard, roomKey);
-    }
-  }, 0);
-
-  return originalHtml;
-}
-console.log("Room temperatures:", {
-  room1: currentACTemperature,
-  room2: currentACTemperature2,
-  room3: currentACTemperature3,
 });

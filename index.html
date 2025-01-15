@@ -2,35 +2,13 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  rel="stylesheet"
-/>
-<link
-  href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap"
-  rel="stylesheet"
-/>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-/>
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap"
-  rel="stylesheet"
-/>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-/>
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  rel="stylesheet"
-/>
-<div
-  class="dynamic-page-container"
-  id="dynamicPageContent"
-  style="display: none"
-></div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+<div class="dynamic-page-container" id="dynamicPageContent" style="display: none"></div>
 
 <div class="meeting-page">
   <div class="meeting-screen">
@@ -202,15 +180,8 @@
                 <div class="settings-icon">
                   <i class="fas fa-cog"></i>
                 </div>
-                <div
-                  class="background-upload-container main-bg-container hidden"
-                >
-                  <input
-                    type="file"
-                    id="mainBackgroundUpload"
-                    accept="image/*"
-                    style="display: none"
-                  />
+                <div class="background-upload-container main-bg-container hidden">
+                  <input type="file" id="mainBackgroundUpload" accept="image/*" style="display: none" />
                   <button class="background-upload-button main-background-btn">
                     <div class="button-icon-wrapper">
                       <i class="fas fa-desktop"></i>
@@ -219,18 +190,9 @@
                   </button>
                 </div>
 
-                <div
-                  class="background-upload-container schedule-bg-container hidden"
-                >
-                  <input
-                    type="file"
-                    id="scheduleBackgroundUpload"
-                    accept="image/*"
-                    style="display: none"
-                  />
-                  <button
-                    class="background-upload-button schedule-background-btn"
-                  >
+                <div class="background-upload-container schedule-bg-container hidden">
+                  <input type="file" id="scheduleBackgroundUpload" accept="image/*" style="display: none" />
+                  <button class="background-upload-button schedule-background-btn">
                     <div class="button-icon-wrapper">
                       <i class="fas fa-table"></i>
                     </div>
@@ -256,24 +218,16 @@
               <div class="schedule-actions">
                 <button class="upload-button">
                   Upload Meeting From
-                  <img
-                    class="upload-icon"
+                  <img class="upload-icon"
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/63b8f295cfd8166b173b26ae08d375f7f940976a41ab185ea145bd917523e537?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
-                    alt="Upload icon"
-                  />
+                    alt="Upload icon" />
                 </button>
                 <input type="date" id="meetingDate" class="date-picker" />
-                <img
-                  class="upload-icon-date"
+                <img class="upload-icon-date"
                   src="https://cdn.builder.io/api/v1/image/assets/TEMP/c0a4e8a69fa64878bebad21d5087b0ff9a059ee566216f2bb71511caa204eaa7?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
-                  alt="Additional action icon"
-                />
+                  alt="Additional action icon" />
               </div>
-              <div
-                class="schedule-table"
-                role="table"
-                aria-label="Meeting Schedule"
-              >
+              <div class="schedule-table" role="table" aria-label="Meeting Schedule">
                 <div class="table-header" role="row">
                   <div role="columnheader">TT</div>
                   <div role="columnheader">Ngày</div>
@@ -310,11 +264,7 @@
               </div>
             </div>
             <div class="fullscreen-toggle">
-              <button
-                id="fullscreenBtn"
-                class="fullscreen-button"
-                aria-label="Toggle Fullscreen"
-              >
+              <button id="fullscreenBtn" class="fullscreen-button" aria-label="Toggle Fullscreen">
                 <i class="fas fa-expand"></i>
               </button>
             </div>
@@ -385,8 +335,6 @@
 
   const airConditioner = document.getElementById("temperature-airConditioner");
   let currentACTemperature = 20; // Giá trị mặc định
-  let currentACTemperature2 = 19;
-  let currentACTemperature3 = 18;
   let configTemp = null,
     configHumi = null,
     configCurrent = null,
@@ -399,9 +347,8 @@
     configHumi3 = null,
     configCurrent3 = null,
     configPower3 = null,
-    configAirConditioner = null,
-    configAirConditioner2 = null,
-    configAirConditioner3 = null;
+    configAirConditioner = null;
+
 
   eraWidget.init({
     onConfiguration: (configuration) => {
@@ -422,37 +369,9 @@
       configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
 
       configAirConditioner = configuration.realtime_configs[12];
-      configAirConditioner2 = configuration.realtime_configs[13];
-      configAirConditioner3 = configuration.realtime_configs[14];
 
-      console.log("Full configuration:", configuration);
-
-      // Verify the realtime_configs array exists and has enough elements
-      if (
-        configuration.realtime_configs &&
-        configuration.realtime_configs.length >= 15
-      ) {
-        configAirConditioner = configuration.realtime_configs[12];
-        configAirConditioner2 = configuration.realtime_configs[13];
-        configAirConditioner3 = configuration.realtime_configs[14];
-
-        // Log the assigned configurations
-        console.log("Assigned configurations:", {
-          room1: configAirConditioner,
-          room2: configAirConditioner2,
-          room3: configAirConditioner3,
-        });
-      } else {
-        console.error("Invalid configuration structure:", configuration);
-      }
       actionOn = configuration.actions[0]; // Lưu cấu hình hành động : On
       actionOff = configuration.actions[1]; // Lưu cấu hình hành động : Off
-
-      actionOn2 = configuration.actions[2]; // Lưu cấu hình hành động : On
-      actionOff2 = configuration.actions[3]; // Lưu cấu hình hành động : Off
-
-      actionOn3 = configuration.actions[4]; // Lưu cấu hình hành động : On
-      actionOff3 = configuration.actions[5]; // Lưu cấu hình hành động : Off
     },
     // Hàm lấy giá trị từ các ID và cập nhật giao diện
     onValues: (values) => {
@@ -472,8 +391,6 @@
         configCurrent3,
         configPower3,
         configAirConditioner,
-        configAirConditioner2,
-        configAirConditioner3,
       });
 
       console.log("Current values:", values);
@@ -538,64 +455,18 @@
         if (powerIndex3) powerIndex3.textContent = powerValue3;
       }
 
-      console.log("Received values:", values);
-
-      // Room 1
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
         currentACTemperature = parseFloat(airValue);
-        const tempDisplay = document.querySelector('[data-room="room1"]');
-        if (tempDisplay) {
-          tempDisplay.textContent = `${airValue}°C`;
-          console.log("Updated Room 1 temperature to:", airValue);
-        } else {
-          console.warn("Room 1 temperature display element not found");
+        if (airConditioner) {
+          airConditioner.textContent = airValue + "°C";
+          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
+          const iframeTemp = document.querySelector(".temperature-air");
+          if (iframeTemp) {
+            iframeTemp.textContent = airValue + "°C";
+          }
         }
       }
-
-      // Room 2
-      if (configAirConditioner2 && values[configAirConditioner2.id]) {
-        const airValue2 = values[configAirConditioner2.id].value;
-        currentACTemperature2 = parseFloat(airValue2);
-        const tempDisplay2 = document.querySelector('[data-room="room2"]');
-        if (tempDisplay2) {
-          tempDisplay2.textContent = `${airValue2}°C`;
-          console.log("Updated Room 2 temperature to:", airValue2);
-        } else {
-          console.warn("Room 2 temperature display element not found");
-        }
-      }
-
-      // Room 3
-      if (configAirConditioner3 && values[configAirConditioner3.id]) {
-        const airValue3 = values[configAirConditioner3.id].value;
-        currentACTemperature3 = parseFloat(airValue3);
-        const tempDisplay3 = document.querySelector('[data-room="room3"]');
-        if (tempDisplay3) {
-          tempDisplay3.textContent = `${airValue3}°C`;
-          console.log("Updated Room 3 temperature to:", airValue3);
-        } else {
-          console.warn("Room 3 temperature display element not found");
-        }
-      }
-
-      // Verify all current temperatures
-      console.log("Current temperatures:", {
-        room1: currentACTemperature,
-        room2: currentACTemperature2,
-        room3: currentACTemperature3,
-      });
     },
   });
-  // Add a function to verify DOM elements are properly set up
-  function verifyDOMElements() {
-    const rooms = ["room1", "room2", "room3"];
-    rooms.forEach((room) => {
-      const element = document.querySelector(`[data-room="${room}"]`);
-      console.log(`${room} element:`, element);
-    });
-  }
-
-  // Call verification function when DOM is loaded
-  document.addEventListener("DOMContentLoaded", verifyDOMElements);
 </script>
