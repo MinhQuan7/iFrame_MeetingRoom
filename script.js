@@ -1591,22 +1591,22 @@ function renderRoomPage(data, roomKeyword, roomName) {
 
       // Xử lý nút power
       if (e.target.closest(".controls .btn:first-child")) {
-        acState.isOn = !acState.isOn;
+        acStates.isOn = !acStates.isOn;
         updateACStatus(acCard);
       }
 
       // Xử lý nút giảm nhiệt độ
       if (e.target.closest(".controls .btn:nth-child(3)")) {
-        if (acState.isOn && acState.temperature > acState.minTemp) {
-          acState.temperature--;
+        if (acStates.isOn && acStates.temperature > acStates.minTemp) {
+          acStates.temperature--;
           updateTemperature(temperatureDisplay);
         }
       }
 
       // Xử lý nút tăng nhiệt độ
       if (e.target.closest(".btn-up")) {
-        if (acState.isOn && acState.temperature < acState.maxTemp) {
-          acState.temperature++;
+        if (acStates.isOn && acStates.temperature < acStates.maxTemp) {
+          acStates.temperature++;
           updateTemperature(temperatureDisplay);
         }
       }
@@ -2039,7 +2039,7 @@ function stopTemperatureUpdates() {
 function updateTemperature(tempDisplay) {
   if (!tempDisplay) return;
 
-  if (acState.isOn) {
+  if (acStates.isOn) {
     tempDisplay.textContent = `${currentACTemperature}°C`;
   } else {
     tempDisplay.textContent = "OFF";
