@@ -1232,19 +1232,19 @@ schedule-table {
 }
 
 /*========Upgrade with Change Background Feature============*/
-.main-background-btn {
+/* .main-background-btn {
   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
   color: white;
   box-shadow: 0 6px 12px rgba(106, 17, 203, 0.3),
     0 4px 8px rgba(37, 117, 252, 0.2);
-}
+} */
 
-.schedule-background-btn {
+/* .schedule-background-btn {
   background: linear-gradient(135deg, #ff6b6b, #ff9a9a);
   color: white;
   box-shadow: 0 6px 12px rgba(255, 107, 107, 0.3),
     0 4px 8px rgba(255, 154, 154, 0.2);
-}
+} */
 
 .button-icon-wrapper {
   background-color: rgba(255, 255, 255, 0.2);
@@ -1271,7 +1271,7 @@ schedule-table {
   padding: 10px 20px;
   border: none;
   border-radius: 40px;
-  background: linear-gradient(135deg, #4ecdc4, #45b7d1);
+  /* background: linear-gradient(135deg, #4ecdc4, #45b7d1); */
   color: white;
   font-weight: 600;
   font-size: 13px;
@@ -1391,7 +1391,7 @@ schedule-table {
   );
   border-radius: 20px; /* Bo tròn góc nhiều hơn */
   padding: 30px;
-  max-width: 500px; /* Tăng kích thước */
+  max-width: 450px; /* Tăng kích thước */
   width: 90%;
   max-height: 80%;
   text-align: center;
@@ -1400,10 +1400,18 @@ schedule-table {
   transform: scale(0.7); /* Hiệu ứng scale ban đầu */
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  z-index: 100000;
 }
 
 .background-preview-modal.show .background-preview-content {
   transform: scale(1);
+  opacity: 1;
+}
+:fullscreen .background-preview-content,
+:-webkit-full-screen .background-preview-content,
+:-moz-full-screen .background-preview-content {
+  display: block;
+  visibility: visible;
   opacity: 1;
 }
 
@@ -1610,7 +1618,7 @@ schedule-table {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 2px;
   padding: 10px 20px;
   border: none;
   border-radius: 40px;
@@ -1635,10 +1643,10 @@ schedule-table {
 .background-upload-button {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
   padding: 10px 20px;
   background-color: rgba(69, 255, 218, 0.2);
-  border-radius: 30px;
+  /* border-radius: 30px; */
   color: white;
 }
 
