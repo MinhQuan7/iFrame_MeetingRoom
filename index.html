@@ -324,8 +324,8 @@
 
   let roomTemperatures = {
     lotus: 20,
-    "lavender-1": 20,
-    "lavender-2": 20,
+    "lavender 1": 20,
+    "lavender 2": 20,
   };
   const eraWidget = new EraWidget();
   // Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
@@ -483,15 +483,15 @@
 
       if (configAirConditioner2 && values[configAirConditioner2.id]) {
         const airValue2 = values[configAirConditioner2.id].value;
-        roomTemperatures["lavender-1"] = parseFloat(airValue2);
-        updateRoomTemperatureDisplay("lavender-1", airValue2);
+        roomTemperatures["lavender 1"] = parseFloat(airValue2); // Cập nhật key
+        updateRoomTemperatureDisplay("lavender 1", airValue2);
         console.log("Air Value2 (lavender 1):", airValue2);
       }
 
       if (configAirConditioner3 && values[configAirConditioner3.id]) {
         const airValue3 = values[configAirConditioner3.id].value;
-        roomTemperatures["lavender-2"] = parseFloat(airValue3);
-        updateRoomTemperatureDisplay("lavender-2", airValue3);
+        roomTemperatures["lavender 2"] = parseFloat(airValue3); // Cập nhật key
+        updateRoomTemperatureDisplay("lavender 2", airValue3);
         console.log("Air Value3 (lavender 2):", airValue3);
       }
     },
@@ -501,21 +501,24 @@
     if (!window.roomTemperatures) {
       window.roomTemperatures = {
         lotus: 20,
-        "lavender-1": 20,
-        "lavender-2": 20,
+        "lavender 1": 20,
+        "lavender 2": 20,
       };
     }
 
-    // Clear any existing intervals first
+    // Clear existing intervals
     Object.keys(updateIntervals).forEach((room) => {
       clearInterval(updateIntervals[room]);
     });
 
+    // Set up new monitoring
     Object.keys(roomTemperatures).forEach((room) => {
+      const sanitizedRoom = sanitizeRoomName(room);
+      console.log(`Setting up monitoring for room: ${sanitizedRoom}`);
+
       updateIntervals[room] = setInterval(() => {
         if (acStates[room] && acStates[room].isOn) {
           updateRoomTemperatureDisplay(room, roomTemperatures[room]);
-          console.log(`Updating ${room} temperature:`, roomTemperatures[room]);
         }
       }, 1000);
     });
@@ -536,14 +539,20 @@
   // Helper function to update the temperature display immediately
   function updateRoomTemperatureDisplay(roomName, temperature) {
     const sanitizedRoom = sanitizeRoomName(roomName);
-    // Fix the selector to match the actual HTML structure
-    const tempDisplay = document.querySelector(`#temperature-${sanitizedRoom}`);
+    // Log để debug
+    console.log(`Attempting to update temperature for room: ${sanitizedRoom}`);
+
+    // Sử dụng ID chính xác
+    const tempDisplay = document.getElementById(`temperature-${sanitizedRoom}`);
+    console.log(`Found element:`, tempDisplay);
 
     if (tempDisplay) {
       if (acStates[roomName] && acStates[roomName].isOn) {
         tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
+        console.log(`Updated temperature for ${roomName} to ${temperature}°C`);
       } else {
         tempDisplay.textContent = "OFF";
+        console.log(`Set ${roomName} display to OFF`);
       }
     } else {
       console.warn(`Temperature display element not found for room: ${roomName}`);
