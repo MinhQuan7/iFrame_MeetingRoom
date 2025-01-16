@@ -319,13 +319,13 @@
 <script>
 
   function sanitizeRoomName(room) {
-    return room.toLowerCase();
+    return room.toLowerCase().replace(/\s+/g, "-");
   }
 
   let roomTemperatures = {
     lotus: 20,
-    "lavender 1": 20,
-    "lavender 2": 20,
+    "lavender-1": 20,
+    "lavender-2": 20,
   };
   const eraWidget = new EraWidget();
   // Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
@@ -483,15 +483,15 @@
 
       if (configAirConditioner2 && values[configAirConditioner2.id]) {
         const airValue2 = values[configAirConditioner2.id].value;
-        roomTemperatures["lavender 1"] = parseFloat(airValue2);
-        updateRoomTemperatureDisplay("lavender 1", airValue2);
+        roomTemperatures["lavender-1"] = parseFloat(airValue2);
+        updateRoomTemperatureDisplay("lavender-1", airValue2);
         console.log("Air Value (lotus):", airValue2);
       }
 
       if (configAirConditioner3 && values[configAirConditioner3.id]) {
         const airValue3 = values[configAirConditioner3.id].value;
-        roomTemperatures["lavender 2"] = parseFloat(airValue3);
-        updateRoomTemperatureDisplay("lavender 2", airValue3);
+        roomTemperatures["lavender-2"] = parseFloat(airValue3);
+        updateRoomTemperatureDisplay("lavender-2", airValue3);
         console.log("Air Value (lotus):", airValue3);
       }
     },
@@ -501,8 +501,8 @@
     if (!window.roomTemperatures) {
       window.roomTemperatures = {
         lotus: 20,
-        "lavender 1": 20,
-        "lavender 2": 20,
+        "lavender-1": 20,
+        "lavender-2": 20,
       };
     }
 
@@ -511,7 +511,7 @@
         const sanitizedRoom = sanitizeRoomName(room);
         if (acStates[room] && acStates[room].isOn) {
           const tempDisplay = document.querySelector(
-            `${sanitizedRoom}`
+            `#temperature-${sanitizedRoom}`
           );
           if (tempDisplay) {
             tempDisplay.textContent = `${roomTemperatures[room].toFixed(0)}°C`;
