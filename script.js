@@ -1536,13 +1536,13 @@ let acStates = {
     minTemp: 16,
     maxTemp: 30,
   },
-  lavender1: {
+  "lavender 1": {
     isOn: false,
     roomTemperatures: 19,
     minTemp: 16,
     maxTemp: 30,
   },
-  lavender2: {
+  "lavender 2": {
     isOn: false,
     roomTemperatures: 18,
     minTemp: 16,
@@ -2081,7 +2081,7 @@ function updateRoomTemperatureDisplay(roomName, temperature) {
   );
   if (tempDisplay) {
     if (acStates[roomName] && acStates[roomName].isOn) {
-      tempDisplay.textContent = `${parseFloat(temperature).toFixed(1)}°C`;
+      tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
     } else {
       tempDisplay.textContent = "OFF";
     }
