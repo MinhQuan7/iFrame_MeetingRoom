@@ -485,14 +485,14 @@
         const airValue2 = values[configAirConditioner2.id].value;
         roomTemperatures["lavender-1"] = parseFloat(airValue2);
         updateRoomTemperatureDisplay("lavender-1", airValue2);
-        console.log("Air Value (lotus):", airValue2);
+        console.log("Air Value2 (lavender 1):", airValue2);
       }
 
       if (configAirConditioner3 && values[configAirConditioner3.id]) {
         const airValue3 = values[configAirConditioner3.id].value;
         roomTemperatures["lavender-2"] = parseFloat(airValue3);
         updateRoomTemperatureDisplay("lavender-2", airValue3);
-        console.log("Air Value (lotus):", airValue3);
+        console.log("Air Value3 (lavender 2):", airValue3);
       }
     },
   });
@@ -506,21 +506,47 @@
       };
     }
 
-    setInterval(() => {
-      Object.keys(roomTemperatures).forEach((room) => {
-        const sanitizedRoom = sanitizeRoomName(room);
-        if (acStates[room] && acStates[room].isOn) {
-          const tempDisplay = document.querySelector(
-            `#temperature-${sanitizedRoom}`
-          );
-          if (tempDisplay) {
-            tempDisplay.textContent = `${roomTemperatures[room].toFixed(0)}°C`;
-          }
-        }
-      });
-    }, 1000);
-  }
-  // Initialize the monitoring when the page loads
-  document.addEventListener('DOMContentLoaded', startTemperatureMonitoring);
+    // Clear any existing intervals first
+    Object.keys(updateIntervals).forEach((room) => {
+      clearInterval(updateIntervals[room]);
+    });
 
+    Object.keys(roomTemperatures).forEach((room) => {
+      updateIntervals[room] = setInterval(() => {
+        if (acStates[room] && acStates[room].isOn) {
+          updateRoomTemperatureDisplay(room, roomTemperatures[room]);
+          console.log(`Updating ${room} temperature:`, roomTemperatures[room]);
+        }
+      }, 1000);
+    });
+  }
+
+  function sanitizeRoomName(room) {
+    return room.toLowerCase().replace(/\s+/g, "-");
+  }
+  // Add event listeners for debugging
+  document.addEventListener("DOMContentLoaded", () => {
+    startTemperatureMonitoring();
+    // Debug logging for temperature updates
+    Object.keys(roomTemperatures).forEach((room) => {
+      console.log(`Initial temperature for ${room}:`, roomTemperatures[room]);
+    });
+  });
+
+  // Helper function to update the temperature display immediately
+  function updateRoomTemperatureDisplay(roomName, temperature) {
+    const sanitizedRoom = sanitizeRoomName(roomName);
+    // Fix the selector to match the actual HTML structure
+    const tempDisplay = document.querySelector(`#temperature-${sanitizedRoom}`);
+
+    if (tempDisplay) {
+      if (acStates[roomName] && acStates[roomName].isOn) {
+        tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
+      } else {
+        tempDisplay.textContent = "OFF";
+      }
+    } else {
+      console.warn(`Temperature display element not found for room: ${roomName}`);
+    }
+  }
 </script>

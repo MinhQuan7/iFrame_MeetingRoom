@@ -2020,14 +2020,21 @@ function updateACStatus(container, room) {
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
-  const tempDisplay = container.querySelector(".temperature-air");
+  const tempDisplay = document.querySelector(`#temperature-${sanitizedRoom}`);
+
+  if (!acStates[room]) {
+    console.warn(`No AC state found for room: ${room}`);
+    return;
+  }
 
   if (acStates[room].isOn) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
     powerButton.classList.remove("OFF");
-    startTemperatureUpdates(sanitizedRoom);
+    startTemperatureUpdates(room);
+    // Immediately update temperature display
+    updateRoomTemperatureDisplay(room, roomTemperatures[room]);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
@@ -2035,10 +2042,9 @@ function updateACStatus(container, room) {
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
-    stopTemperatureUpdates(sanitizedRoom);
+    stopTemperatureUpdates(room);
   }
 }
-
 let updateIntervals = {};
 
 function getRoomSelector(room) {
@@ -2074,24 +2080,5 @@ function stopTemperatureUpdates(room) {
   if (updateIntervals[room]) {
     clearInterval(updateIntervals[room]);
     delete updateIntervals[room];
-  }
-}
-function sanitizeRoomName(room) {
-  return room.toLowerCase().replace(/\s+/g, "-");
-}
-
-// Helper function to update the temperature display immediately
-function updateRoomTemperatureDisplay(roomName, temperature) {
-  const sanitizedRoom = sanitizeRoomName(roomName);
-  const tempDisplay = document.querySelector(
-    `#${sanitizedRoom} .temperature-air`
-  );
-
-  if (tempDisplay) {
-    if (acStates[roomName] && acStates[roomName].isOn) {
-      tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
-    } else {
-      tempDisplay.textContent = "OFF";
-    }
   }
 }
