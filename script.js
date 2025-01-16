@@ -2038,26 +2038,20 @@ function updateACStatus(container, room) {
 
 let updateIntervals = {};
 
-function stopTemperatureUpdates(room) {
-  if (updateIntervals[room]) {
-    clearInterval(updateIntervals[room]);
-    updateIntervals[room] = null;
-  }
+function getRoomSelector(room) {
+  // Replace spaces with hyphens and convert to lowercase for consistency
+  return room.toLowerCase().replace(/\s+/g, "-");
 }
 
-// Cập nhật nhiệt độ phòng
-// function updateTemperature(tempDisplay, room) {
-//   if (!tempDisplay || !acStates[room]) return; // Kiểm tra nếu tempDisplay hoặc acStates[room] không tồn tại
-
-//   if (acStates[room].isOn) {
-//     tempDisplay.textContent = `${acStates[room].temperature}°C`;
-//   } else {
-//     tempDisplay.textContent = "OFF";
-//   }
-// }
-
 function updateTemperature(tempDisplay, room) {
-  tempDisplay.textContent = `${acStates[room].roomTemperatures}°C`;
+  if (tempDisplay && acStates[room]) {
+    if (acStates[room].isOn) {
+      // Use the updateRoomTemperatureDisplay function for consistency
+      updateRoomTemperatureDisplay(room, acStates[room].roomTemperatures);
+    } else {
+      tempDisplay.textContent = "OFF";
+    }
+  }
 }
 
 // Start IoT temperature updates for each room
@@ -2067,15 +2061,31 @@ function startTemperatureUpdates(room) {
   }
 
   updateIntervals[room] = setInterval(() => {
-    if (acStates[room].isOn) {
-      const tempDisplay = document.querySelector(`#${room} .temperature-air`);
-      if (tempDisplay) {
-        // Lấy nhiệt độ từ IoT platform cho phòng
-        const temperature = roomTemperatures[room]; // Lấy nhiệt độ của phòng hiện tại
-        tempDisplay.textContent = `${temperature}°C`;
-      }
+    if (acStates[room] && acStates[room].isOn) {
+      updateRoomTemperatureDisplay(room, roomTemperatures[room]);
     }
-  }, 1000); // Cập nhật mỗi giây
+  }, 1000);
+}
+// Helper function to stop temperature updates
+function stopTemperatureUpdates(room) {
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
+    delete updateIntervals[room];
+  }
+}
+
+// Helper function to update the temperature display immediately
+function updateRoomTemperatureDisplay(roomName, temperature) {
+  const tempDisplay = document.querySelector(
+    `.ac-card[data-room="${roomName}"] .temperature-air`
+  );
+  if (tempDisplay) {
+    if (acStates[roomName] && acStates[roomName].isOn) {
+      tempDisplay.textContent = `${parseFloat(temperature).toFixed(1)}°C`;
+    } else {
+      tempDisplay.textContent = "OFF";
+    }
+  }
 }
 
 // Lắng nghe sự kiện click trên container để điều khiển các phòng
