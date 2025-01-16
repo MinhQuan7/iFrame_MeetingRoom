@@ -347,7 +347,9 @@
     configHumi3 = null,
     configCurrent3 = null,
     configPower3 = null,
-    configAirConditioner = null;
+    configAirConditioner = null,
+    configAirConditioner2 = null,
+    configAirConditioner3 = null;
 
 
   eraWidget.init({
@@ -368,7 +370,9 @@
       configCurrent3 = configuration.realtime_configs[10]; // Lưu cấu hình power
       configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
 
-      configAirConditioner = configuration.realtime_configs[12];
+      configAirConditioner = configuration.realtime_configs[13];
+      configAirConditioner2 = configuration.realtime_configs[14];
+      configAirConditioner3 = configuration.realtime_configs[15];
 
       actionOn = configuration.actions[0]; // Lưu cấu hình hành động : On
       actionOff = configuration.actions[1]; // Lưu cấu hình hành động : Off
