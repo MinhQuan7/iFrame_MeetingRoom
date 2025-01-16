@@ -299,7 +299,7 @@
   /* padding: 0px 22px 0px 0; */
   border-radius: 16px; /* Thêm border-radius */
 }
-.meeting-info {
+/* .meeting-info {
   margin: 15px 0;
   margin-left: 0;
   max-width: 100%;
@@ -311,9 +311,19 @@
   flex-direction: column;
   justify-content: space-between;
   flex: 1;
-  overflow-x: scroll; /* Thêm overflow: hidden */
-}
+  overflow-x: scroll;
+} */
 
+.meeting-info {
+  margin: 15px 0;
+  width: 100%;
+  border-radius: 16px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
 .meeting-title {
   font-size: 15px;
   line-height: 1;
@@ -474,11 +484,12 @@
   flex-shrink: 0; /* Prevent compression */
 }
 .rooms-container {
-  max-height: 100vh; /* Use viewport height */
+  height: 100vh; /* Full viewport height */
   overflow-y: auto; /* Enable vertical scrolling */
+  padding-bottom: 20px; /* Add padding at bottom for last item */
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  padding-right: 10px; /* Add space for scrollbar */
 }
+
 /* Media queries for iPad */
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   .meeting-info {
@@ -2148,14 +2159,37 @@ html {
   z-index: -1;
 }
 
-.dynamic-page-container .container {
+.dynamic-page-container {
   height: 100vh; /* Sử dụng viewport height */
   max-height: 100vh;
   overflow: hidden;
   padding: 0; /* Loại bỏ padding */
   margin: 0; /* Loại bỏ margin */
 }
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent double scrollbars */
+}
 
+/* Header section */
+.header {
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+/* Table container */
+.table-container {
+  flex-shrink: 0; /* Prevent table from shrinking */
+}
+
+/* Room tabs (P1, P2, P3) */
+.room-tabs {
+  flex-shrink: 0; /* Prevent tabs from shrinking */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
 /* Hiệu ứng chuyển trang mượt mà */
 .dynamic-page-container {
   transform: translateY(20px);
