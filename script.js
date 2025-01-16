@@ -1536,13 +1536,13 @@ let acStates = {
     minTemp: 16,
     maxTemp: 30,
   },
-  "lavender 1": {
+  "lavender-1": {
     isOn: false,
     roomTemperatures: 19,
     minTemp: 16,
     maxTemp: 30,
   },
-  "lavender 2": {
+  "lavender-2": {
     isOn: false,
     roomTemperatures: 18,
     minTemp: 16,
@@ -1798,12 +1798,12 @@ function loadDynamicPage(pageType) {
         roomName = "Lotus";
         break;
       case "room2":
-        roomKeyword = "lavender 1";
-        roomName = "Lavender 1";
+        roomKeyword = "lavender-1";
+        roomName = "Lavender-1";
         break;
       case "room3":
-        roomKeyword = "lavender 2";
-        roomName = "Lavender 2";
+        roomKeyword = "lavender-2";
+        roomName = "Lavender-2";
         break;
       default:
         console.error("Unknown room type:", pageType);
