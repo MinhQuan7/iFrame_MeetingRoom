@@ -1672,7 +1672,19 @@ function renderRoomPage(data, roomKeyword, roomName) {
                         </svg>
                     </button>
 
-                    <span class="temperature-air"  data-room="room${roomKeyword} id ="temperature-airConditioner">20°C</span>
+                    <div class="ac-card" id="lotus" data-room="lotus">
+  <h3 class="title">Máy lạnh phòng lotus</h3>
+  <span class="temperature-air">20°C</span>
+</div>
+<div class="ac-card" id="lavender1" data-room="lavender1">
+  <h3 class="title">Máy lạnh phòng lavender1</h3>
+  <span class="temperature-air">20°C</span>
+</div>
+<div class="ac-card" id="lavender2" data-room="lavender2">
+  <h3 class="title">Máy lạnh phòng lavender2</h3>
+  <span class="temperature-air">20°C</span>
+</div>
+
 
                     <!-- Up Button -->
                     <button class="btn-up">
@@ -1961,27 +1973,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Khởi tạo trạng thái ban đầu
-let acStates = {
-  lotus: {
-    isOn: false,
-    temperature: 20,
-    minTemp: 16,
-    maxTemp: 30,
-  },
-  lavender1: {
-    isOn: false,
-    temperature: 20,
-    minTemp: 16,
-    maxTemp: 30,
-  },
-  lavender2: {
-    isOn: false,
-    temperature: 20,
-    minTemp: 16,
-    maxTemp: 30,
-  },
-};
 // Thêm CSS cho styling
 const style = document.createElement("style");
 style.textContent = `
@@ -2002,6 +1993,34 @@ document.head.appendChild(style);
 let actionOn = null,
   actionOff = null,
   statusAirConditioner = null;
+
+let roomTemperatures = {
+  lotus: 20, // Nhiệt độ mặc định cho phòng lotus
+  lavender1: 19, // Nhiệt độ mặc định cho phòng lavender1
+  lavender2: 18, // Nhiệt độ mặc định cho phòng lavender2
+};
+
+let acStates = {
+  lotus: {
+    isOn: false,
+    temperature: roomTemperatures.lotus,
+    minTemp: 16,
+    maxTemp: 30,
+  },
+  lavender1: {
+    isOn: false,
+    temperature: roomTemperatures.lavender1,
+    minTemp: 16,
+    maxTemp: 30,
+  },
+  lavender2: {
+    isOn: false,
+    temperature: roomTemperatures.lavender2,
+    minTemp: 16,
+    maxTemp: 30,
+  },
+};
+
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container, room) {
   const statusDot = container.querySelector(".status-air-dot");
@@ -2014,12 +2033,10 @@ function updateACStatus(container, room) {
     statusText.textContent = "Online";
     powerButton.classList.add("active");
     startTemperatureUpdates(room);
-    eraWidget.triggerAction(actions[room].on, null);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
-    eraWidget.triggerAction(actions[room].off, null);
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
@@ -2027,26 +2044,27 @@ function updateACStatus(container, room) {
   }
 }
 
-let updateInterval;
-// Stop IoT temperature updates
-function stopTemperatureUpdates() {
-  if (updateInterval) {
-    clearInterval(updateInterval);
-    updateInterval = null;
+let updateIntervals = {};
+
+function stopTemperatureUpdates(room) {
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
+    updateIntervals[room] = null;
   }
 }
 
-function updateTemperature(tempDisplay) {
+// Cập nhật nhiệt độ phòng
+function updateTemperature(tempDisplay, room) {
   if (!tempDisplay) return;
 
-  if (acStates.isOn) {
-    tempDisplay.textContent = `${currentACTemperature}°C`;
+  if (acStates[room].isOn) {
+    tempDisplay.textContent = `${acStates[room].temperature}°C`;
   } else {
     tempDisplay.textContent = "OFF";
   }
 }
-/*===synchronize data from IoT Paltform with Air Conditioner====*/
-// Start IoT temperature updates
+
+// Start IoT temperature updates for each room
 function startTemperatureUpdates(room) {
   if (updateIntervals[room]) {
     clearInterval(updateIntervals[room]);
@@ -2056,32 +2074,20 @@ function startTemperatureUpdates(room) {
     if (acStates[room].isOn) {
       const tempDisplay = document.querySelector(`#${room} .temperature-air`);
       if (tempDisplay) {
-        // Lấy nhiệt độ từ IoT platform theo phòng
-        const temperature = getTemperatureFromIoT(room);
+        // Lấy nhiệt độ từ IoT platform cho phòng
+        const temperature = roomTemperatures[room]; // Lấy nhiệt độ của phòng hiện tại
         tempDisplay.textContent = `${temperature}°C`;
       }
     }
-  }, 100);
+  }, 1000); // Cập nhật mỗi giây
 }
-// function getTemperatureFromIoT(room) {
-//   // Gọi API hoặc lấy dữ liệu từ IoT platform theo phòng
-//   switch (room) {
-//     case "lotus":
-//       return currentACTemperatureLotus;
-//     case "lavender1":
-//       return currentACTemperatureLavender1;
-//     case "lavender2":
-//       return currentACTemperatureLavender2;
-//     default:
-//       return 20;
-//   }
-// }
 
+// Lắng nghe sự kiện click trên container để điều khiển các phòng
 container.addEventListener("click", (e) => {
   const acCard = e.target.closest(".ac-card");
   if (!acCard) return;
 
-  const room = acCard.dataset.room; // Thêm data-room attribute vào HTML
+  const room = acCard.dataset.room; // Lấy tên phòng từ thuộc tính data-room
   const tempDisplay = acCard.querySelector(".temperature-air");
 
   if (e.target.closest(".controls .btn:first-child")) {
@@ -2109,3 +2115,122 @@ container.addEventListener("click", (e) => {
     }
   }
 });
+
+// Hàm render trang động cho từng phòng
+function renderRoomPage(data, roomKeyword, roomName) {
+  console.log("Rendering room page for:", roomName);
+  console.log("Data received:", data);
+
+  // Lọc các cuộc họp cho phòng
+  const roomMeetings = data.filter((meeting) =>
+    meeting.room.toLowerCase().includes(roomKeyword.toLowerCase())
+  );
+  console.log("Filtered room meetings:", roomMeetings);
+
+  // Lọc các cuộc họp diễn ra trong ngày
+  const today = new Date();
+  const filteredData = roomMeetings.filter((meeting) => {
+    const meetingDate = new Date(meeting.date.split("/").reverse().join("-"));
+    return meetingDate.toDateString() === today.toDateString();
+  });
+  console.log("Today's meetings:", filteredData);
+
+  // Lấy thời gian hiện tại
+  const currentTime = new Date();
+  const currentTimeStr = `${String(currentTime.getHours()).padStart(
+    2,
+    "0"
+  )}:${String(currentTime.getMinutes()).padStart(2, "0")}`;
+
+  // Tìm cuộc họp đang diễn ra
+  const currentMeeting = filteredData.find((meeting) => {
+    const startTime = meeting.startTime;
+    const endTime = meeting.endTime;
+    return currentTimeStr >= startTime && currentTimeStr <= endTime;
+  });
+  console.log("Current meeting:", currentMeeting);
+
+  // Lọc các cuộc họp sắp diễn ra
+  const upcomingMeetings = filteredData
+    .filter((meeting) => {
+      const startTime = meeting.startTime;
+      return currentTimeStr <= startTime;
+    })
+    .sort((a, b) => {
+      const timeA = a.startTime.split(":").map(Number);
+      const timeB = b.startTime.split(":").map(Number);
+      return timeA[0] * 60 + timeA[1] - (timeB[0] * 60 + timeB[1]);
+    });
+  console.log("Upcoming meetings:", upcomingMeetings);
+
+  return `
+    <div class="container">
+      <div class="left-panel">
+        <div>
+          <div class="clock-container">
+            <div class="time-1" id="currentTime-1"></div>
+          </div>
+          <div class="currentDateElement-1" id="currentDate-1"></div>
+        </div>
+        <div>
+          <div class="device online">
+            <img
+              alt="Power meter icon"
+              height="30"
+              src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
+              width="30"
+            />
+            <div>
+              <div>Power meter AC 1</div>
+              <div>Dòng điện: 8.5 A | Công suất: 0.56 KW</div>
+            </div>
+            <div class="status">
+              <i class="fas fa-circle"> </i>
+              <span> Online </span>
+            </div>
+          </div>
+
+          <div class="ac-card" data-room="${roomName}">
+            <div class="card-content">
+              <img alt="Air conditioner icon" height="30" src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg" width="30" />
+              <div class="main-content">
+                <h3 class="title">Máy lạnh ${roomName}</h3>
+
+                <div class="controls">
+                  <button class="btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10" stroke-width="2" />
+                    </svg>
+                  </button>
+                  <div class="divider"></div>
+                  <button class="btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M19 9l-7 7-7-7" stroke-width="2" />
+                    </svg>
+                  </button>
+
+                  <span class="temperature-air" id="temperature-${roomName}">${roomTemperatures[roomName]}°C</span>
+
+                  <button class="btn-up">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M5 15l7-7 7 7" stroke-width="2" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="status-air">
+                  <div class="status-air-dot"></div>
+                  <span>Offline</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="home-button">
+          <i class="fas fa-home"></i> TRANG CHỦ
+        </button>
+      </div>
+    </div>
+  `;
+}

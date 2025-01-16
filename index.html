@@ -334,6 +334,8 @@
   const powerIndex3 = document.getElementById("power-eRa3");
 
   const airConditioner = document.getElementById("temperature-airConditioner");
+  const airConditioner2 = document.getElementById("temperature-airConditioner");
+  const airConditioner3 = document.getElementById("temperature-airConditioner");
   let currentACTemperature = 20; // Giá trị mặc định
   let configTemp = null,
     configHumi = null,
@@ -370,9 +372,9 @@
       configCurrent3 = configuration.realtime_configs[10]; // Lưu cấu hình power
       configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
 
-      configAirConditioner = configuration.realtime_configs[13];
-      configAirConditioner2 = configuration.realtime_configs[14];
-      configAirConditioner3 = configuration.realtime_configs[15];
+      configAirConditioner = configuration.realtime_configs[12];
+      configAirConditioner2 = configuration.realtime_configs[13];
+      configAirConditioner3 = configuration.realtime_configs[14];
 
       actionOn = configuration.actions[0]; // Lưu cấu hình hành động : On
       actionOff = configuration.actions[1]; // Lưu cấu hình hành động : Off
@@ -461,45 +463,70 @@
         if (powerIndex3) powerIndex3.textContent = powerValue3;
       }
 
+      // if (configAirConditioner && values[configAirConditioner.id]) {
+      //   const airValue = values[configAirConditioner.id].value;
+      //   currentACTemperature = parseFloat(airValue);
+      //   if (airConditioner) {
+      //     airConditioner.textContent = airValue + "°C";
+      //     // Cập nhật nhiệt độ trong iframe nếu nó đã được render
+      //     const iframeTemp = document.querySelector(".temperature-air");
+      //     if (iframeTemp) {
+      //       iframeTemp.textContent = airValue + "°C";
+      //     }
+      //   }
+      // }
+
+      // if (configAirConditioner2 && values[configAirConditioner2.id]) {
+      //   const airValue2 = values[configAirConditioner2.id].value;
+      //   currentACTemperature2 = parseFloat(airValue);
+      //   if (airConditioner2) {
+      //     airConditioner2.textContent = airValue2 + "°C";
+      //     // Cập nhật nhiệt độ trong iframe nếu nó đã được render
+      //     const iframeTemp = document.querySelector(".temperature-air");
+      //     if (iframeTemp) {
+      //       iframeTemp.textContent = airValue2 + "°C";
+      //     }
+      //   }
+      // }
+
+
+      // if (configAirConditioner3 && values[configAirConditioner3.id]) {
+      //   const airValue3 = values[configAirConditioner3.id].value;
+      //   currentACTemperature3 = parseFloat(airValue3);
+      //   if (airConditioner3) {
+      //     airConditioner3.textContent = airValue3 + "°C";
+      //     // Cập nhật nhiệt độ trong iframe nếu nó đã được render
+      //     const iframeTemp = document.querySelector(".temperature-air");
+      //     if (iframeTemp) {
+      //       iframeTemp.textContent = airValue3 + "°C";
+      //     }
+      //   }
+      // }
+
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
-        currentACTemperature = parseFloat(airValue);
-        if (airConditioner) {
-          airConditioner.textContent = airValue + "°C";
-          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
-          const iframeTemp = document.querySelector(".temperature-air");
-          if (iframeTemp) {
-            iframeTemp.textContent = airValue + "°C";
-          }
-        }
+        roomTemperatures.lotus = parseFloat(airValue);  // Cập nhật nhiệt độ cho phòng lotus
+        updateRoomTemperatureDisplay('lotus', airValue); // Cập nhật hiển thị nhiệt độ
       }
 
       if (configAirConditioner2 && values[configAirConditioner2.id]) {
         const airValue2 = values[configAirConditioner2.id].value;
-        currentACTemperature2 = parseFloat(airValue);
-        if (airConditioner) {
-          airConditioner.textContent = airValue2 + "°C";
-          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
-          const iframeTemp = document.querySelector(".temperature-air");
-          if (iframeTemp) {
-            iframeTemp.textContent = airValue2 + "°C";
-          }
-        }
+        roomTemperatures.lavender1 = parseFloat(airValue2);  // Cập nhật nhiệt độ cho phòng lavender1
+        updateRoomTemperatureDisplay('lavender1', airValue2); // Cập nhật hiển thị nhiệt độ
       }
-
 
       if (configAirConditioner3 && values[configAirConditioner3.id]) {
         const airValue3 = values[configAirConditioner3.id].value;
-        currentACTemperature3 = parseFloat(airValue3);
-        if (airConditioner) {
-          airConditioner.textContent = airValue3 + "°C";
-          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
-          const iframeTemp = document.querySelector(".temperature-air");
-          if (iframeTemp) {
-            iframeTemp.textContent = airValue3 + "°C";
-          }
-        }
+        roomTemperatures.lavender2 = parseFloat(airValue3);  // Cập nhật nhiệt độ cho phòng lavender2
+        updateRoomTemperatureDisplay('lavender2', airValue3); // Cập nhật hiển thị nhiệt độ
       }
     },
   });
+  // Hàm cập nhật hiển thị nhiệt độ trên giao diện
+  function updateRoomTemperatureDisplay(room, temperature) {
+    const tempDisplay = document.querySelector(`#${room} .temperature-air`);
+    if (tempDisplay) {
+      tempDisplay.textContent = `${temperature}°C`;
+    }
+  }
 </script>
