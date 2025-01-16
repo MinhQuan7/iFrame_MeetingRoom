@@ -493,13 +493,6 @@
       }
     },
   });
-  // Hàm cập nhật hiển thị nhiệt độ trên giao diện
-  function updateRoomTemperatureDisplay(room, temperature) {
-    const tempDisplay = document.querySelector(`#${room} .temperature-air`);
-    if (tempDisplay) {
-      tempDisplay.textContent = `${temperature}°C`;
-    }
-  }
   // Function to start temperature monitoring
   function startTemperatureMonitoring() {
     if (!window.roomTemperatures) {
