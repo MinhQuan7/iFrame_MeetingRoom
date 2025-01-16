@@ -1393,6 +1393,7 @@ schedule-table {
   padding: 30px;
   max-width: 450px; /* Tăng kích thước */
   width: 90%;
+  
   max-height: 80%;
   text-align: center;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 10px 20px rgba(0, 0, 0, 0.1);
