@@ -496,15 +496,8 @@
       }
     },
   });
-
-  function createValidSelector(roomName) {
-    // Escape special characters including spaces in ID
-    return CSS.escape(roomName);
-  }
-
   // Function to start temperature monitoring
   function startTemperatureMonitoring() {
-    // Initialize room temperatures if not exists
     if (!window.roomTemperatures) {
       window.roomTemperatures = {
         lotus: 20,
@@ -513,57 +506,21 @@
       };
     }
 
-    // Clear any existing interval to prevent multiple updates
-    if (window.tempMonitoringInterval) {
-      clearInterval(window.tempMonitoringInterval);
-    }
-
-    // Start new monitoring interval
-    window.tempMonitoringInterval = setInterval(() => {
+    setInterval(() => {
       Object.keys(roomTemperatures).forEach((room) => {
-        // Check if AC is on for this room
+        const sanitizedRoom = sanitizeRoomName(room);
         if (acStates[room] && acStates[room].isOn) {
-          // Use proper ID selector for each room
-          const tempDisplay = document.getElementById(`temperature-${room}`);
-
+          const tempDisplay = document.querySelector(
+            `${sanitizedRoom}`
+          );
           if (tempDisplay) {
-            // Update temperature display
-            const temperature = roomTemperatures[room];
-            tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
-            console.log(`Updated ${room} temperature to: ${temperature}°C`);
-          } else {
-            console.warn(
-              `Temperature display element not found for room: ${room}`
-            );
-            // Log available elements for debugging
-            console.log(`Looking for element with id: temperature-${room}`);
+            tempDisplay.textContent = `${roomTemperatures[room].toFixed(0)}°C`;
           }
         }
       });
     }, 1000);
-
-    // Initial update
-    Object.keys(roomTemperatures).forEach((room) => {
-      if (acStates[room] && acStates[room].isOn) {
-        const tempDisplay = document.getElementById(`temperature-${room}`);
-        if (tempDisplay) {
-          tempDisplay.textContent = `${roomTemperatures[room].toFixed(0)}°C`;
-        }
-      }
-    });
   }
-
   // Initialize the monitoring when the page loads
   document.addEventListener('DOMContentLoaded', startTemperatureMonitoring);
-  // Add cleanup function to prevent memory leaks
-  function stopTemperatureMonitoring() {
-    if (window.tempMonitoringInterval) {
-      clearInterval(window.tempMonitoringInterval);
-      window.tempMonitoringInterval = null;
-    }
-  }
-
-  // Add event listener for page unload to clean up
-  window.addEventListener("unload", stopTemperatureMonitoring);
 
 </script>
