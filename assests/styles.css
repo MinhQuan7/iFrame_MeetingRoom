@@ -329,7 +329,17 @@
   line-height: 1;
   letter-spacing: -0.15px;
 }
-
+.room-card {
+  margin-bottom: 15px;
+  width: 100%;
+  min-height: fit-content;
+}
+.room-tabs {
+  flex-shrink: 0; /* Prevent tabs from shrinking */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
 .meeting-time {
   display: flex;
   font-size: 14px;
