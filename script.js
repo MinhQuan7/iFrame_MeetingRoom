@@ -2082,9 +2082,6 @@ function sanitizeRoomName(room) {
 
 // Helper function to update the temperature display immediately
 function updateRoomTemperatureDisplay(roomName, temperature) {
-  // const tempDisplay = document.querySelector(
-  //   `.ac-card[data-room="${roomName}"] .temperature-air`
-  // );
   const sanitizedRoom = sanitizeRoomName(roomName);
   const tempDisplay = document.querySelector(
     `#${sanitizedRoom} .temperature-air`
