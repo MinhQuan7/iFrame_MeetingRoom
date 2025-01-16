@@ -607,7 +607,12 @@
   margin-right: 0;
   height: fit-content;
 }
-
+@media (max-width: 1230px) {
+  .right-column {
+    height: auto;
+    width: auto;
+  }
+}
 /* Cập nhật media queries để duy trì tỷ lệ mới trên các màn hình lớn */
 @media (max-width: 1200px) {
   .content-wrapper {
@@ -700,9 +705,9 @@
   justify-content: space-between;
   flex-shrink: 0; /* Prevent actions from shrinking */
 }
-.upload-button {
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
-  transition: border-color 0.3s ease; /* Hiệu ứng chuyển màu viền */
+/* .upload-button {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  transition: border-color 0.3s ease;
   border: 2px #fff;
   border-radius: 23px;
   background-color: rgba(130, 132, 255, 0.86);
@@ -716,8 +721,22 @@
   margin: auto 0;
   padding: 6px 6px;
   color: #fff;
+} */
+.upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: rgba(130, 132, 255, 0.86);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 23px;
+  min-width: 200px;
+  max-width: 300px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
-
 .upload-icon {
   aspect-ratio: 1;
   object-fit: contain;
@@ -735,19 +754,49 @@ upload-icon-date {
   align-self: stretch;
   margin: auto 0;
 }
-.schedule-table {
+/* .schedule-table {
   min-height: auto;
   max-height: 70vh;
   overflow-y: auto;
   font-size: 16px;
-  /* margin: 15px 0; */
   flex-direction: column;
   overflow-x: hidden;
   justify-content: start;
-
   width: 100%;
   border-collapse: collapse;
   margin-top: 8px;
+} */
+schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+}
+@media screen and (max-width: 1230px) {
+  .schedule-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    min-width: 100px;
+  }
+
+  .content-container {
+    padding: 15px;
+  }
+
+  .upload-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .upload-button {
+    width: 100%;
+    max-width: 250px;
+  }
 }
 .schedule-table th,
 .schedule-table td {
