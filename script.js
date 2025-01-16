@@ -2012,6 +2012,9 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
+  function sanitizeRoomName(room) {
+    return room.toLowerCase();
+  }
 
 //=================Air Conditioner ===
 // Hàm cập nhật trạng thái điều hòa
@@ -2020,7 +2023,7 @@ function updateACStatus(container, room) {
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
-  const tempDisplay = document.querySelector(`#temperature-${sanitizedRoom}`);
+  const tempDisplay = document.querySelector(`${sanitizedRoom}`);
 
   if (!acStates[room]) {
     console.warn(`No AC state found for room: ${room}`);
