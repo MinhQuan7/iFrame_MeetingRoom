@@ -1638,7 +1638,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
               <span> Online </span>
             </div>
           </div>
-<div class="ac-card" data-room="${roomKeyword}">
+<div class="ac-card">
         <div class="card-content">
             <!-- AC Icon -->
              <img
@@ -1672,7 +1672,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
                         </svg>
                     </button>
 
-                    <span class="temperature-air" id ="temperature-airConditioner">20°C</span>
+                    <span class="temperature-air"  data-room="room${roomKeyword} id ="temperature-airConditioner">20°C</span>
 
                     <!-- Up Button -->
                     <button class="btn-up">
@@ -2063,19 +2063,19 @@ function startTemperatureUpdates(room) {
     }
   }, 100);
 }
-function getTemperatureFromIoT(room) {
-  // Gọi API hoặc lấy dữ liệu từ IoT platform theo phòng
-  switch (room) {
-    case "lotus":
-      return currentACTemperatureLotus;
-    case "lavender1":
-      return currentACTemperatureLavender1;
-    case "lavender2":
-      return currentACTemperatureLavender2;
-    default:
-      return 20;
-  }
-}
+// function getTemperatureFromIoT(room) {
+//   // Gọi API hoặc lấy dữ liệu từ IoT platform theo phòng
+//   switch (room) {
+//     case "lotus":
+//       return currentACTemperatureLotus;
+//     case "lavender1":
+//       return currentACTemperatureLavender1;
+//     case "lavender2":
+//       return currentACTemperatureLavender2;
+//     default:
+//       return 20;
+//   }
+// }
 
 container.addEventListener("click", (e) => {
   const acCard = e.target.closest(".ac-card");

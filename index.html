@@ -395,6 +395,8 @@
         configCurrent3,
         configPower3,
         configAirConditioner,
+        configAirConditioner2,
+        configAirConditioner3,
       });
 
       console.log("Current values:", values);
@@ -468,6 +470,33 @@
           const iframeTemp = document.querySelector(".temperature-air");
           if (iframeTemp) {
             iframeTemp.textContent = airValue + "°C";
+          }
+        }
+      }
+
+      if (configAirConditioner2 && values[configAirConditioner2.id]) {
+        const airValue2 = values[configAirConditioner2.id].value;
+        currentACTemperature2 = parseFloat(airValue);
+        if (airConditioner) {
+          airConditioner.textContent = airValue2 + "°C";
+          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
+          const iframeTemp = document.querySelector(".temperature-air");
+          if (iframeTemp) {
+            iframeTemp.textContent = airValue2 + "°C";
+          }
+        }
+      }
+
+
+      if (configAirConditioner3 && values[configAirConditioner3.id]) {
+        const airValue3 = values[configAirConditioner3.id].value;
+        currentACTemperature3 = parseFloat(airValue3);
+        if (airConditioner) {
+          airConditioner.textContent = airValue3 + "°C";
+          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
+          const iframeTemp = document.querySelector(".temperature-air");
+          if (iframeTemp) {
+            iframeTemp.textContent = airValue3 + "°C";
           }
         }
       }
