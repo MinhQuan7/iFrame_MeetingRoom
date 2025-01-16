@@ -1571,7 +1571,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
   });
   console.log("Today's meetings:", filteredData);
 
-  const roomKey = normalizeRoomKey(roomKeyword);;
+  const roomKey = normalizeRoomKey(roomKeyword);
 
   // Initialize room state if it doesn't exist
   if (!acStates[roomKey]) {
@@ -2016,6 +2016,7 @@ document.head.appendChild(style);
 //=================Air Conditioner ===
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container, room) {
+  const sanitizedRoom = sanitizeRoomName(room);
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
@@ -2026,7 +2027,7 @@ function updateACStatus(container, room) {
     statusText.textContent = "Online";
     powerButton.classList.add("active");
     powerButton.classList.remove("OFF");
-    startTemperatureUpdates(room);
+    startTemperatureUpdates(sanitizedRoom);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
@@ -2034,7 +2035,7 @@ function updateACStatus(container, room) {
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
-    stopTemperatureUpdates(room);
+    stopTemperatureUpdates(sanitizedRoom);
   }
 }
 
@@ -2075,12 +2076,20 @@ function stopTemperatureUpdates(room) {
     delete updateIntervals[room];
   }
 }
+function sanitizeRoomName(room) {
+  return room.toLowerCase().replace(/\s+/g, "-");
+}
 
 // Helper function to update the temperature display immediately
 function updateRoomTemperatureDisplay(roomName, temperature) {
+  // const tempDisplay = document.querySelector(
+  //   `.ac-card[data-room="${roomName}"] .temperature-air`
+  // );
+  const sanitizedRoom = sanitizeRoomName(roomName);
   const tempDisplay = document.querySelector(
-    `.ac-card[data-room="${roomName}"] .temperature-air`
+    `#${sanitizedRoom} .temperature-air`
   );
+
   if (tempDisplay) {
     if (acStates[roomName] && acStates[roomName].isOn) {
       tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
