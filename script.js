@@ -2081,17 +2081,57 @@ function sanitizeRoomName(room) {
 }
 
 // Helper function to update the temperature display immediately
-function updateRoomTemperatureDisplay(roomName, temperature) {
-  const sanitizedRoom = sanitizeRoomName(roomName);
-  const tempDisplay = document.querySelector(
-    `#${sanitizedRoom} .temperature-air`
-  );
 
+function updateRoomTemperatureDisplay(roomName, temperature) {
+  // Method 1: Using CSS.escape for proper ID escaping
+  const selector = `#${createValidSelector(roomName)} .temperature-air`;
+  console.log("Using selector:", selector);
+
+  let tempDisplay;
+  try {
+    tempDisplay = document.querySelector(selector);
+  } catch (error) {
+    console.error("Invalid selector:", error);
+  }
+
+  // Fallback method if the first selector doesn't work
+  if (!tempDisplay) {
+    try {
+      // Alternative method: Using getElementById and then finding child
+      const roomContainer = document.getElementById(roomName);
+      if (roomContainer) {
+        tempDisplay = roomContainer.querySelector(".temperature-air");
+      }
+    } catch (error) {
+      console.error("Fallback selection failed:", error);
+    }
+  }
+
+  // Update the display if element is found
   if (tempDisplay) {
     if (acStates[roomName] && acStates[roomName].isOn) {
       tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
+      console.log(`Updated temperature for ${roomName} to ${temperature}°C`);
     } else {
       tempDisplay.textContent = "OFF";
+      console.log(`Set ${roomName} display to OFF`);
     }
+  } else {
+    console.warn(`Could not find temperature display for room: ${roomName}`);
+    // Log available elements for debugging
+    console.log("Available room elements:", {
+      byId: document.getElementById(roomName),
+      byClass: document.getElementsByClassName("temperature-air"),
+    });
   }
+}
+// Kiểm tra môi trường và hỗ trợ CSS.escape
+if (!CSS.escape) {
+  // Polyfill for CSS.escape if not supported
+  CSS.escape = function (value) {
+    return value
+      .replace(/["\\]/g, "\\$&")
+      .replace(/[\n\r\f]/g, "")
+      .replace(/[ ]/g, "\\ ");
+  };
 }

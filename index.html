@@ -496,6 +496,12 @@
       }
     },
   });
+
+  function createValidSelector(roomName) {
+      // Escape special characters including spaces in ID
+      return CSS.escape(roomName);
+    }
+
   // Function to start temperature monitoring
   function startTemperatureMonitoring() {
     if (!window.roomTemperatures) {
