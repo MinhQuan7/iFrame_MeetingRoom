@@ -2012,9 +2012,6 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
-  function sanitizeRoomName(room) {
-    return room.toLowerCase();
-  }
 
 //=================Air Conditioner ===
 // Hàm cập nhật trạng thái điều hòa
@@ -2023,21 +2020,14 @@ function updateACStatus(container, room) {
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
-  const tempDisplay = document.querySelector(`${sanitizedRoom}`);
-
-  if (!acStates[room]) {
-    console.warn(`No AC state found for room: ${room}`);
-    return;
-  }
+  const tempDisplay = container.querySelector(".temperature-air");
 
   if (acStates[room].isOn) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
     powerButton.classList.remove("OFF");
-    startTemperatureUpdates(room);
-    // Immediately update temperature display
-    updateRoomTemperatureDisplay(room, roomTemperatures[room]);
+    startTemperatureUpdates(sanitizedRoom);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
@@ -2045,9 +2035,10 @@ function updateACStatus(container, room) {
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
-    stopTemperatureUpdates(room);
+    stopTemperatureUpdates(sanitizedRoom);
   }
 }
+
 let updateIntervals = {};
 
 function getRoomSelector(room) {
@@ -2083,5 +2074,24 @@ function stopTemperatureUpdates(room) {
   if (updateIntervals[room]) {
     clearInterval(updateIntervals[room]);
     delete updateIntervals[room];
+  }
+}
+function sanitizeRoomName(room) {
+  return room.toLowerCase().replace(/\s+/g, "-");
+}
+
+// Helper function to update the temperature display immediately
+function updateRoomTemperatureDisplay(roomName, temperature) {
+  const sanitizedRoom = sanitizeRoomName(roomName);
+  const tempDisplay = document.querySelector(
+    `#${sanitizedRoom} .temperature-air`
+  );
+
+  if (tempDisplay) {
+    if (acStates[roomName] && acStates[roomName].isOn) {
+      tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
+    } else {
+      tempDisplay.textContent = "OFF";
+    }
   }
 }
