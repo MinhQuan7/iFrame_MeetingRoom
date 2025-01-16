@@ -315,8 +315,14 @@
 
 <script src="https://www.unpkg.com/@eohjsc/era-widget@1.1.3/src/index.js"></script>
 <script src="script.js"></script>
+
 <script>
-  let roomTemperatures;
+
+  let roomTemperatures = {
+    lotus: 20,
+    lavender1: 20,
+    lavender2: 20
+  };
   const eraWidget = new EraWidget();
   // Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
   const temp = document.getElementById("temperature-eRa");
@@ -463,46 +469,6 @@
         const powerValue3 = values[configPower3.id].value;
         if (powerIndex3) powerIndex3.textContent = powerValue3;
       }
-
-      // if (configAirConditioner && values[configAirConditioner.id]) {
-      //   const airValue = values[configAirConditioner.id].value;
-      //   currentACTemperature = parseFloat(airValue);
-      //   if (airConditioner) {
-      //     airConditioner.textContent = airValue + "°C";
-      //     // Cập nhật nhiệt độ trong iframe nếu nó đã được render
-      //     const iframeTemp = document.querySelector(".temperature-air");
-      //     if (iframeTemp) {
-      //       iframeTemp.textContent = airValue + "°C";
-      //     }
-      //   }
-      // }
-
-      // if (configAirConditioner2 && values[configAirConditioner2.id]) {
-      //   const airValue2 = values[configAirConditioner2.id].value;
-      //   currentACTemperature2 = parseFloat(airValue);
-      //   if (airConditioner2) {
-      //     airConditioner2.textContent = airValue2 + "°C";
-      //     // Cập nhật nhiệt độ trong iframe nếu nó đã được render
-      //     const iframeTemp = document.querySelector(".temperature-air");
-      //     if (iframeTemp) {
-      //       iframeTemp.textContent = airValue2 + "°C";
-      //     }
-      //   }
-      // }
-
-
-      // if (configAirConditioner3 && values[configAirConditioner3.id]) {
-      //   const airValue3 = values[configAirConditioner3.id].value;
-      //   currentACTemperature3 = parseFloat(airValue3);
-      //   if (airConditioner3) {
-      //     airConditioner3.textContent = airValue3 + "°C";
-      //     // Cập nhật nhiệt độ trong iframe nếu nó đã được render
-      //     const iframeTemp = document.querySelector(".temperature-air");
-      //     if (iframeTemp) {
-      //       iframeTemp.textContent = airValue3 + "°C";
-      //     }
-      //   }
-      // }
 
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
