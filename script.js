@@ -1549,7 +1549,9 @@ let acStates = {
     maxTemp: 30,
   },
 };
-
+function normalizeRoomKey(roomName) {
+  return roomName.toLowerCase().trim();
+}
 // Hàm render trang động riêng biệt
 function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Rendering room page for:", roomName);
@@ -1569,7 +1571,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
   });
   console.log("Today's meetings:", filteredData);
 
-  const roomKey = roomName.toLowerCase();
+  const roomKey = normalizeRoomKey(roomKeyword);;
 
   // Initialize room state if it doesn't exist
   if (!acStates[roomKey]) {

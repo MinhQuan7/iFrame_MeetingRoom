@@ -479,13 +479,13 @@
       if (configAirConditioner2 && values[configAirConditioner2.id]) {
         const airValue2 = values[configAirConditioner2.id].value;
         roomTemperatures.lavender1 = parseFloat(airValue2);  // Cập nhật nhiệt độ cho phòng lavender1
-        updateRoomTemperatureDisplay('lavender1', airValue2); // Cập nhật hiển thị nhiệt độ
+        updateRoomTemperatureDisplay('lavender 1', airValue2); // Cập nhật hiển thị nhiệt độ
       }
 
       if (configAirConditioner3 && values[configAirConditioner3.id]) {
         const airValue3 = values[configAirConditioner3.id].value;
         roomTemperatures.lavender2 = parseFloat(airValue3);  // Cập nhật nhiệt độ cho phòng lavender2
-        updateRoomTemperatureDisplay('lavender2', airValue3); // Cập nhật hiển thị nhiệt độ
+        updateRoomTemperatureDisplay('lavender 2', airValue3); // Cập nhật hiển thị nhiệt độ
       }
     },
   });
@@ -502,8 +502,8 @@
     if (!window.roomTemperatures) {
       window.roomTemperatures = {
         lotus: 20,
-        lavender1: 20,
-        lavender2: 20
+        "lavender 1": 20,
+        "lavender 2": 20
       };
     }
 
