@@ -496,4 +496,31 @@
       tempDisplay.textContent = `${temperature}°C`;
     }
   }
+  // Function to start temperature monitoring
+  function startTemperatureMonitoring() {
+    // Ensure the roomTemperatures object exists
+    if (!window.roomTemperatures) {
+      window.roomTemperatures = {
+        lotus: 20,
+        lavender1: 20,
+        lavender2: 20
+      };
+    }
+
+    // Set up interval to check temperatures
+    setInterval(() => {
+      Object.keys(roomTemperatures).forEach(room => {
+        if (acStates[room] && acStates[room].isOn) {
+          const tempDisplay = document.querySelector(`#temperature-${room}`);
+          if (tempDisplay) {
+            tempDisplay.textContent = `${roomTemperatures[room].toFixed(1)}°C`;
+          }
+        }
+      });
+    }, 1000);
+  }
+
+  // Initialize the monitoring when the page loads
+  document.addEventListener('DOMContentLoaded', startTemperatureMonitoring);
+
 </script>

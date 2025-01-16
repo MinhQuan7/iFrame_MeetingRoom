@@ -2087,5 +2087,3 @@ function updateRoomTemperatureDisplay(roomName, temperature) {
     }
   }
 }
-
-// Lắng nghe sự kiện click trên container để điều khiển các phòng
