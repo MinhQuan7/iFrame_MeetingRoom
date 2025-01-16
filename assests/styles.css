@@ -463,9 +463,10 @@
   flex-direction: column;
   justify-content: space-between;
   flex: 1;
-  min-width: 0; /* Prevent flex items from overflowing */
+  min-width: 0;
+  max-height: 300px; /* Chiều cao tối đa có thể điều chỉnh thêm */
+  overflow-y: auto; /* Cho phép cuộn dọc khi nội dung vượt quá chiều cao tối đa */
 }
-
 /* Meeting title */
 .meeting-title {
   font-size: 15px;
@@ -501,13 +502,22 @@
 }
 .rooms-container {
   height: calc(
-    100vh - 100px
-  ); /* Chiều cao tính từ viewport với một khoảng trống cho header */
-  overflow-y: auto; /* Enable vertical scrolling */
+    100vh - 120px
+  ); /* Thêm không gian cho header và các phần tử trên */
+  overflow-y: auto;
   padding-bottom: 20px;
   -webkit-overflow-scrolling: touch; /* Smooth scrolling trên iOS */
 }
+/* Điều chỉnh khi màn hình nhỏ hoặc các thiết bị di động */
+@media (max-width: 767px) {
+  .meeting-info {
+    max-height: 250px; /* Giảm chiều cao tối đa cho các màn hình nhỏ */
+  }
 
+  .rooms-container {
+    height: calc(100vh - 160px); /* Điều chỉnh cho phù hợp với không gian */
+  }
+}
 /* Media queries for iPad */
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   .meeting-info {
