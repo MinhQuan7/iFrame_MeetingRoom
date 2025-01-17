@@ -466,7 +466,7 @@
 .rooms-container {
   height: auto;
   min-height: calc(100vh - 180px); /* Điều chỉnh chiều cao cơ bản */
-  max-height: calc(100vh - 100px); /* Đảm bảo không bị giới hạn quá nhiều */
+  max-height: calc(100vh - 140px); /* Đảm bảo không bị giới hạn quá nhiều */
   overflow-y: auto;
   padding: 15px; /* Giảm padding để có nhiều không gian hơn */
   margin-bottom: 10px; /* Giảm margin dưới cùng để tối ưu không gian */
