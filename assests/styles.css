@@ -779,90 +779,63 @@
 .schedule-section {
   display: flex;
   max-width: 100%;
-  height:95vh;
-  /* height: 100vh; */ /* Bỏ height cố định */
+  min-height: 100vh;
   flex-direction: column;
   font-family: SF Pro, sans-serif;
   color: #000;
-  overflow-y: auto; /* Cho phép scroll dọc */
-  padding-bottom: 20px; /* Thêm padding bottom để tránh nội dung bị cắt */
+  overflow-y: auto;
+  padding-bottom: 20px;
 }
 
 .schedule-content {
   width: 100%;
-  height: 70%;
+  flex: 1;
   padding: 20px;
-  max-height: 85vh;
   border-radius: 16px;
   background-color: rgba(255, 255, 255, 0.85);
   display: flex;
   flex-direction: column;
   font-weight: 520;
   text-align: center;
-  overflow-x: auto; /* Cho phép scroll ngang nếu bảng quá rộng */
+  overflow: auto;
 }
 
-/* Media query cho màn hình nhỏ */
-@media screen and (max-width: 768px) {
-  .schedule-content {
-    padding: 10px;
-    margin: 0;
-  }
-
-  .schedule-title {
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
-
-  /* Đảm bảo bảng có thể scroll ngang */
-  .schedule-table {
-    min-width: 800px; /* hoặc chiều rộng tối thiểu phù hợp với nội dung bảng */
-    overflow-x: auto;
-  }
-
-  .table-header,
-  .table-row {
-    min-width: 100%;
-  }
-}
-/* Thêm media query cho iPad */
 @media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
   .schedule-section {
-    height: auto; /* Thay vì fixed height */
-    min-height: 50vh;
-    /* max-height: 90vh; */
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
+    min-height: 100vh;
+    height: auto;
+    position: relative;
+    padding-bottom: 100px; /* Để tránh content bị che bởi room-buttons */
   }
 
   .schedule-content {
-    flex: 1;
-    overflow-y: auto;
+    min-height: 60vh;
+    margin-bottom: 20px;
     padding: 15px;
   }
 
   .schedule-table {
+    min-width: 800px;
     width: 100%;
     overflow-x: auto;
   }
 
-  /* Điều chỉnh kích thước font và padding cho dễ đọc trên iPad */
-  .schedule-title {
-    font-size: 24px;
-    margin-bottom: 15px;
+  .room-buttons {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    padding: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   }
+}
 
-  .schedule-actions {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .table-header > div,
-  .table-row > div {
-    padding: 8px;
-    font-size: 14px;
-  }
+/* Thêm styles cho bảng để đảm bảo có thể scroll */
+.schedule-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Để smooth scroll trên iOS */
+  width: 100%;
 }
 /*Custom Scrollbar Styles
 /* .schedule-section::-webkit-scrollbar {
