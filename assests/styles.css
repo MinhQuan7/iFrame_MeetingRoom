@@ -450,7 +450,7 @@
 }
 .rooms-container {
   height: calc(
-    100vh - 100px
+    100vh - 130px
   ); /* Thêm không gian cho header và các phần tử trên */
   overflow-y: auto;
   padding-bottom: 20px;
