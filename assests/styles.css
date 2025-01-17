@@ -809,7 +809,7 @@
   }
 
   .schedule-content {
-    min-height: 60vh;
+    max-height: 70vh;
     margin-bottom: 20px;
     padding: 15px;
   }
@@ -821,7 +821,7 @@
   }
 
   .room-buttons {
-    position: fixed;
+    position: relative;
     bottom: 0;
     left: 0;
     width: 100%;
