@@ -776,34 +776,59 @@
     width: 100%;
   }
 }
+.schedule-section {
+  display: flex;
+  width: 100%;
+  /* height: 100vh; */ /* Bỏ height cố định */
+  flex-direction: column;
+  font-family: SF Pro, sans-serif;
+  color: #000;
+  overflow-y: auto; /* Cho phép scroll dọc */
+  padding-bottom: 20px; /* Thêm padding bottom để tránh nội dung bị cắt */
+}
+
 .schedule-content {
-  max-width: 100%;
-  height: 70%;
-  padding: 20px 20px 20px 20px;
+  width: 100%;
+  padding: 20px;
+  max-height: 85vh;
   border-radius: 16px;
   background-color: rgba(255, 255, 255, 0.85);
   display: flex;
   flex-direction: column;
   font-weight: 520;
   text-align: center;
-  overflow: hidden;
+  overflow-x: auto; /* Cho phép scroll ngang nếu bảng quá rộng */
 }
 
-.schedule-section {
-  display: flex;
-  width: 100%;
-  height: 95vh;
-  flex-direction: column;
-  font-family: SF Pro, sans-serif;
-  color: #000;
-  overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbars */
+/* Media query cho màn hình nhỏ */
+@media screen and (max-width: 768px) {
+  .schedule-content {
+    padding: 10px;
+    margin: 0;
+  }
+
+  .schedule-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  /* Đảm bảo bảng có thể scroll ngang */
+  .schedule-table {
+    min-width: 800px; /* hoặc chiều rộng tối thiểu phù hợp với nội dung bảng */
+    overflow-x: auto;
+  }
+
+  .table-header,
+  .table-row {
+    min-width: 100%;
+  }
 }
 /* Thêm media query cho iPad */
 @media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
   .schedule-section {
     height: auto; /* Thay vì fixed height */
     min-height: 50vh;
-    max-height: 90vh;
+    /* max-height: 90vh; */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -837,34 +862,33 @@
     font-size: 14px;
   }
 }
-/* Custom Scrollbar Styles */
-.schedule-section::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+/*Custom Scrollbar Styles
+/* .schedule-section::-webkit-scrollbar {
+  width: 12px; 
 }
-
-.schedule-section::-webkit-scrollbar-track {
-  background: rgba(240, 240, 240, 0.8); /* Background of the scrollbar track */
-  border-radius: 10px; /* Rounded corners for the track */
+*/
+/* .schedule-section::-webkit-scrollbar-track {
+  background: rgba(240, 240, 240, 0.8);
+  border-radius: 10px; 
 }
 
 .schedule-section::-webkit-scrollbar-thumb {
-  background-color: #888; /* Color of the draggable part (thumb) */
-  border-radius: 10px; /* Rounded corners for the thumb */
+  background-color: #888; 
+  border-radius: 10px; 
 }
 
 .schedule-section::-webkit-scrollbar-thumb:hover {
-  background-color: #555; /* Darker color on hover */
+  background-color: #555;
 }
 
 .schedule-section::-webkit-scrollbar-corner {
-  background: transparent; /* Corner where both scrollbars meet */
+  background: transparent; 
 }
-
 .schedule-title {
   font-size: 32px;
   margin-bottom: 20px;
   align-self: center;
-}
+} */
 
 .schedule-actions {
   display: flex;
@@ -1628,8 +1652,8 @@ schedule-table {
   z-index: 10;
 }
 
-.background-management > * {
-  margin: 0 10px; /* Khoảng cách đều giữa các phần tử */
+.background-management {
+  margin: 60px 10px; /* Khoảng cách đều giữa các phần tử */
 }
 
 @media (max-width: 768px) {
@@ -1694,7 +1718,7 @@ schedule-table {
   border: none;
   border-radius: 40px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1px;
   cursor: pointer;
@@ -1717,7 +1741,7 @@ schedule-table {
   gap: 2px;
   padding: 10px 20px;
   background-color: rgba(69, 255, 218, 0.2);
-  /* border-radius: 30px; */
+  border-radius: 30px;
   color: white;
 }
 
