@@ -326,7 +326,7 @@
   justify-content: space-between;
   flex: 1;
   min-width: 0;
-  max-height: 500px; /* Thêm chiều cao tối đa để phần tử có thể cuộn khi nội dung quá dài */
+  max-height: 400px; /* Thêm chiều cao tối đa để phần tử có thể cuộn khi nội dung quá dài */
   overflow-y: auto; /* Cho phép cuộn dọc khi nội dung vượt quá chiều cao tối đa */
 }
 
