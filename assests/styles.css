@@ -463,13 +463,16 @@
   flex-shrink: 0; /* Prevent compression */
 }
 /* Base styles for rooms container */
+/* Base styles for rooms container */
 .rooms-container {
   height: auto;
-  min-height: calc(100vh - 180px); /* Điều chỉnh chiều cao cơ bản */
-  max-height: calc(100vh - 140px); /* Đảm bảo không bị giới hạn quá nhiều */
+  min-height: calc(
+    100vh - 150px
+  ); /* Điều chỉnh để thêm không gian cho phần cuộn */
+  max-height: calc(100vh - 50px); /* Giảm tối đa chiều cao để không bị cắt */
   overflow-y: auto;
-  padding: 15px; /* Giảm padding để có nhiều không gian hơn */
-  margin-bottom: 10px; /* Giảm margin dưới cùng để tối ưu không gian */
+  padding: 10px; /* Giảm padding để có nhiều không gian hơn */
+  margin-bottom: 10px;
   scrollbar-width: thin;
   scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
 }
@@ -490,8 +493,8 @@
 
 /* Meeting info adaptations */
 .meeting-info {
-  padding: 12px;
-  margin: 12px 0;
+  padding: 10px; /* Giảm padding */
+  margin: 8px 0; /* Giảm margin để giảm không gian */
   border-radius: 8px;
   transition: all 0.3s ease;
 }
@@ -500,7 +503,7 @@
 .clock-container {
   display: flex;
   color: #ffffff;
-  font-size: 4rem; /* Điều chỉnh lại kích thước đồng hồ */
+  font-size: 3.5rem; /* Giảm kích thước đồng hồ */
   position: absolute;
   top: 0;
   left: 0;
@@ -511,19 +514,19 @@
 /* Large screens (1920x1080 and above) */
 @media screen and (min-width: 1920px) {
   .rooms-container {
-    min-height: calc(100vh - 220px);
-    padding: 20px;
+    min-height: calc(100vh - 250px); /* Giảm chiều cao của phần tử chứa */
+    padding: 15px;
   }
 
   .clock-container {
-    font-size: 5rem;
+    font-size: 4rem; /* Giảm kích thước đồng hồ */
   }
 }
 
 /* Standard desktop screens (1366x768 to 1919px) */
 @media screen and (min-width: 1366px) and (max-width: 1919px) {
   .rooms-container {
-    min-height: calc(100vh - 200px); /* Điều chỉnh cho màn hình này */
+    min-height: calc(100vh - 180px); /* Điều chỉnh chiều cao cho màn hình này */
   }
 
   .clock-container {
@@ -545,31 +548,33 @@
   }
 
   .meeting-info {
-    padding: 10px;
-    margin: 10px 0;
+    padding: 8px;
+    margin: 8px 0;
   }
 
   .clock-container {
-    font-size: 3rem;
+    font-size: 2.8rem;
     top: 8px;
     padding: 8px;
   }
 
   .welcome-text {
-    margin-top: 25px;
+    margin-top: 20px;
   }
 }
 
 /* Mobile devices */
 @media screen and (max-width: 767px) {
   .rooms-container {
-    min-height: calc(100vh - 110px); /* Tăng không gian cho các màn hình nhỏ */
+    min-height: calc(
+      100vh - 80px
+    ); /* Cung cấp nhiều không gian hơn cho màn hình nhỏ */
     padding: 8px;
   }
 
   .meeting-info {
     padding: 8px;
-    margin: 10px 0;
+    margin: 8px 0;
   }
 
   .meeting-title {
@@ -578,14 +583,14 @@
   }
 
   .clock-container {
-    font-size: 2.5rem;
+    font-size: 2rem;
     top: 5px;
     left: 10px;
     padding: 5px;
   }
 
   .welcome-text {
-    margin-top: 30px;
+    margin-top: 25px;
     font-size: 16px;
   }
 
@@ -600,7 +605,9 @@
 /* Handle smaller height screens */
 @media screen and (max-height: 700px) {
   .rooms-container {
-    min-height: calc(100vh - 90px); /* Điều chỉnh cho màn hình thấp */
+    min-height: calc(
+      100vh - 50px
+    ); /* Cung cấp nhiều không gian hơn cho màn hình nhỏ */
   }
 
   .meeting-info {
@@ -612,7 +619,7 @@
 /* Support for orientation changes */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
   .rooms-container {
-    min-height: calc(100vh - 90px);
+    min-height: calc(100vh - 80px);
   }
 
   .clock-container {
