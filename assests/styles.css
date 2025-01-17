@@ -792,13 +792,51 @@
 .schedule-section {
   display: flex;
   width: 100%;
-  height: 95vh; /* Changed from 95vh to use full viewport height */
+  height: 95vh;
   flex-direction: column;
   font-family: SF Pro, sans-serif;
   color: #000;
   overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbars */
 }
+/* Thêm media query cho iPad */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .schedule-section {
+    height: auto; /* Thay vì fixed height */
+    min-height: 50vh;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
 
+  .schedule-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+  }
+
+  .schedule-table {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  /* Điều chỉnh kích thước font và padding cho dễ đọc trên iPad */
+  .schedule-title {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+
+  .schedule-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .table-header > div,
+  .table-row > div {
+    padding: 8px;
+    font-size: 14px;
+  }
+}
 /* Custom Scrollbar Styles */
 .schedule-section::-webkit-scrollbar {
   width: 12px; /* Width of the scrollbar */
@@ -1578,32 +1616,36 @@ schedule-table {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05); /* Đổ bóng */
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .background-management {
-    flex-direction: column;
-    gap: 15px;
-    padding: 20px;
-    width: 100%;
-    align-items: stretch;
-  }
-
-  .reset-main-btn,
-  .reset-schedule-btn,
-  .background-cancel-btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
 /*=======Update when user click setting=======*/
 .background-management {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 10px 20px;
-  border-radius: 50px;
-  transition: all 0.4s ease;
+  justify-content: center; /* Căn giữa các phần tử theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  padding: 15px 20px;
+  z-index: 10;
+}
+
+.background-management > * {
+  margin: 0 10px; /* Khoảng cách đều giữa các phần tử */
+}
+
+@media (max-width: 768px) {
+  .background-management {
+    flex-direction: column; /* Chuyển sang cột khi màn hình nhỏ */
+    gap: 12px; /* Khoảng cách giữa các phần tử */
+    width: 100%; /* Đảm bảo chiếm hết chiều ngang */
+    align-items: stretch; /* Các phần tử kéo giãn đều theo chiều ngang */
+    padding: 15px;
+  }
+
+  .background-upload-button,
+  .reset-background-button {
+    width: 100%; /* Nút chiếm toàn bộ chiều ngang */
+    justify-content: center; /* Căn giữa nội dung trong nút */
+  }
 }
 
 .settings-icon {
@@ -1611,6 +1653,35 @@ schedule-table {
   font-size: 24px;
   color: white;
   transition: transform 0.3s ease;
+}
+/* Ghim nút settings-icon ở góc dưới cùng bên trái */
+.settings-icon {
+  position: fixed; /* Giữ cố định vị trí */
+  bottom: 10px; /* Cách đáy 10px */
+  left: 10px; /* Cách trái 10px */
+  z-index: 1000; /* Đảm bảo nằm trên các thành phần khác */
+  cursor: pointer;
+  font-size: 24px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7); /* Thêm nền mờ để nổi bật */
+  padding: 10px;
+  border-radius: 50%; /* Làm tròn nút */
+  transition: transform 0.3s ease;
+}
+
+/* Hiển thị trên thiết bị nhỏ hơn */
+@media (max-width: 1000px) {
+  .settings-icon {
+    bottom: 15px; /* Điều chỉnh khoảng cách cho thiết bị nhỏ */
+    left: 15px;
+  }
+}
+
+/* Hiệu ứng khi hover */
+.settings-icon:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 0.7); /* Đổi màu nền khi hover */
+  color: black;
 }
 
 .background-upload-container,

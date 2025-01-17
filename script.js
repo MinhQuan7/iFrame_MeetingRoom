@@ -941,6 +941,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 document.addEventListener("DOMContentLoaded", function () {
   // Lấy các phần tử cần thiết
   const mainBackgroundUploadBtn = document.querySelector(
