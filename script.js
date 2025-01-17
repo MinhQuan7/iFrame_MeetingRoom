@@ -716,13 +716,45 @@ function updateClock() {
 
   const currentDateElement = document.querySelector(".current-date");
   if (currentDateElement) {
-    currentDateElement.textContent = "Thứ 2, \n10/12/2024";
+    /*currentDateElement.textContent = "Thứ 2, \n10/12/2024";*/
     currentDateElement.style.fontSize = "15px"; // Thay đổi kích thước font
     currentDateElement.style.color = "#ffffff"; // Thay đổi màu chữ
     currentDateElement.style.fontWeight = "bold"; // Đậm chữ
     currentDateElement.style.paddingRight = "25px";
   }
 }
+function getFormattedDate() {
+  const days = [
+    "Chủ Nhật",
+    "Thứ 2",
+    "Thứ 3",
+    "Thứ 4",
+    "Thứ 5",
+    "Thứ 6",
+    "Thứ 7",
+  ];
+  const now = new Date();
+
+  const dayOfWeek = days[now.getDay()];
+  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const year = now.getFullYear();
+
+  return `${dayOfWeek},\n${day}/${month}/${year}`;
+}
+
+function updateDate() {
+  const currentDateElement = document.querySelector(".current-date");
+  if (currentDateElement) {
+    currentDateElement.textContent = getFormattedDate();
+  }
+}
+
+// Cập nhật thời gian thực mỗi giây
+setInterval(updateDate, 1000);
+
+// Hiển thị ngày ngay khi tải trang
+updateDate();
 
 // Khởi tạo đồng hồ và cập nhật mỗi giây
 function initClock() {
