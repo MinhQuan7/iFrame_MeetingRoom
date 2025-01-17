@@ -326,7 +326,7 @@
   justify-content: space-between;
   flex: 1;
   min-width: 0;
-  max-height: 400px; /* Thêm chiều cao tối đa để phần tử có thể cuộn khi nội dung quá dài */
+  max-height: 500px; /* Thêm chiều cao tối đa để phần tử có thể cuộn khi nội dung quá dài */
   overflow-y: auto; /* Cho phép cuộn dọc khi nội dung vượt quá chiều cao tối đa */
 }
 
@@ -414,6 +414,44 @@
   flex: 1; /* Cho phép các phần tử co giãn */
 }
 
+/* .meeting-info {
+  margin: 15px 0;
+  max-width: 100%;
+  border-radius: 16px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.85);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  overflow: hidden;
+}
+
+.meeting-header {
+  display: flex;
+  width: 100%;
+  gap: 4px;
+  margin-bottom: 3px;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  padding: 3px 0;
+}
+
+.meeting-title {
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: -0.15px;
+}
+
+.meeting-time {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  flex-wrap: wrap;
+} */
+/* Meeting info container */
 .meeting-info {
   margin: 15px 0;
   margin-left: 0;
@@ -462,177 +500,99 @@
   justify-content: center;
   flex-shrink: 0; /* Prevent compression */
 }
-
 .rooms-container {
-  height: auto;
-  min-height: calc(
-    100vh - 150px
-  ); /* Điều chỉnh để thêm không gian cho phần cuộn */
-  max-height: none;
-  /* max-height: calc(100vh - 50px); Giảm tối đa chiều cao để không bị cắt */
+  height: calc(
+    100vh - 120px
+  ); /* Thêm không gian cho header và các phần tử trên */
   overflow-y: auto;
-  padding: 10px; /* Giảm padding để có nhiều không gian hơn */
-  margin-bottom: 10px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+  padding-bottom: 20px;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling trên iOS */
 }
-
-/* Custom scrollbar styling */
-.rooms-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.rooms-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.rooms-container::-webkit-scrollbar-thumb {
-  background-color: rgba(155, 155, 155, 0.5);
-  border-radius: 4px;
-}
-
-/* Meeting info adaptations */
-.meeting-info {
-  padding: 10px; /* Giảm padding */
-  margin: 8px 0; /* Giảm margin để giảm không gian */
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-/* Clock container positioning */
-.clock-container {
-  display: flex;
-  color: #ffffff;
-  font-size: 3.5rem; /* Giảm kích thước đồng hồ */
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 10px;
-  z-index: 2;
-}
-
-/* Large screens (1920x1080 and above) */
-@media screen and (min-width: 1920px) {
-  .content-wrapper {
-    max-width: 1800px;
-    margin: 0 auto;
-  }
-
-  .clock-container {
-    font-size: 4rem;
-  }
-}
-
-/* Standard desktop */
-@media screen and (min-width: 1366px) and (max-width: 1919px) {
-  .content-wrapper {
-    max-width: 1300px;
-    margin: 0 auto;
-  }
-
-  .clock-container {
-    font-size: 3.5rem;
-  }
-}
-
-/* Tablets and smaller laptops */
-@media screen and (min-width: 768px) and (max-width: 1365px) {
-  .rooms-container {
-    padding: 15px;
-  }
-
-  .clock-container {
-    font-size: 2.8rem;
-    padding: 8px;
-  }
-
+/* Điều chỉnh khi màn hình nhỏ hoặc các thiết bị di động */
+@media (max-width: 767px) {
   .meeting-info {
-    margin-bottom: 12px;
+    max-height: 250px; /* Giảm chiều cao tối đa cho các màn hình nhỏ */
+  }
+
+  .rooms-container {
+    height: calc(100vh - 160px); /* Điều chỉnh cho phù hợp với không gian */
+  }
+}
+/* Media queries for iPad */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .meeting-info {
+    padding: 12px;
+    margin: 12px 0;
+  }
+
+  .meeting-time {
+    gap: 10px;
+  }
+
+  .start-time,
+  .end-time {
+    min-width: 120px; /* Slightly wider on iPad */
   }
 }
 
-/* Mobile devices */
+/* Handle smaller iPad screens in portrait */
 @media screen and (max-width: 767px) {
-  .rooms-container {
-    padding: 10px;
-  }
-
-  .clock-container {
-    font-size: 2rem;
-    padding: 5px;
-  }
-
   .meeting-info {
-    padding: 10px;
-    margin-bottom: 10px;
+    padding: 8px;
+    margin: 10px 0;
   }
 
   .meeting-title {
     font-size: 14px;
   }
-}
 
-/* Shorter screens */
-@media screen and (max-height: 700px) {
-  .rooms-container {
-    padding-top: 10px;
+  .meeting-time {
+    font-size: 13px;
   }
 
-  .clock-container {
-    font-size: 2rem;
-    padding: 5px;
+  .start-time,
+  .end-time {
+    min-width: 90px;
+    padding: 4px 8px;
   }
 }
-
-/* Landscape mode */
-@media screen and (orientation: landscape) and (max-width: 1024px) {
-  .clock-container {
-    font-size: 2rem;
-    padding: 5px;
-  }
-
-  .content-wrapper {
-    padding-bottom: 30px;
-  }
-}
-
-/* Fullscreen optimizations */
-.fullscreen-mode .rooms-container {
-  height: 100vh;
-  padding-bottom: 60px;
-}
-
-/* Main content area */
-.main-content {
-  flex: 1;
-  width: 100%;
-  position: relative;
-  z-index: 1;
-}
-
-/* Container for scrollable content */
-.scroll-container {
-  position: relative;
-  width: 100%;
-  height: auto;
-  overflow-y: auto;
-}
-
-/* Add fade effect at bottom */
-.scroll-container::after {
-  content: "";
-  position: fixed;
-  bottom: 0;
+.clock-container {
+  display: flex;
+  color: #ffffff;
+  font-size: clamp(5rem, 5vw, 5.5rem);
+  margin: 0;
+  position: absolute;
+  top: 0;
   left: 0;
-  right: 0;
-  height: 20px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
-  pointer-events: none;
 }
-/* Ensure content visibility in fullscreen mode */
-.fullscreen-mode .rooms-container {
-  height: calc(100vh - 80px);
-  max-height: none;
+@media (max-width: 1366px) {
+  .clock-container {
+    font-size: 3.75rem;
+    top: 8px;
+    padding-left: 10px;
+  }
+  .date-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .current-date {
+    font-size: clamp(0.5rem, 1.8vw, 0.7rem);
+    margin-left: 5px;
+  }
+  .welcome-text {
+    margin-top: 20px; /* Điều chỉnh khoảng cách trên */
+  }
+}
+@media (max-width: 768px) {
+  .clock-container {
+    font-size: 2.5rem;
+    top: 5px;
+    left: 40px;
+  }
+  .welcome-text {
+    margin-top: 30px;
+  }
 }
 .temperature {
   align-self: stretch;
@@ -816,17 +776,19 @@
     width: 100%;
   }
 }
-/* .schedule-section {
-  display: flex;
+.schedule-content {
   max-width: 100%;
-  min-height: 100vh;
+  height: 70%;
+  padding: 20px 20px 20px 20px;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.85);
+  display: flex;
   flex-direction: column;
-  font-family: SF Pro, sans-serif;
-  color: #000;
-  overflow-y: auto;
-  padding-bottom: 20px;
-} */
-/* Base styles */
+  font-weight: 520;
+  text-align: center;
+  overflow: hidden;
+}
+
 .schedule-section {
   display: flex;
   flex-direction: column;
@@ -837,8 +799,6 @@
   padding-bottom: 20px;
   position: relative;
 }
-
-/* iPad styles */
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   body,
   html {
@@ -945,15 +905,16 @@
 .schedule-section::-webkit-scrollbar-corner {
   background: transparent; 
 }
+
 .schedule-title {
   font-size: 32px;
   margin-bottom: 20px;
   align-self: center;
-} */
+}
 
 .schedule-actions {
   display: flex;
-  margin-top: 20px; /* Reduced from 42px */
+  margin-top: 20px; 
   margin-bottom: 20px;
   width: 100%;
   align-items: center;
@@ -961,7 +922,7 @@
   font-size: 24px;
   color: #fff;
   justify-content: space-between;
-  flex-shrink: 0; /* Prevent actions from shrinking */
+  flex-shrink: 0; 
 }
 /* .upload-button {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
@@ -1701,36 +1662,32 @@ schedule-table {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05); /* Đổ bóng */
 }
 
-/*=======Update when user click setting=======*/
-.background-management {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  justify-content: center; /* Căn giữa các phần tử theo chiều ngang */
-  align-items: center; /* Căn giữa theo chiều dọc */
-  padding: 15px 20px;
-  z-index: 10;
-}
-
-.background-management {
-  margin: 60px 10px; /* Khoảng cách đều giữa các phần tử */
-}
-
+/* Responsive Adjustments */
 @media (max-width: 768px) {
   .background-management {
-    flex-direction: column; /* Chuyển sang cột khi màn hình nhỏ */
-    gap: 12px; /* Khoảng cách giữa các phần tử */
-    width: 100%; /* Đảm bảo chiếm hết chiều ngang */
-    align-items: stretch; /* Các phần tử kéo giãn đều theo chiều ngang */
-    padding: 15px;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    width: 100%;
+    align-items: stretch;
   }
 
-  .background-upload-button,
-  .reset-background-button {
-    width: 50%; /* Nút chiếm toàn bộ chiều ngang */
-    justify-content: center; /* Căn giữa nội dung trong nút */
+  .reset-main-btn,
+  .reset-schedule-btn,
+  .background-cancel-btn {
+    width: 100%;
+    justify-content: center;
   }
+}
+
+/*=======Update when user click setting=======*/
+.background-management {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  transition: all 0.4s ease;
 }
 
 .settings-icon {
@@ -1738,35 +1695,6 @@ schedule-table {
   font-size: 24px;
   color: white;
   transition: transform 0.3s ease;
-}
-/* Ghim nút settings-icon ở góc dưới cùng bên trái */
-.settings-icon {
-  position: fixed; /* Giữ cố định vị trí */
-  bottom: 10px; /* Cách đáy 10px */
-  left: 10px; /* Cách trái 10px */
-  z-index: 1000; /* Đảm bảo nằm trên các thành phần khác */
-  cursor: pointer;
-  font-size: 24px;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.7); /* Thêm nền mờ để nổi bật */
-  padding: 10px;
-  border-radius: 50%; /* Làm tròn nút */
-  transition: transform 0.3s ease;
-}
-
-/* Hiển thị trên thiết bị nhỏ hơn */
-@media (max-width: 1000px) {
-  .settings-icon {
-    bottom: 15px; /* Điều chỉnh khoảng cách cho thiết bị nhỏ */
-    left: 15px;
-  }
-}
-
-/* Hiệu ứng khi hover */
-.settings-icon:hover {
-  transform: scale(1.1);
-  background-color: rgba(255, 255, 255, 0.7); /* Đổi màu nền khi hover */
-  color: black;
 }
 
 .background-upload-container,
@@ -1779,7 +1707,7 @@ schedule-table {
   border: none;
   border-radius: 40px;
   font-weight: 600;
-  font-size: 11px;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 1px;
   cursor: pointer;
@@ -1801,8 +1729,8 @@ schedule-table {
   align-items: center;
   gap: 2px;
   padding: 10px 20px;
-  background-color: rgb(0 0 0 / 84%);
-  border-radius: 30px;
+  background-color: rgba(69, 255, 218, 0.2);
+  /* border-radius: 30px; */
   color: white;
 }
 
@@ -2051,8 +1979,6 @@ schedule-table {
   .room-button {
     min-width: 100px;
     padding: 6px;
-    margin-bottom: 20px;
-    height: 40px;
   }
 
   .logo {
