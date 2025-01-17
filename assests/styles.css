@@ -1681,24 +1681,81 @@ schedule-table {
 }
 
 /*=======Update when user click setting=======*/
+/* Container chính */
 .background-management {
+  position: fixed;
+  top: 20px;
+  left: 20px;
   display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 10px 20px;
-  border-radius: 50px;
-  transition: all 0.4s ease;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  z-index: 1000;
 }
 
+/* Icon settings */
 .settings-icon {
   cursor: pointer;
   font-size: 24px;
   color: white;
   transition: transform 0.3s ease;
+  background: rgba(0, 0, 0, 0.5);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.background-upload-container,
+.settings-icon:hover {
+  transform: rotate(90deg);
+}
+
+/* Content dropdown */
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 5px;
+  min-width: 200px;
+  opacity: 1;
+  visibility: hidden;
+}
+
+/* Style cho các container và button */
 .reset-background-button {
+  width: 82%;
+  display: flex;
+  margin-left: 20px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 15px; /* Thay padding cho đồng nhất */
+  background-color: rgb(0 149 119 / 78%); /* Tương tự như các nút khác */
+  border: none;
+  border-radius: 8px; /* Sử dụng border-radius giống các nút */
+  color: white;
+  font-weight: 600; /* Giữ font-weight giống */
+  font-size: 11px; /* Điều chỉnh font size để giống nhau */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  opacity: 0; /* Giữ opacity cho đến khi được hiển thị */
+  visibility: hidden; /* Ẩn khi không sử dụng */
+}
+
+.background-upload-container {
+  width: 100%;
+  opacity: 1;
+  transform: scaleX(1);
+  margin: 0;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1713,33 +1770,40 @@ schedule-table {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s ease;
-  opacity: 0;
-}
-
-.background-upload-container.active,
-.reset-background-button.active {
-  opacity: 1;
-  visibility: visible;
-  transform: scaleX(1); /* Mở rộng toàn bộ */
+  visibility: hidden;
 }
 
 .background-upload-button {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 2px;
-  padding: 10px 20px;
-  background-color: rgba(69, 255, 218, 0.2);
-  /* border-radius: 30px; */
+  gap: 8px;
+  padding: 8px 15px;
+  background-color: rgb(0 149 119 / 78%);
+  border: none;
+  border-radius: 8px;
   color: white;
+  transition: all 0.3s ease;
+}
+
+.background-upload-button:hover {
+  background-color: rgb(0 149 119);
+}
+
+.background-upload-container.active,
+.reset-background-button.active,
+.settings-content.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scaleX(1); /* Mở rộng toàn bộ */
 }
 
 .button-icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
 }
