@@ -778,7 +778,8 @@
 }
 .schedule-section {
   display: flex;
-  width: 100%;
+  max-width: 100%;
+  height:95vh;
   /* height: 100vh; */ /* Bỏ height cố định */
   flex-direction: column;
   font-family: SF Pro, sans-serif;
@@ -789,6 +790,7 @@
 
 .schedule-content {
   width: 100%;
+  height: 70%;
   padding: 20px;
   max-height: 85vh;
   border-radius: 16px;
