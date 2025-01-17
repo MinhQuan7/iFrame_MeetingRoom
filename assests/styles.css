@@ -462,14 +462,14 @@
   justify-content: center;
   flex-shrink: 0; /* Prevent compression */
 }
-/* Base styles for rooms container */
-/* Base styles for rooms container */
+
 .rooms-container {
   height: auto;
   min-height: calc(
     100vh - 150px
   ); /* Điều chỉnh để thêm không gian cho phần cuộn */
-  max-height: calc(100vh - 50px); /* Giảm tối đa chiều cao để không bị cắt */
+  max-height: none;
+  /* max-height: calc(100vh - 50px); Giảm tối đa chiều cao để không bị cắt */
   overflow-y: auto;
   padding: 10px; /* Giảm padding để có nhiều không gian hơn */
   margin-bottom: 10px;
@@ -513,120 +513,122 @@
 
 /* Large screens (1920x1080 and above) */
 @media screen and (min-width: 1920px) {
-  .rooms-container {
-    min-height: calc(100vh - 250px); /* Giảm chiều cao của phần tử chứa */
-    padding: 15px;
+  .content-wrapper {
+    max-width: 1800px;
+    margin: 0 auto;
   }
 
   .clock-container {
-    font-size: 4rem; /* Giảm kích thước đồng hồ */
+    font-size: 4rem;
   }
 }
 
-/* Standard desktop screens (1366x768 to 1919px) */
+/* Standard desktop */
 @media screen and (min-width: 1366px) and (max-width: 1919px) {
-  .rooms-container {
-    min-height: calc(100vh - 180px); /* Điều chỉnh chiều cao cho màn hình này */
+  .content-wrapper {
+    max-width: 1300px;
+    margin: 0 auto;
   }
 
   .clock-container {
     font-size: 3.5rem;
-    padding: 12px;
-  }
-
-  .date-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
   }
 }
 
 /* Tablets and smaller laptops */
 @media screen and (min-width: 768px) and (max-width: 1365px) {
   .rooms-container {
-    padding: 12px;
-  }
-
-  .meeting-info {
-    padding: 8px;
-    margin: 8px 0;
+    padding: 15px;
   }
 
   .clock-container {
     font-size: 2.8rem;
-    top: 8px;
     padding: 8px;
   }
 
-  .welcome-text {
-    margin-top: 20px;
+  .meeting-info {
+    margin-bottom: 12px;
   }
 }
 
 /* Mobile devices */
 @media screen and (max-width: 767px) {
   .rooms-container {
-    min-height: calc(
-      100vh - 80px
-    ); /* Cung cấp nhiều không gian hơn cho màn hình nhỏ */
-    padding: 8px;
+    padding: 10px;
+  }
+
+  .clock-container {
+    font-size: 2rem;
+    padding: 5px;
   }
 
   .meeting-info {
-    padding: 8px;
-    margin: 8px 0;
+    padding: 10px;
+    margin-bottom: 10px;
   }
 
   .meeting-title {
     font-size: 14px;
-    line-height: 1.4;
+  }
+}
+
+/* Shorter screens */
+@media screen and (max-height: 700px) {
+  .rooms-container {
+    padding-top: 10px;
   }
 
   .clock-container {
     font-size: 2rem;
-    top: 5px;
-    left: 10px;
+    padding: 5px;
+  }
+}
+
+/* Landscape mode */
+@media screen and (orientation: landscape) and (max-width: 1024px) {
+  .clock-container {
+    font-size: 2rem;
     padding: 5px;
   }
 
-  .welcome-text {
-    margin-top: 25px;
-    font-size: 16px;
-  }
-
-  .start-time,
-  .end-time {
-    min-width: 90px;
-    padding: 4px 8px;
-    font-size: 13px;
+  .content-wrapper {
+    padding-bottom: 30px;
   }
 }
 
-/* Handle smaller height screens */
-@media screen and (max-height: 700px) {
-  .rooms-container {
-    min-height: calc(
-      100vh - 50px
-    ); /* Cung cấp nhiều không gian hơn cho màn hình nhỏ */
-  }
-
-  .meeting-info {
-    padding: 8px;
-    margin: 8px 0;
-  }
+/* Fullscreen optimizations */
+.fullscreen-mode .rooms-container {
+  height: 100vh;
+  padding-bottom: 60px;
 }
 
-/* Support for orientation changes */
-@media screen and (orientation: landscape) and (max-width: 1024px) {
-  .rooms-container {
-    min-height: calc(100vh - 80px);
-  }
-
-  .clock-container {
-    font-size: 2rem;
-  }
+/* Main content area */
+.main-content {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
+/* Container for scrollable content */
+.scroll-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow-y: auto;
+}
+
+/* Add fade effect at bottom */
+.scroll-container::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
+  pointer-events: none;
+}
 /* Ensure content visibility in fullscreen mode */
 .fullscreen-mode .rooms-container {
   height: calc(100vh - 80px);
