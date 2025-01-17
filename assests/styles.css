@@ -299,20 +299,6 @@
   /* padding: 0px 22px 0px 0; */
   border-radius: 16px; /* Thêm border-radius */
 }
-/* .meeting-info {
-  margin: 15px 0;
-  margin-left: 0;
-  max-width: 100%;
-  border-radius: 16px;
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.85);
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
-  overflow-x: scroll;
-} */
 
 .meeting-info {
   margin: 15px 0;
@@ -414,44 +400,6 @@
   flex: 1; /* Cho phép các phần tử co giãn */
 }
 
-/* .meeting-info {
-  margin: 15px 0;
-  max-width: 100%;
-  border-radius: 16px;
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.85);
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
-  overflow: hidden;
-}
-
-.meeting-header {
-  display: flex;
-  width: 100%;
-  gap: 4px;
-  margin-bottom: 3px;
-  flex-direction: column;
-  overflow: hidden;
-  justify-content: center;
-  padding: 3px 0;
-}
-
-.meeting-title {
-  font-size: 15px;
-  line-height: 1;
-  letter-spacing: -0.15px;
-}
-
-.meeting-time {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  flex-wrap: wrap;
-} */
-/* Meeting info container */
 .meeting-info {
   margin: 15px 0;
   margin-left: 0;
@@ -464,7 +412,7 @@
   justify-content: space-between;
   flex: 1;
   min-width: 0;
-  max-height: 300px; /* Chiều cao tối đa có thể điều chỉnh thêm */
+  max-height: 600px; /* Chiều cao tối đa có thể điều chỉnh thêm */
   overflow-y: auto; /* Cho phép cuộn dọc khi nội dung vượt quá chiều cao tối đa */
 }
 /* Meeting title */
