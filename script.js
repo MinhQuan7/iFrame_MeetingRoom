@@ -716,7 +716,7 @@ function updateClock() {
 
   const currentDateElement = document.querySelector(".current-date");
   if (currentDateElement) {
-    // currentDateElement.textContent = "Thứ 2, \n10/12/2024";
+    /*currentDateElement.textContent = "Thứ 2, \n10/12/2024";*/
     currentDateElement.style.fontSize = "15px"; // Thay đổi kích thước font
     currentDateElement.style.color = "#ffffff"; // Thay đổi màu chữ
     currentDateElement.style.fontWeight = "bold"; // Đậm chữ
@@ -973,6 +973,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 document.addEventListener("DOMContentLoaded", function () {
   // Lấy các phần tử cần thiết
   const mainBackgroundUploadBtn = document.querySelector(
@@ -1018,10 +1019,11 @@ document.addEventListener("DOMContentLoaded", function () {
           <button class="background-confirm-btn">Xác Nhận</button>
           <button class="background-cancel-btn">Hủy</button>
         </div>
-      </div>
+      </div> 
     `;
 
-    document.body.appendChild(modal);
+    const modalContainer = document.querySelector(".modal-container");
+    modalContainer.appendChild(modal);
 
     // Trigger show effect
     setTimeout(() => {
@@ -1046,14 +1048,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
       modal.classList.remove("show");
       setTimeout(() => {
-        document.body.removeChild(modal);
+        modalContainer.removeChild(modal);
       }, 300);
     });
 
     cancelBtn.addEventListener("click", () => {
       modal.classList.remove("show");
       setTimeout(() => {
-        document.body.removeChild(modal);
+        modalContainer.removeChild(modal);
       }, 300);
     });
   }
@@ -1093,6 +1095,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Reset background
   resetBackgroundButton.addEventListener("click", function () {
     // Tạo modal xác nhận
+    const modalContainer = document.querySelector(".modal-container");
     const confirmModal = document.createElement("div");
     confirmModal.className = "background-preview-modal";
     confirmModal.innerHTML = `
@@ -1105,7 +1108,7 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
       </div>
     `;
-    document.body.appendChild(confirmModal);
+    modalContainer.appendChild(confirmModal);
 
     // Trigger show effect
     setTimeout(() => {
@@ -1121,7 +1124,7 @@ document.addEventListener("DOMContentLoaded", function () {
       meetingScreen.style.backgroundImage = "url(assests/imgs/background.jpg)";
       confirmModal.classList.remove("show");
       setTimeout(() => {
-        document.body.removeChild(confirmModal);
+        modalContainer.removeChild(confirmModal);
       }, 300);
     });
 
@@ -1131,14 +1134,14 @@ document.addEventListener("DOMContentLoaded", function () {
         "url(assests/imgs/default-schedule-background.jpg)";
       confirmModal.classList.remove("show");
       setTimeout(() => {
-        document.body.removeChild(confirmModal);
+        modalContainer.removeChild(confirmModal);
       }, 300);
     });
 
     cancelBtn.addEventListener("click", () => {
       confirmModal.classList.remove("show");
       setTimeout(() => {
-        document.body.removeChild(confirmModal);
+        modalContainer.removeChild(confirmModal);
       }, 300);
     });
   });
@@ -1473,21 +1476,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const fullscreenBtn = document.getElementById("fullscreenBtn");
   const meetingContainer = document.querySelector(".meeting-container");
   const meetingPage = document.querySelector(".meeting-page");
-
+  const previewModal = document.querySelector(".modal-container");
   function toggleFullScreen() {
     if (!document.fullscreenElement) {
       // Enter fullscreen
       if (meetingPage.requestFullscreen) {
         meetingPage.requestFullscreen();
+        previewModal.requestFullscreen();
       } else if (meetingPage.mozRequestFullScreen) {
         // Firefox
         meetingPage.mozRequestFullScreen();
+        previewModal.mozRequestFullScreen();
       } else if (meetingPage.webkitRequestFullscreen) {
         // Chrome, Safari and Opera
         meetingPage.webkitRequestFullscreen();
+        previewModal.webkitRequestFullscreen();
       } else if (meetingPage.msRequestFullscreen) {
         // Internet Explorer/Edge
         meetingPage.msRequestFullscreen();
+        previewModal.msRequestFullscreen();
       }
 
       meetingContainer.classList.add("fullscreen-mode");
@@ -1557,7 +1564,33 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+let actionOn = null,
+  actionOff = null,
+  statusAirConditioner = null;
 
+let acStates = {
+  lotus: {
+    isOn: false,
+    roomTemperatures: 20,
+    minTemp: 16,
+    maxTemp: 30,
+  },
+  "lavender-1": {
+    isOn: false,
+    roomTemperatures: 19,
+    minTemp: 16,
+    maxTemp: 30,
+  },
+  "lavender-2": {
+    isOn: false,
+    roomTemperatures: 18,
+    minTemp: 16,
+    maxTemp: 30,
+  },
+};
+function normalizeRoomKey(roomName) {
+  return roomName.toLowerCase().trim();
+}
 // Hàm render trang động riêng biệt
 function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Rendering room page for:", roomName);
@@ -1576,6 +1609,18 @@ function renderRoomPage(data, roomKeyword, roomName) {
     return meetingDate.toDateString() === today.toDateString();
   });
   console.log("Today's meetings:", filteredData);
+
+  const roomKey = normalizeRoomKey(roomKeyword);
+
+  // Initialize room state if it doesn't exist
+  if (!acStates[roomKey]) {
+    acStates[roomKey] = {
+      isOn: false,
+      roomTemperatures: 20,
+      minTemp: 16,
+      maxTemp: 30,
+    };
+  }
 
   // Lấy thời gian hiện tại
   const currentTime = new Date();
@@ -1608,42 +1653,50 @@ function renderRoomPage(data, roomKeyword, roomName) {
   setTimeout(() => {
     const container = document.querySelector(".container");
     if (!container) return;
-
     container.addEventListener("click", (e) => {
       const acCard = e.target.closest(".ac-card");
       if (!acCard) return;
 
-      // Cập nhật nhiệt độ ban đầu
-      const temperatureDisplay = container.querySelector(".temperature-air");
-      if (temperatureDisplay) {
-        updateTemperature(temperatureDisplay);
+      // const room = acCard.dataset.room; // Lấy tên phòng từ thuộc tính data-room
+      // Kiểm tra và khởi tạo acStates nếu chưa có phòng này
+      const room = acCard.dataset.room.toLowerCase();
+      if (!acStates[room]) {
+        acStates[room] = {
+          isOn: false,
+          roomTemperatures: 20,
+          minTemp: 16,
+          maxTemp: 30,
+        }; // Khởi tạo phòng với giá trị mặc định
       }
+      const tempDisplay = acCard.querySelector(".temperature-air");
 
-      // const temperatureDisplay = acCard.querySelector(".temperature-air");
-
-      // Xử lý nút power
       if (e.target.closest(".controls .btn:first-child")) {
-        acStates.isOn = !acStates.isOn;
-        updateACStatus(acCard);
+        acStates[room].isOn = !acStates[room].isOn;
+        updateACStatus(acCard, room);
       }
 
-      // Xử lý nút giảm nhiệt độ
       if (e.target.closest(".controls .btn:nth-child(3)")) {
-        if (acStates.isOn && acStates.temperature > acStates.minTemp) {
-          acStates.temperature--;
-          updateTemperature(temperatureDisplay);
+        if (
+          acStates[room].isOn &&
+          acStates[room].roomTemperatures > acStates[room].minTemp
+        ) {
+          acStates[room].roomTemperatures--;
+          updateTemperature(tempDisplay, room);
         }
       }
 
-      // Xử lý nút tăng nhiệt độ
       if (e.target.closest(".btn-up")) {
-        if (acStates.isOn && acStates.temperature < acStates.maxTemp) {
-          acStates.temperature++;
-          updateTemperature(temperatureDisplay);
+        if (
+          acStates[room].isOn &&
+          acStates[room].roomTemperatures < acStates[room].maxTemp
+        ) {
+          acStates[room].roomTemperatures++;
+          updateTemperature(tempDisplay, room);
         }
       }
     });
   }, 0);
+
   return `
     <div class="container">
       <div class="left-panel">
@@ -1670,61 +1723,49 @@ function renderRoomPage(data, roomKeyword, roomName) {
               <span> Online </span>
             </div>
           </div>
-<div class="ac-card" data-room="${roomKeyword}">
-        <div class="card-content">
-            <!-- AC Icon -->
-             <img
-              alt="Air conditioner icon"
-              height="30"
-              src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg"
-              width="30"
-            />
-                <rect x="2" y="3" width="20" height="14" rx="2" stroke-width="2" />
-                <path d="M6 7h12" stroke-width="2" />
-                <path d="M6 11h12" stroke-width="2" />
-            </svg>
 
-            <div class="main-content">
-                <h3 class="title">Máy lạnh phòng họp 1</h3>
+          <div class="ac-card"data-room="${roomName.toLowerCase()}">
+            <div class="card-content">
+              <img alt="Air conditioner icon" height="30" src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg" width="30" />
+              <div class="main-content">
+                <h3 class="title">Máy lạnh ${roomName}</h3>
 
                 <div class="controls">
-                    <!-- Power Button -->
-                    <button class="btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10" stroke-width="2" />
-                        </svg>
-                    </button>
+                  <button class="btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10" stroke-width="2" />
+                    </svg>
+                  </button>
+                  <div class="divider"></div>
+                  <button class="btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M19 9l-7 7-7-7" stroke-width="2" />
+                    </svg>
+                  </button>
 
-                    <div class="divider"></div>
+                  <span class="temperature-air" id="temperature-${roomName}">${
+    acStates[roomKey].roomTemperatures
+  }°C</span>
 
-                    <!-- Down Button -->
-                    <button class="btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M19 9l-7 7-7-7" stroke-width="2" />
-                        </svg>
-                    </button>
-
-                    <span class="temperature-air" id ="temperature-airConditioner">20°C</span>
-
-                    <!-- Up Button -->
-                    <button class="btn-up">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M5 15l7-7 7 7" stroke-width="2" />
-                        </svg>
-                    </button>
+                  <button class="btn-up">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M5 15l7-7 7 7" stroke-width="2" />
+                    </svg>
+                  </button>
                 </div>
 
                 <div class="status-air">
-                    <div class="status-air-dot"></div>
-                    <span>Offline</span>
+                  <div class="status-air-dot"></div>
+                  <span>Offline</span>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-        </div>
+
         <button class="home-button">
-        <i class="fas fa-home"></i>
-  TRANG CHỦ</button>
+          <i class="fas fa-home"></i> TRANG CHỦ
+        </button>
       </div>
       <div class="main-panel">
         <div>
@@ -1733,14 +1774,16 @@ function renderRoomPage(data, roomKeyword, roomName) {
           <div class="meeting-title-1">${
             currentMeeting ? currentMeeting.content : "Không có cuộc họp"
           }</div>
-<div class="meeting-time-1">
-  <div role="cell">
-    <span>Bắt đầu: ${currentMeeting ? currentMeeting.startTime : "--:--"}</span>
-    <span> - Kết thúc: ${
-      currentMeeting ? currentMeeting.endTime : "--:--"
-    }</span>
-  </div>
-</div>
+          <div class="meeting-time-1">
+            <div role="cell">
+              <span>Bắt đầu: ${
+                currentMeeting ? currentMeeting.startTime : "--:--"
+              }</span>
+              <span> - Kết thúc: ${
+                currentMeeting ? currentMeeting.endTime : "--:--"
+              }</span>
+            </div>
+          </div>
           <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
           <div class="purpose-value">${
             currentMeeting ? currentMeeting.purpose : "Chưa xác định"
@@ -1794,12 +1837,12 @@ function loadDynamicPage(pageType) {
         roomName = "Lotus";
         break;
       case "room2":
-        roomKeyword = "lavender 1";
-        roomName = "Lavender 1";
+        roomKeyword = "lavender-1";
+        roomName = "Lavender-1";
         break;
       case "room3":
-        roomKeyword = "lavender 2";
-        roomName = "Lavender 2";
+        roomKeyword = "lavender-2";
+        roomName = "Lavender-2";
         break;
       default:
         console.error("Unknown room type:", pageType);
@@ -1993,27 +2036,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Khởi tạo trạng thái ban đầu
-let acStates = {
-  lotus: {
-    isOn: false,
-    temperature: 20,
-    minTemp: 16,
-    maxTemp: 30,
-  },
-  lavender1: {
-    isOn: false,
-    temperature: 20,
-    minTemp: 16,
-    maxTemp: 30,
-  },
-  lavender2: {
-    isOn: false,
-    temperature: 20,
-    minTemp: 16,
-    maxTemp: 30,
-  },
-};
 // Thêm CSS cho styling
 const style = document.createElement("style");
 style.textContent = `
@@ -2031,11 +2053,9 @@ style.textContent = `
 document.head.appendChild(style);
 
 //=================Air Conditioner ===
-let actionOn = null,
-  actionOff = null,
-  statusAirConditioner = null;
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container, room) {
+  const sanitizedRoom = sanitizeRoomName(room);
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
@@ -2045,99 +2065,72 @@ function updateACStatus(container, room) {
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
-    startTemperatureUpdates(room);
-    eraWidget.triggerAction(actions[room].on, null);
+    powerButton.classList.remove("OFF");
+    startTemperatureUpdates(sanitizedRoom);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
-    eraWidget.triggerAction(actions[room].off, null);
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
-    stopTemperatureUpdates(room);
+    stopTemperatureUpdates(sanitizedRoom);
   }
 }
 
-let updateInterval;
-// Stop IoT temperature updates
-function stopTemperatureUpdates() {
-  if (updateInterval) {
-    clearInterval(updateInterval);
-    updateInterval = null;
+let updateIntervals = {};
+
+function getRoomSelector(room) {
+  // Replace spaces with hyphens and convert to lowercase for consistency
+  return room.toLowerCase().replace(/\s+/g, "-");
+}
+
+function updateTemperature(tempDisplay, room) {
+  if (tempDisplay && acStates[room]) {
+    if (acStates[room].isOn) {
+      // Use the updateRoomTemperatureDisplay function for consistency
+      updateRoomTemperatureDisplay(room, acStates[room].roomTemperatures);
+    } else {
+      tempDisplay.textContent = "OFF";
+    }
   }
 }
 
-function updateTemperature(tempDisplay) {
-  if (!tempDisplay) return;
-
-  if (acStates.isOn) {
-    tempDisplay.textContent = `${currentACTemperature}°C`;
-  } else {
-    tempDisplay.textContent = "OFF";
-  }
-}
-/*===synchronize data from IoT Paltform with Air Conditioner====*/
-// Start IoT temperature updates
+// Start IoT temperature updates for each room
 function startTemperatureUpdates(room) {
   if (updateIntervals[room]) {
     clearInterval(updateIntervals[room]);
   }
 
   updateIntervals[room] = setInterval(() => {
-    if (acStates[room].isOn) {
-      const tempDisplay = document.querySelector(`#${room} .temperature-air`);
-      if (tempDisplay) {
-        // Lấy nhiệt độ từ IoT platform theo phòng
-        const temperature = getTemperatureFromIoT(room);
-        tempDisplay.textContent = `${temperature}°C`;
-      }
+    if (acStates[room] && acStates[room].isOn) {
+      updateRoomTemperatureDisplay(room, roomTemperatures[room]);
     }
-  }, 100);
+  }, 1000);
 }
-function getTemperatureFromIoT(room) {
-  // Gọi API hoặc lấy dữ liệu từ IoT platform theo phòng
-  switch (room) {
-    case "lotus":
-      return currentACTemperatureLotus;
-    case "lavender1":
-      return currentACTemperatureLavender1;
-    case "lavender2":
-      return currentACTemperatureLavender2;
-    default:
-      return 20;
+// Helper function to stop temperature updates
+function stopTemperatureUpdates(room) {
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
+    delete updateIntervals[room];
   }
 }
+function sanitizeRoomName(room) {
+  return room.toLowerCase().replace(/\s+/g, "-");
+}
 
-container.addEventListener("click", (e) => {
-  const acCard = e.target.closest(".ac-card");
-  if (!acCard) return;
+// Helper function to update the temperature display immediately
+function updateRoomTemperatureDisplay(roomName, temperature) {
+  const sanitizedRoom = sanitizeRoomName(roomName);
+  const tempDisplay = document.querySelector(
+    `#${sanitizedRoom} .temperature-air`
+  );
 
-  const room = acCard.dataset.room; // Thêm data-room attribute vào HTML
-  const tempDisplay = acCard.querySelector(".temperature-air");
-
-  if (e.target.closest(".controls .btn:first-child")) {
-    acStates[room].isOn = !acStates[room].isOn;
-    updateACStatus(acCard, room);
-  }
-
-  if (e.target.closest(".controls .btn:nth-child(3)")) {
-    if (
-      acStates[room].isOn &&
-      acStates[room].temperature > acStates[room].minTemp
-    ) {
-      acStates[room].temperature--;
-      updateTemperature(tempDisplay, room);
+  if (tempDisplay) {
+    if (acStates[roomName] && acStates[roomName].isOn) {
+      tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
+    } else {
+      tempDisplay.textContent = "OFF";
     }
   }
-
-  if (e.target.closest(".btn-up")) {
-    if (
-      acStates[room].isOn &&
-      acStates[room].temperature < acStates[room].maxTemp
-    ) {
-      acStates[room].temperature++;
-      updateTemperature(tempDisplay, room);
-    }
-  }
-});
+}

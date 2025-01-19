@@ -299,19 +299,21 @@
   /* padding: 0px 22px 0px 0; */
   border-radius: 16px; /* Thêm border-radius */
 }
+
 .meeting-info {
   margin: 15px 0;
   margin-left: 0;
-  max-width: 100%;
+  width: 100%;
   border-radius: 16px;
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.85);
-  align-self: stretch;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex: 1;
-  overflow: hidden; /* Thêm overflow: hidden */
+  min-width: 0;
+  max-height: 700px; /* Thêm chiều cao tối đa để phần tử có thể cuộn khi nội dung quá dài */
+  overflow-y: auto; /* Cho phép cuộn dọc khi nội dung vượt quá chiều cao tối đa */
 }
 
 .meeting-title {
@@ -319,7 +321,17 @@
   line-height: 1;
   letter-spacing: -0.15px;
 }
-
+.room-card {
+  margin-bottom: 15px;
+  width: 100%;
+  min-height: fit-content;
+}
+.room-tabs {
+  flex-shrink: 0; /* Prevent tabs from shrinking */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
 .meeting-time {
   display: flex;
   font-size: 14px;
@@ -390,42 +402,108 @@
 
 .meeting-info {
   margin: 15px 0;
-  max-width: 100%;
+  margin-left: 0;
+  width: 100%;
   border-radius: 16px;
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.85);
-  align-self: stretch;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex: 1;
-  overflow: hidden;
+  min-width: 0;
+  max-height: 600px; /* Chiều cao tối đa có thể điều chỉnh thêm */
+  overflow-y: auto; /* Cho phép cuộn dọc khi nội dung vượt quá chiều cao tối đa */
 }
-
-.meeting-header {
-  display: flex;
-  width: 100%;
-  gap: 4px;
-  margin-bottom: 3px;
-  flex-direction: column;
-  overflow: hidden;
-  justify-content: center;
-  padding: 3px 0;
-}
-
+/* Meeting title */
 .meeting-title {
   font-size: 15px;
-  line-height: 1;
+  line-height: 1.2; /* Increased for better readability */
   letter-spacing: -0.15px;
+  white-space: normal; /* Allow text wrapping */
+  word-break: break-word; /* Prevent overflow */
 }
 
+/* Meeting time container */
 .meeting-time {
   display: flex;
+  font-size: 14px;
   align-items: center;
-  justify-content: start;
+  letter-spacing: -0.1px;
+  line-height: 1.2;
+  justify-content: flex-start;
   flex-wrap: wrap;
+  gap: 8px; /* Add space between wrapped items */
 }
 
+/* Time slots styling */
+.start-time,
+.end-time {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  min-width: 100px;
+  justify-content: center;
+  flex-shrink: 0; /* Prevent compression */
+}
+.rooms-container {
+  height: calc(
+    100vh - 130px
+  ); /* Thêm không gian cho header và các phần tử trên */
+  overflow-y: auto;
+  padding-bottom: 20px;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling trên iOS */
+}
+/* Điều chỉnh khi màn hình nhỏ hoặc các thiết bị di động */
+@media (max-width: 767px) {
+  .meeting-info {
+    max-height: 250px; /* Giảm chiều cao tối đa cho các màn hình nhỏ */
+  }
+
+  .rooms-container {
+    height: calc(100vh - 160px); /* Điều chỉnh cho phù hợp với không gian */
+  }
+}
+/* Media queries for iPad */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .meeting-info {
+    padding: 12px;
+    margin: 12px 0;
+  }
+
+  .meeting-time {
+    gap: 10px;
+  }
+
+  .start-time,
+  .end-time {
+    min-width: 120px; /* Slightly wider on iPad */
+  }
+}
+
+/* Handle smaller iPad screens in portrait */
+@media screen and (max-width: 767px) {
+  .meeting-info {
+    padding: 8px;
+    margin: 10px 0;
+  }
+
+  .meeting-title {
+    font-size: 14px;
+  }
+
+  .meeting-time {
+    font-size: 13px;
+  }
+
+  .start-time,
+  .end-time {
+    min-width: 90px;
+    padding: 4px 8px;
+  }
+}
 .clock-container {
   display: flex;
   color: #ffffff;
@@ -607,7 +685,12 @@
   margin-right: 0;
   height: fit-content;
 }
-
+@media (max-width: 1230px) {
+  .right-column {
+    height: auto;
+    width: auto;
+  }
+}
 /* Cập nhật media queries để duy trì tỷ lệ mới trên các màn hình lớn */
 @media (max-width: 1200px) {
   .content-wrapper {
@@ -629,6 +712,11 @@
     margin-top: 5px;
   }
 }
+@media (min-width: 1024px) and (max-width: 1190px) {
+  .schedule-content {
+    max-height: 50%;
+  }
+}
 /* Giữ nguyên layout dọc trên màn hình nhỏ */
 @media (max-width: 991px) {
   .left-column,
@@ -638,7 +726,7 @@
 }
 .schedule-content {
   max-width: 100%;
-  height: 95%;
+  height: 70%;
   padding: 20px 20px 20px 20px;
   border-radius: 16px;
   background-color: rgba(255, 255, 255, 0.85);
@@ -651,35 +739,119 @@
 
 .schedule-section {
   display: flex;
-  width: 100%;
-  height: 95vh; /* Changed from 95vh to use full viewport height */
   flex-direction: column;
-  font-family: SF Pro, sans-serif;
-  color: #000;
-  overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbars */
+  width: 100%;
+  min-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling cho iOS */
+  padding-bottom: 20px;
+  position: relative;
+}
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  body,
+  html {
+    height: 100%;
+    overflow: hidden; /* Ngăn scroll của body */
+  }
+
+  .schedule-section {
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 100px; /* Thêm padding để tránh content bị che bởi room-buttons */
+  }
+
+  .schedule-content {
+    flex: 1;
+    min-height: min-content; /* Cho phép content co giãn theo nội dung */
+    overflow: visible;
+    margin-bottom: 20px;
+  }
+
+  .schedule-table {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
-/* Custom Scrollbar Styles */
-.schedule-section::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+/* Thêm styles cho dark mode nếu cần */
+@media (prefers-color-scheme: dark) {
+  .room-buttons {
+    background: #1a1a1a;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+  }
+}
+.schedule-content {
+  width: 100%;
+  flex: 1;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  font-weight: 520;
+  text-align: center;
+  overflow: auto;
 }
 
-.schedule-section::-webkit-scrollbar-track {
-  background: rgba(240, 240, 240, 0.8); /* Background of the scrollbar track */
-  border-radius: 10px; /* Rounded corners for the track */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .schedule-section {
+    min-height: 100vh;
+    height: auto;
+    position: relative;
+    padding-bottom: 100px; /* Để tránh content bị che bởi room-buttons */
+  }
+
+  .schedule-content {
+    max-height: 50vh;
+    margin-bottom: 20px;
+    padding: 15px;
+  }
+
+  .schedule-table {
+    min-width: 800px;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .room-buttons {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Thêm styles cho bảng để đảm bảo có thể scroll */
+.schedule-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Để smooth scroll trên iOS */
+  width: 100%;
+}
+/*Custom Scrollbar Styles
+/* .schedule-section::-webkit-scrollbar {
+  width: 12px; 
+}
+*/
+/* .schedule-section::-webkit-scrollbar-track {
+  background: rgba(240, 240, 240, 0.8);
+  border-radius: 10px; 
 }
 
 .schedule-section::-webkit-scrollbar-thumb {
-  background-color: #888; /* Color of the draggable part (thumb) */
-  border-radius: 10px; /* Rounded corners for the thumb */
+  background-color: #888; 
+  border-radius: 10px; 
 }
 
 .schedule-section::-webkit-scrollbar-thumb:hover {
-  background-color: #555; /* Darker color on hover */
+  background-color: #555;
 }
 
 .schedule-section::-webkit-scrollbar-corner {
-  background: transparent; /* Corner where both scrollbars meet */
+  background: transparent; 
 }
 
 .schedule-title {
@@ -690,7 +862,7 @@
 
 .schedule-actions {
   display: flex;
-  margin-top: 20px; /* Reduced from 42px */
+  margin-top: 20px; 
   margin-bottom: 20px;
   width: 100%;
   align-items: center;
@@ -698,11 +870,11 @@
   font-size: 24px;
   color: #fff;
   justify-content: space-between;
-  flex-shrink: 0; /* Prevent actions from shrinking */
+  flex-shrink: 0; 
 }
-.upload-button {
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
-  transition: border-color 0.3s ease; /* Hiệu ứng chuyển màu viền */
+/* .upload-button {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  transition: border-color 0.3s ease;
   border: 2px #fff;
   border-radius: 23px;
   background-color: rgba(130, 132, 255, 0.86);
@@ -716,8 +888,22 @@
   margin: auto 0;
   padding: 6px 6px;
   color: #fff;
+} */
+.upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: rgba(130, 132, 255, 0.86);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 23px;
+  min-width: 200px;
+  max-width: 300px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
-
 .upload-icon {
   aspect-ratio: 1;
   object-fit: contain;
@@ -735,19 +921,49 @@ upload-icon-date {
   align-self: stretch;
   margin: auto 0;
 }
-.schedule-table {
+/* .schedule-table {
   min-height: auto;
   max-height: 70vh;
   overflow-y: auto;
   font-size: 16px;
-  /* margin: 15px 0; */
   flex-direction: column;
   overflow-x: hidden;
   justify-content: start;
-
   width: 100%;
   border-collapse: collapse;
   margin-top: 8px;
+} */
+schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+}
+@media screen and (max-width: 1230px) {
+  .schedule-table {
+    display: block;
+    /* overflow-x: auto; */
+    white-space: nowrap;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    min-width: 100px;
+  }
+
+  .content-container {
+    padding: 15px;
+  }
+
+  .upload-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .upload-button {
+    width: 100%;
+    max-width: 250px;
+  }
 }
 .schedule-table th,
 .schedule-table td {
@@ -849,7 +1065,7 @@ upload-icon-date {
 }
 
 .room-buttons {
-  margin-top: auto; /* Push to bottom */
+  margin-top: 2%; /* Push to bottom */
   padding: 15px;
   gap: 20px;
   display: flex;
@@ -1048,19 +1264,19 @@ upload-icon-date {
 }
 
 /*========Upgrade with Change Background Feature============*/
-.main-background-btn {
+/* .main-background-btn {
   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
   color: white;
   box-shadow: 0 6px 12px rgba(106, 17, 203, 0.3),
     0 4px 8px rgba(37, 117, 252, 0.2);
-}
+} */
 
-.schedule-background-btn {
+/* .schedule-background-btn {
   background: linear-gradient(135deg, #ff6b6b, #ff9a9a);
   color: white;
   box-shadow: 0 6px 12px rgba(255, 107, 107, 0.3),
     0 4px 8px rgba(255, 154, 154, 0.2);
-}
+} */
 
 .button-icon-wrapper {
   background-color: rgba(255, 255, 255, 0.2);
@@ -1087,7 +1303,7 @@ upload-icon-date {
   padding: 10px 20px;
   border: none;
   border-radius: 40px;
-  background: linear-gradient(135deg, #4ecdc4, #45b7d1);
+  /* background: linear-gradient(135deg, #4ecdc4, #45b7d1); */
   color: white;
   font-weight: 600;
   font-size: 13px;
@@ -1176,7 +1392,28 @@ upload-icon-date {
     justify-content: center;
   }
 }
+.meeting-page {
+  position: relative; /* Thêm position relative */
+}
 
+.modal-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.background-preview-modal {
+  pointer-events: auto;
+}
+
+/* Đảm bảo modal container hoạt động đúng trong chế độ fullscreen */
+.meeting-page:fullscreen .modal-container {
+  position: fixed;
+}
 .background-preview-modal {
   position: fixed;
   top: 0;
@@ -1198,7 +1435,6 @@ upload-icon-date {
   opacity: 1;
   visibility: visible;
 }
-
 .background-preview-content {
   background: linear-gradient(
     135deg,
@@ -1207,7 +1443,7 @@ upload-icon-date {
   );
   border-radius: 20px; /* Bo tròn góc nhiều hơn */
   padding: 30px;
-  max-width: 500px; /* Tăng kích thước */
+  max-width: 450px; /* Tăng kích thước */
   width: 90%;
   max-height: 80%;
   text-align: center;
@@ -1216,10 +1452,17 @@ upload-icon-date {
   transform: scale(0.7); /* Hiệu ứng scale ban đầu */
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  z-index: 100000;
 }
-
 .background-preview-modal.show .background-preview-content {
   transform: scale(1);
+  opacity: 1;
+}
+:fullscreen .background-preview-content,
+:-webkit-full-screen .background-preview-content,
+:-moz-full-screen .background-preview-content {
+  display: block;
+  visibility: visible;
   opacity: 1;
 }
 
@@ -1405,28 +1648,85 @@ upload-icon-date {
 }
 
 /*=======Update when user click setting=======*/
+/* Container chính */
 .background-management {
+  position: fixed;
+  top: 20px;
+  left: 20px;
   display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 10px 20px;
-  border-radius: 50px;
-  transition: all 0.4s ease;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  z-index: 1000;
 }
 
+/* Icon settings */
 .settings-icon {
   cursor: pointer;
   font-size: 24px;
   color: white;
   transition: transform 0.3s ease;
-}
-
-.background-upload-container,
-.reset-background-button {
+  background: rgba(0, 0, 0, 0.5);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.settings-icon:hover {
+  transform: rotate(90deg);
+}
+
+/* Content dropdown */
+.settings-content {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 5px;
+  min-width: 200px;
+  opacity: 1;
+  visibility: hidden;
+}
+
+/* Style cho các container và button */
+.reset-background-button {
+  width: 82%;
+  display: flex;
+  margin-left: 20px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 15px; /* Thay padding cho đồng nhất */
+  background-color: rgb(0 149 119 / 78%); /* Tương tự như các nút khác */
+  border: none;
+  border-radius: 8px; /* Sử dụng border-radius giống các nút */
+  color: white;
+  font-weight: 600; /* Giữ font-weight giống */
+  font-size: 11px; /* Điều chỉnh font size để giống nhau */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  opacity: 0; /* Giữ opacity cho đến khi được hiển thị */
+  visibility: hidden; /* Ẩn khi không sử dụng */
+}
+
+.background-upload-container {
+  width: 100%;
+  opacity: 1;
+  transform: scaleX(1);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   padding: 10px 20px;
   border: none;
   border-radius: 40px;
@@ -1437,33 +1737,40 @@ upload-icon-date {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s ease;
-  opacity: 0;
-}
-
-.background-upload-container.active,
-.reset-background-button.active {
-  opacity: 1;
-  visibility: visible;
-  transform: scaleX(1); /* Mở rộng toàn bộ */
+  visibility: hidden;
 }
 
 .background-upload-button {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
-  background-color: rgba(69, 255, 218, 0.2);
-  border-radius: 30px;
+  gap: 8px;
+  padding: 8px 15px;
+  background-color: rgb(0 149 119 / 78%);
+  border: none;
+  border-radius: 8px;
   color: white;
+  transition: all 0.3s ease;
+}
+
+.background-upload-button:hover {
+  background-color: rgb(0 149 119);
+}
+
+.background-upload-container.active,
+.reset-background-button.active,
+.settings-content.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scaleX(1); /* Mở rộng toàn bộ */
 }
 
 .button-icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
 }
@@ -2003,14 +2310,37 @@ html {
   z-index: -1;
 }
 
-.dynamic-page-container .container {
+.dynamic-page-container {
   height: 100vh; /* Sử dụng viewport height */
   max-height: 100vh;
   overflow: hidden;
   padding: 0; /* Loại bỏ padding */
   margin: 0; /* Loại bỏ margin */
 }
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent double scrollbars */
+}
 
+/* Header section */
+.header {
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+/* Table container */
+.table-container {
+  flex-shrink: 0; /* Prevent table from shrinking */
+}
+
+/* Room tabs (P1, P2, P3) */
+.room-tabs {
+  flex-shrink: 0; /* Prevent tabs from shrinking */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
 /* Hiệu ứng chuyển trang mượt mà */
 .dynamic-page-container {
   transform: translateY(20px);

@@ -2,13 +2,30 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
-<div class="dynamic-page-container" id="dynamicPageContent" style="display: none"></div>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+/>
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  rel="stylesheet"
+/>
 
 <div class="meeting-page">
   <div class="meeting-screen">
@@ -26,186 +43,206 @@
             <div class="welcome-text">
               <div class="welcome-message">CHÀO MỪNG ĐẾN VỚI PNJ Corp</div>
             </div>
-            <div class="rooms-container">
-              <div class="room-section">
-                <div class="room-number">Lotus</div>
-                <div class="room-details">
-                  <div class="meeting-info">
-                    <div class="meeting-header">
-                      <div class="meeting-title">
-                        <span>Thông tin cuộc họp: Trống</span>
-                      </div>
-                      <div class="meeting-time">
-                        <div class="time-spacer"></div>
-                        <div class="start-time">
-                          <span>Thời gian bắt đầu:</span>
-                          7:00
+            <div class="room-tabs">
+              <div class="rooms-container">
+                <div class="room-section">
+                  <div class="room-number">Lotus</div>
+                  <div class="room-details">
+                    <div class="meeting-info">
+                      <div class="meeting-header">
+                        <div class="meeting-title">
+                          <span>Thông tin cuộc họp: Trống</span>
                         </div>
-                        <div class="end-time">
-                          <span>Thời gian kết thúc:</span>
-                          9:00
-                        </div>
-                      </div>
-                    </div>
-                    <div class="meeting-stats">
-                      <div class="stats-row">
-                        <div class="temperature">
-                          Nhiệt độ: <span id="temperature-eRa"></span>°C
-                        </div>
-                        <div class="humidity">
-                          Độ ẩm: <span id="humidity-eRa"></span>%
+                        <div class="meeting-time">
+                          <div class="time-spacer"></div>
+                          <div class="start-time">
+                            <span>Thời gian bắt đầu:</span>
+                            7:00
+                          </div>
+                          <div class="end-time">
+                            <span>Thời gian kết thúc:</span>
+                            9:00
+                          </div>
                         </div>
                       </div>
-                      <div class="stats-row">
-                        <div class="current">
-                          Dòng điện:<span id="current-eRa"></span>A
+                      <div class="meeting-stats">
+                        <div class="stats-row">
+                          <div class="temperature">
+                            Nhiệt độ: <span id="temperature-eRa"></span>°C
+                          </div>
+                          <div class="humidity">
+                            Độ ẩm: <span id="humidity-eRa"></span>%
+                          </div>
                         </div>
-                        <div class="power">
-                          Công suất: <span id="power-eRa"></span>kWh
+                        <div class="stats-row">
+                          <div class="current">
+                            Dòng điện:<span id="current-eRa"></span>A
+                          </div>
+                          <div class="power">
+                            Công suất: <span id="power-eRa"></span>kWh
+                          </div>
                         </div>
-                      </div>
-                      <div class="status-indicator">
-                        <div class="indicator-dot busy"></div>
-                        <div class="status-text">Đang họp</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="room-section">
-                <div class="room-number">Lavender 1</div>
-                <div class="room-details">
-                  <div class="meeting-info">
-                    <div class="meeting-header">
-                      <div class="meeting-title">
-                        <span>Thông tin cuộc họp:</span>
-                        Trống
-                      </div>
-                      <div class="meeting-time">
-                        <div class="time-spacer"></div>
-                        <div class="start-time">
-                          <span>Thời gian bắt đầu:</span>
-                          --:--
+                        <div class="status-indicator">
+                          <div class="indicator-dot busy"></div>
+                          <div class="status-text">Đang họp</div>
                         </div>
-                        <div class="end-time">
-                          <span>Thời gian kết thúc:</span>
-                          --:--
-                        </div>
-                      </div>
-                    </div>
-                    <div class="meeting-stats">
-                      <div class="stats-row">
-                        <div class="temperature">
-                          Nhiệt độ: <span id="temperature-eRa2"></span>°C
-                        </div>
-                        <div class="humidity">
-                          Độ ẩm: <span id="humidity-eRa2"></span>%
-                        </div>
-                      </div>
-                      <div class="stats-row">
-                        <div class="current">
-                          Dòng điện: <span id="current-eRa2"></span>A
-                        </div>
-                        <div class="power">
-                          Công suất:
-                          <span id="power-eRa2"></span>
-                          kWh
-                        </div>
-                      </div>
-                      <div class="status-indicator">
-                        <div class="indicator-dot available"></div>
-                        <div class="status-text">Trống</div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="room-section">
-                <div class="room-number">Lavender 2</div>
-                <div class="room-details">
-                  <div class="meeting-info">
-                    <div class="meeting-header">
-                      <div class="meeting-title">
-                        <span>Thông tin cuộc họp:</span>
-                        Họp với khách hàng
-                      </div>
-                      <div class="meeting-time">
-                        <div class="time-spacer"></div>
-                        <div class="start-time">
-                          <span>Thời gian bắt đầu:</span>
-                          7:00
+                <div class="room-section">
+                  <div class="room-number">Lavender 1</div>
+                  <div class="room-details">
+                    <div class="meeting-info">
+                      <div class="meeting-header">
+                        <div class="meeting-title">
+                          <span>Thông tin cuộc họp:</span>
+                          Trống
                         </div>
-                        <div class="end-time">
-                          <span>Thời gian kết thúc:</span>
-                          9:00
-                        </div>
-                      </div>
-                    </div>
-                    <div class="meeting-stats">
-                      <div class="stats-row">
-                        <div class="temperature">
-                          Nhiệt độ:
-                          <span id="temperature-eRa3"></span>
-                          ℃
-                        </div>
-                        <div class="humidity">
-                          Độ ẩm: <span id="humidity-eRa3"></span>%
+                        <div class="meeting-time">
+                          <div class="time-spacer"></div>
+                          <div class="start-time">
+                            <span>Thời gian bắt đầu:</span>
+                            --:--
+                          </div>
+                          <div class="end-time">
+                            <span>Thời gian kết thúc:</span>
+                            --:--
+                          </div>
                         </div>
                       </div>
-                      <div class="stats-row">
-                        <div class="current">
-                          Dòng điện:
-                          <span id="current-eRa3"></span>
-                          A
+                      <div class="meeting-stats">
+                        <div class="stats-row">
+                          <div class="temperature">
+                            Nhiệt độ: <span id="temperature-eRa2"></span>°C
+                          </div>
+                          <div class="humidity">
+                            Độ ẩm: <span id="humidity-eRa2"></span>%
+                          </div>
                         </div>
-                        <div class="power">
-                          Công suất:
-                          <span id="power-eRa3"></span>
-                          kW
+                        <div class="stats-row">
+                          <div class="current">
+                            Dòng điện: <span id="current-eRa2"></span>A
+                          </div>
+                          <div class="power">
+                            Công suất:
+                            <span id="power-eRa2"></span>
+                            kWh
+                          </div>
                         </div>
-                      </div>
-                      <div class="status-indicator">
-                        <div class="indicator-dot busy"></div>
-                        <div class="status-text">Đang họp</div>
+                        <div class="status-indicator">
+                          <div class="indicator-dot available"></div>
+                          <div class="status-text">Trống</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <!-- Thêm phần upload background mới -->
-              <!-- Cập nhật HTML -->
-              <div class="background-management">
-                <div class="settings-icon">
-                  <i class="fas fa-cog"></i>
-                </div>
-                <div class="background-upload-container main-bg-container hidden">
-                  <input type="file" id="mainBackgroundUpload" accept="image/*" style="display: none" />
-                  <button class="background-upload-button main-background-btn">
-                    <div class="button-icon-wrapper">
-                      <i class="fas fa-desktop"></i>
-                    </div>
-                    <span>Background Chính</span>
-                  </button>
-                </div>
 
-                <div class="background-upload-container schedule-bg-container hidden">
-                  <input type="file" id="scheduleBackgroundUpload" accept="image/*" style="display: none" />
-                  <button class="background-upload-button schedule-background-btn">
-                    <div class="button-icon-wrapper">
-                      <i class="fas fa-table"></i>
+                <div class="room-section">
+                  <div class="room-number">Lavender 2</div>
+                  <div class="room-details">
+                    <div class="meeting-info">
+                      <div class="meeting-header">
+                        <div class="meeting-title">
+                          <span>Thông tin cuộc họp:</span>
+                          Họp với khách hàng
+                        </div>
+                        <div class="meeting-time">
+                          <div class="time-spacer"></div>
+                          <div class="start-time">
+                            <span>Thời gian bắt đầu:</span>
+                            7:00
+                          </div>
+                          <div class="end-time">
+                            <span>Thời gian kết thúc:</span>
+                            9:00
+                          </div>
+                        </div>
+                      </div>
+                      <div class="meeting-stats">
+                        <div class="stats-row">
+                          <div class="temperature">
+                            Nhiệt độ:
+                            <span id="temperature-eRa3"></span>
+                            ℃
+                          </div>
+                          <div class="humidity">
+                            Độ ẩm: <span id="humidity-eRa3"></span>%
+                          </div>
+                        </div>
+                        <div class="stats-row">
+                          <div class="current">
+                            Dòng điện:
+                            <span id="current-eRa3"></span>
+                            A
+                          </div>
+                          <div class="power">
+                            Công suất:
+                            <span id="power-eRa3"></span>
+                            kW
+                          </div>
+                        </div>
+                        <div class="status-indicator">
+                          <div class="indicator-dot busy"></div>
+                          <div class="status-text">Đang họp</div>
+                        </div>
+                      </div>
                     </div>
-                    <span>Background Lịch</span>
-                  </button>
-                </div>
-
-                <button class="reset-background-button hidden">
-                  <div class="button-icon-wrapper">
-                    <i class="fas fa-undo"></i>
                   </div>
-                  <span>Đặt Lại</span>
-                </button>
+                </div>
+                <!-- Thêm phần upload background mới -->
+                <!-- Cập nhật HTML -->
+                <div class="background-management">
+                  <div class="settings-icon">
+                    <i class="fas fa-cog"></i>
+                  </div>
+                  <div class="settings-content hidden">
+                    <div class="background-upload-container main-bg-container">
+                      <input
+                        type="file"
+                        id="mainBackgroundUpload"
+                        accept="image/*"
+                        hidden
+                      />
+                      <button
+                        class="background-upload-button main-background-btn"
+                      >
+                        <div class="button-icon-wrapper">
+                          <i class="fas fa-desktop"></i>
+                        </div>
+                        <span>Background Chính</span>
+                      </button>
+                    </div>
+
+                    <div
+                      class="background-upload-container schedule-bg-container"
+                    >
+                      <input
+                        type="file"
+                        id="scheduleBackgroundUpload"
+                        accept="image/*"
+                        hidden
+                      />
+                      <button
+                        class="background-upload-button schedule-background-btn"
+                      >
+                        <div class="button-icon-wrapper">
+                          <i class="fas fa-table"></i>
+                        </div>
+                        <span>Background Lịch</span>
+                      </button>
+                    </div>
+
+                    <button class="reset-background-button">
+                      <div class="button-icon-wrapper">
+                        <i class="fas fa-undo"></i>
+                      </div>
+                      <span>Đặt Lại</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -218,16 +255,24 @@
               <div class="schedule-actions">
                 <button class="upload-button">
                   Upload Meeting From
-                  <img class="upload-icon"
+                  <img
+                    class="upload-icon"
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/63b8f295cfd8166b173b26ae08d375f7f940976a41ab185ea145bd917523e537?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
-                    alt="Upload icon" />
+                    alt="Upload icon"
+                  />
                 </button>
                 <input type="date" id="meetingDate" class="date-picker" />
-                <img class="upload-icon-date"
+                <img
+                  class="upload-icon-date"
                   src="https://cdn.builder.io/api/v1/image/assets/TEMP/c0a4e8a69fa64878bebad21d5087b0ff9a059ee566216f2bb71511caa204eaa7?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
-                  alt="Additional action icon" />
+                  alt="Additional action icon"
+                />
               </div>
-              <div class="schedule-table" role="table" aria-label="Meeting Schedule">
+              <div
+                class="schedule-table"
+                role="table"
+                aria-label="Meeting Schedule"
+              >
                 <div class="table-header" role="row">
                   <div role="columnheader">TT</div>
                   <div role="columnheader">Ngày</div>
@@ -264,7 +309,11 @@
               </div>
             </div>
             <div class="fullscreen-toggle">
-              <button id="fullscreenBtn" class="fullscreen-button" aria-label="Toggle Fullscreen">
+              <button
+                id="fullscreenBtn"
+                class="fullscreen-button"
+                aria-label="Toggle Fullscreen"
+              >
                 <i class="fas fa-expand"></i>
               </button>
             </div>
@@ -290,6 +339,12 @@
       </div>
     </div>
   </div>
+  <div class="modal-container"></div>
+  <div
+    class="dynamic-page-container"
+    id="dynamicPageContent"
+    style="display: none"
+  ></div>
 </div>
 
 <div class="window">
@@ -315,7 +370,17 @@
 
 <script src="https://www.unpkg.com/@eohjsc/era-widget@1.1.3/src/index.js"></script>
 <script src="script.js"></script>
+
 <script>
+  function sanitizeRoomName(room) {
+    return room.toLowerCase().replace(/\s+/g, "-");
+  }
+
+  let roomTemperatures = {
+    lotus: 20,
+    "lavender-1": 20,
+    "lavender-2": 20,
+  };
   const eraWidget = new EraWidget();
   // Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
   const temp = document.getElementById("temperature-eRa");
@@ -334,6 +399,8 @@
   const powerIndex3 = document.getElementById("power-eRa3");
 
   const airConditioner = document.getElementById("temperature-airConditioner");
+  const airConditioner2 = document.getElementById("temperature-airConditioner");
+  const airConditioner3 = document.getElementById("temperature-airConditioner");
   let currentACTemperature = 20; // Giá trị mặc định
   let configTemp = null,
     configHumi = null,
@@ -347,8 +414,9 @@
     configHumi3 = null,
     configCurrent3 = null,
     configPower3 = null,
-    configAirConditioner = null;
-
+    configAirConditioner = null,
+    configAirConditioner2 = null,
+    configAirConditioner3 = null;
 
   eraWidget.init({
     onConfiguration: (configuration) => {
@@ -369,6 +437,8 @@
       configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
 
       configAirConditioner = configuration.realtime_configs[12];
+      configAirConditioner2 = configuration.realtime_configs[13];
+      configAirConditioner3 = configuration.realtime_configs[14];
 
       actionOn = configuration.actions[0]; // Lưu cấu hình hành động : On
       actionOff = configuration.actions[1]; // Lưu cấu hình hành động : Off
@@ -391,6 +461,8 @@
         configCurrent3,
         configPower3,
         configAirConditioner,
+        configAirConditioner2,
+        configAirConditioner3,
       });
 
       console.log("Current values:", values);
@@ -457,17 +529,50 @@
 
       if (configAirConditioner && values[configAirConditioner.id]) {
         const airValue = values[configAirConditioner.id].value;
-        currentACTemperature = parseFloat(airValue);
-        if (airConditioner) {
-          airConditioner.textContent = airValue + "°C";
-          // Cập nhật nhiệt độ trong iframe nếu nó đã được render
-          const iframeTemp = document.querySelector(".temperature-air");
-          if (iframeTemp) {
-            iframeTemp.textContent = airValue + "°C";
-          }
-        }
+        roomTemperatures.lotus = parseFloat(airValue);
+        updateRoomTemperatureDisplay("lotus", airValue);
+        console.log("Air Value (lotus):", airValue);
       }
-      
+
+      if (configAirConditioner2 && values[configAirConditioner2.id]) {
+        const airValue2 = values[configAirConditioner2.id].value;
+        roomTemperatures["lavender-1"] = parseFloat(airValue2);
+        updateRoomTemperatureDisplay("lavender-1", airValue2);
+        console.log("Air Value (lotus):", airValue2);
+      }
+
+      if (configAirConditioner3 && values[configAirConditioner3.id]) {
+        const airValue3 = values[configAirConditioner3.id].value;
+        roomTemperatures["lavender-2"] = parseFloat(airValue3);
+        updateRoomTemperatureDisplay("lavender-2", airValue3);
+        console.log("Air Value (lotus):", airValue3);
+      }
     },
   });
+  // Function to start temperature monitoring
+  function startTemperatureMonitoring() {
+    if (!window.roomTemperatures) {
+      window.roomTemperatures = {
+        lotus: 20,
+        "lavender-1": 20,
+        "lavender-2": 20,
+      };
+    }
+
+    setInterval(() => {
+      Object.keys(roomTemperatures).forEach((room) => {
+        const sanitizedRoom = sanitizeRoomName(room);
+        if (acStates[room] && acStates[room].isOn) {
+          const tempDisplay = document.querySelector(
+            `#temperature-${sanitizedRoom}`
+          );
+          if (tempDisplay) {
+            tempDisplay.textContent = `${roomTemperatures[room].toFixed(0)}°C`;
+          }
+        }
+      });
+    }, 1000);
+  }
+  // Initialize the monitoring when the page loads
+  document.addEventListener("DOMContentLoaded", startTemperatureMonitoring);
 </script>
