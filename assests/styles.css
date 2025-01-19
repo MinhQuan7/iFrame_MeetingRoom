@@ -450,7 +450,7 @@
 }
 .rooms-container {
   height: calc(
-    100vh - 133px
+    100vh - 136px
   ); /* Thêm không gian cho header và các phần tử trên */
   overflow-y: auto;
   padding-bottom: 20px;
@@ -1190,7 +1190,7 @@ schedule-table {
 }
 @media (min-width: 992px) and (max-width: 1190px) {
   .date-picker {
-    margin-top: -8%;
+    margin-top: -8.3%;
   }
 }
 @media (max-width: 991px) {
