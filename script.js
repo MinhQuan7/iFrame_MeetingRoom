@@ -1471,6 +1471,36 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+  const datePicker = document.getElementById("meetingDate");
+  hideProgressBar();
+
+  // Set giá trị mặc định là ngày hiện tại
+  const today = new Date();
+  const formattedDate = today.toISOString().split("T")[0];
+  datePicker.value = formattedDate;
+
+  // Kích hoạt sự kiện change để hiển thị dữ liệu của ngày hiện tại
+  const changeEvent = new Event("change");
+  datePicker.dispatchEvent(changeEvent);
+
+  datePicker.addEventListener("change", function () {
+    // Lấy dữ liệu từ localStorage
+    const cachedData = JSON.parse(localStorage.getItem("fileCache"));
+
+    if (cachedData && cachedData.data) {
+      const selectedDate = new Date(this.value);
+      const filteredData = cachedData.data.filter((meeting) => {
+        const meetingDate = new Date(
+          meeting.date.split("/").reverse().join("-")
+        );
+        return meetingDate.toDateString() === selectedDate.toDateString();
+      });
+      updateScheduleTable(filteredData);
+    }
+  });
+});
+
 /*================Full Screen Feature===============*/
 document.addEventListener("DOMContentLoaded", function () {
   const fullscreenBtn = document.getElementById("fullscreenBtn");
