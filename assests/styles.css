@@ -1175,6 +1175,7 @@ schedule-table {
 @media (min-width: 1901px) {
   .date-picker {
     margin-top: -4%;
+    margin-right: -24%;
   }
 }
 @media (min-width: 1300px) and (max-width: 1900px) {
