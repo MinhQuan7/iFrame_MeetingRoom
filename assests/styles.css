@@ -1735,23 +1735,7 @@ schedule-table {
   font-size: 14px; /* Tăng font size */
   transition: all 0.3s ease;
 }
-.change-name-container {
-  position: relative;
-  transition: transform 0.3s ease;
-}
-.change-name-container.move-to-top {
-  top: 0;
-}
 
-.change-name-container:not(.move-to-top) {
-  bottom: 0;
-}
-
-.change-name-container.keyboard-active {
-  transform: translateY(
-    -100vh
-  ); /* Điều chỉnh giá trị này tùy theo kích thước màn hình */
-}
 .change-name-container.keyboard-visible {
   transform: translateY(
     -320px
