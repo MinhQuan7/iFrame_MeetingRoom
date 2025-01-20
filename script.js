@@ -2100,7 +2100,7 @@ function handleEndMeeting(event) {
   // Tìm cuộc họp hiện tại
   const roomMeetings = data.filter(
     (meeting) =>
-      meeting.room.toLowerCase().includes(roomName.toLowerCase()) &&
+      meeting.room.toLowerCase().replace(/\s+/g, "-") &&
       meeting.date === currentDate
   );
 
