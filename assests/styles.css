@@ -2626,6 +2626,7 @@ html {
   gap: 10px;
   flex-wrap: wrap;
   margin-left: 5%;
+  max-width: 320px;
 }
 
 .device-info {

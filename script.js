@@ -1656,15 +1656,15 @@ document.addEventListener("DOMContentLoaded", function () {
   roomButtons.forEach((button) => {
     button.addEventListener("click", function () {
       const roomText = this.querySelector(".button-text").textContent;
-      if (roomText === "P.1") {
+      if (roomText === "P.LOTUS") {
         loadDynamicPage("room1");
         console.log("Press button of P.1");
       }
-      if (roomText === "P.2") {
+      if (roomText === "P.LAVENDER 1") {
         loadDynamicPage("room2");
         console.log("Press button of P.2");
       }
-      if (roomText === "P.3") {
+      if (roomText === "P.LAVENDER 2") {
         loadDynamicPage("room3");
         console.log("Press button of P.3");
       }
