@@ -953,6 +953,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const newNameInput = document.getElementById("newNameInput");
   const welcomeMessage = document.querySelector(".welcome-message");
 
+  // Handle input focus (keyboard appears)
+  newNameInput.addEventListener("focus", function () {
+    modal.classList.add("keyboard-active");
+  });
+
+  // Handle input blur (keyboard disappears)
+  newNameInput.addEventListener("blur", function () {
+    modal.classList.remove("keyboard-active");
+  });
+
+  // Handle Enter key press
+  newNameInput.addEventListener("keyup", function (event) {
+    if (event.key === "Enter") {
+      saveAndCloseModal();
+    }
+  });
+
   // Toggle menu settings
   settingsIcon.addEventListener("click", function (event) {
     event.stopPropagation();
@@ -987,15 +1004,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   // Xử lý nút Save
-  document.querySelector(".save-button").addEventListener("click", function () {
+  function saveAndCloseModal() {
     const newName = newNameInput.value.trim();
     if (newName) {
       welcomeMessage.textContent = newName;
       localStorage.setItem("welcomeMessage", newName);
     }
     modal.classList.remove("active");
+    modal.classList.remove("keyboard-active");
     modalOverlay.classList.remove("active");
-  });
+    newNameInput.blur(); // Hide keyboard
+  }
 
   // Đóng modal khi click outside
   // modalOverlay.addEventListener("click", function () {
@@ -1020,6 +1039,31 @@ document.addEventListener("DOMContentLoaded", function () {
   if (savedMessage) {
     welcomeMessage.textContent = savedMessage;
   }
+
+  // Update Save button click handler
+  document
+    .querySelector(".save-button")
+    .addEventListener("click", saveAndCloseModal);
+
+  // Update Cancel button click handler
+  document
+    .querySelector(".cancel-button")
+    .addEventListener("click", function () {
+      modal.classList.remove("active");
+      modal.classList.remove("keyboard-active");
+      modalOverlay.classList.remove("active");
+      newNameInput.blur(); // Hide keyboard
+    });
+
+  // Only close modal when clicking Cancel button
+  modalOverlay.addEventListener("click", function (event) {
+    if (event.target.classList.contains("cancel-button")) {
+      modal.classList.remove("active");
+      modal.classList.remove("keyboard-active");
+      modalOverlay.classList.remove("active");
+      newNameInput.blur(); // Hide keyboard
+    }
+  });
 });
 
 document.addEventListener("DOMContentLoaded", function () {

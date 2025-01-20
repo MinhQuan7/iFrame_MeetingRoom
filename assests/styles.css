@@ -1735,9 +1735,14 @@ schedule-table {
   font-size: 14px; /* Tăng font size */
   transition: all 0.3s ease;
 }
+
 .name-change-modal.active {
-  display: block;
+  transform: translateY(0);
 }
+.name-change-modal.keyboard-active {
+  bottom: 50vh; /* Adjust this value based on your needs */
+}
+
 .save-button {
   background-color: rgb(0 149 119 / 78%);
   color: white;
