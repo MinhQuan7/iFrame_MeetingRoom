@@ -1736,7 +1736,18 @@ schedule-table {
   transition: all 0.3s ease;
 }
 
-.change-name-container.keyboard-visible {
+.name-change-modal.move-to-top {
+  top: 0;
+  transform: translateY(
+    -320px
+  ); /* Điều chỉnh giá trị này tùy thuộc vào chiều cao bàn phím */
+}
+
+.name-change-modal:not(.move-to-top) {
+  bottom: 0;
+}
+
+.name-change-modal.keyboard-visible {
   transform: translateY(
     -320px
   ); /* Điều chỉnh giá trị này tùy thuộc vào chiều cao bàn phím */

@@ -1658,14 +1658,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add click event to fullscreen button
   fullscreenBtn.addEventListener("click", toggleFullScreen);
-
-  // Xử lý đóng modal
   document
     .querySelector(".cancel-button")
     .addEventListener("click", function () {
       nameChangeModal.classList.remove("active");
       modalOverlay.classList.remove("active");
-      changeNameContainer.classList.remove("move-to-top");
+      changeNameContainer.classList.remove("move-to-top"); // Chỉ remove class move-to-top khi click nút Hủy
     });
 
   document.querySelector(".save-button").addEventListener("click", function () {
