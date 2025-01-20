@@ -1572,45 +1572,79 @@ document.addEventListener("DOMContentLoaded", function () {
   const meetingContainer = document.querySelector(".meeting-container");
   const meetingPage = document.querySelector(".meeting-page");
   const previewModal = document.querySelector(".modal-container");
+  const changeNameContainer = document.querySelector(".change-name-container");
+  const nameChangeModal = document.querySelector(".name-change-modal");
+  const modalOverlay = document.querySelector(".modal-overlay");
+
   function toggleFullScreen() {
     if (!document.fullscreenElement) {
       // Enter fullscreen
       if (meetingPage.requestFullscreen) {
         meetingPage.requestFullscreen();
-        previewModal.requestFullscreen();
       } else if (meetingPage.mozRequestFullScreen) {
-        // Firefox
         meetingPage.mozRequestFullScreen();
-        previewModal.mozRequestFullScreen();
       } else if (meetingPage.webkitRequestFullscreen) {
-        // Chrome, Safari and Opera
         meetingPage.webkitRequestFullscreen();
-        previewModal.webkitRequestFullscreen();
       } else if (meetingPage.msRequestFullscreen) {
-        // Internet Explorer/Edge
         meetingPage.msRequestFullscreen();
-        previewModal.msRequestFullscreen();
       }
 
       meetingContainer.classList.add("fullscreen-mode");
       fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+
+      // Đảm bảo modal và overlay được append vào element đang fullscreen
+      meetingPage.appendChild(nameChangeModal);
+      meetingPage.appendChild(modalOverlay);
     } else {
       // Exit fullscreen
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.mozCancelFullScreen) {
-        // Firefox
         document.mozCancelFullScreen();
       } else if (document.webkitExitFullscreen) {
-        // Chrome, Safari and Opera
         document.webkitExitFullscreen();
       } else if (document.msExitFullscreen) {
-        // Internet Explorer/Edge
         document.msExitFullscreen();
       }
 
       meetingContainer.classList.remove("fullscreen-mode");
       fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+
+      // Đưa modal và overlay trở lại body
+      document.body.appendChild(nameChangeModal);
+      document.body.appendChild(modalOverlay);
+    }
+  }
+
+  // Xử lý hiển thị modal
+  const changeNameButton = document.querySelector(".change-name-button");
+  const welcomeMessage = document.querySelector(".welcome-message");
+  const newNameInput = document.getElementById("newNameInput");
+
+  changeNameButton.addEventListener("click", function (event) {
+    event.stopPropagation();
+
+    // Đảm bảo modal được append vào element đúng
+    if (document.fullscreenElement) {
+      document.fullscreenElement.appendChild(nameChangeModal);
+      document.fullscreenElement.appendChild(modalOverlay);
+    }
+
+    modal.classList.add("active");
+    modalOverlay.classList.add("active");
+    newNameInput.value = welcomeMessage.textContent;
+    newNameInput.focus();
+  });
+
+  // Xử lý fullscreen change
+  function handleFullscreenChange() {
+    if (!document.fullscreenElement) {
+      meetingContainer.classList.remove("fullscreen-mode");
+      fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+
+      // Đưa modal và overlay về body khi thoát fullscreen
+      document.body.appendChild(nameChangeModal);
+      document.body.appendChild(modalOverlay);
     }
   }
 
@@ -1620,15 +1654,31 @@ document.addEventListener("DOMContentLoaded", function () {
   document.addEventListener("mozfullscreenchange", handleFullscreenChange);
   document.addEventListener("MSFullscreenChange", handleFullscreenChange);
 
-  function handleFullscreenChange() {
-    if (!document.fullscreenElement) {
-      meetingContainer.classList.remove("fullscreen-mode");
-      fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
-    }
-  }
-
   // Add click event to fullscreen button
   fullscreenBtn.addEventListener("click", toggleFullScreen);
+
+  // Xử lý đóng modal
+  document
+    .querySelector(".cancel-button")
+    .addEventListener("click", function () {
+      nameChangeModal.classList.remove("active");
+      modalOverlay.classList.remove("active");
+    });
+
+  document.querySelector(".save-button").addEventListener("click", function () {
+    const newName = newNameInput.value.trim();
+    if (newName) {
+      welcomeMessage.textContent = newName;
+      localStorage.setItem("welcomeMessage", newName);
+    }
+    nameChangeModal.classList.remove("active");
+    modalOverlay.classList.remove("active");
+  });
+
+  modalOverlay.addEventListener("click", function () {
+    nameChangeModal.classList.remove("active");
+    modalOverlay.classList.remove("active");
+  });
 
   // Optional: Escape key to exit fullscreen
   document.addEventListener("keydown", function (e) {
@@ -1636,6 +1686,12 @@ document.addEventListener("DOMContentLoaded", function () {
       toggleFullScreen();
     }
   });
+
+  // Load saved welcome message if exists
+  const savedMessage = localStorage.getItem("welcomeMessage");
+  if (savedMessage) {
+    welcomeMessage.textContent = savedMessage;
+  }
 });
 
 //====================Feature Go to Page 2=======================
