@@ -1015,6 +1015,11 @@ schedule-table {
   justify-content: space-between;
   flex-shrink: 0; /* Prevent buttons from shrinking */
 }
+@media (min-width: 1900px) {
+  .room-buttons {
+    margin-bottom: 2%;
+  }
+}
 /* Scrollbar styles */
 .schedule-table::-webkit-scrollbar {
   width: 8px;
