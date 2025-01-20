@@ -1735,6 +1735,16 @@ schedule-table {
   font-size: 14px; /* Tăng font size */
   transition: all 0.3s ease;
 }
+.change-name-container {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.change-name-container.keyboard-active {
+  transform: translateY(
+    -50vh
+  ); /* Điều chỉnh giá trị này tùy theo kích thước màn hình */
+}
 
 .name-change-modal.active {
   transform: translateY(0);
