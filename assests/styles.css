@@ -1742,7 +1742,7 @@ schedule-table {
 
 .change-name-container.keyboard-active {
   transform: translateY(
-    -50vh
+    -100vh
   ); /* Điều chỉnh giá trị này tùy theo kích thước màn hình */
 }
 
