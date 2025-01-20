@@ -236,6 +236,10 @@
     font-size: 0.4rem;
     margin-bottom: 0.3rem;
   }
+  .table-row {
+    font-size: 0.4rem;
+    margin-bottom: 0.3rem;
+  }
 }
 /* Button styles */
 .upload-button,
