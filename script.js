@@ -941,37 +941,102 @@ function showErrorModal(message) {
 /*======Change Background Feature========= */
 document.addEventListener("DOMContentLoaded", function () {
   const settingsIcon = document.querySelector(".settings-icon");
+  const settingsContent = document.querySelector(".settings-content");
   const mainBgContainer = document.querySelector(".main-bg-container");
   const scheduleBgContainer = document.querySelector(".schedule-bg-container");
   const resetBackgroundButton = document.querySelector(
     ".reset-background-button"
   );
+  const changeNameContainer = document.querySelector(".change-name-container");
 
+  // Thêm HTML cho modal
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div class="modal-overlay"></div>
+    <div class="name-change-modal">
+      <input type="text" id="newNameInput" placeholder="Nhập tên mới">
+      <div class="modal-buttons">
+        <button class="modal-button cancel-button">Hủy</button>
+        <button class="modal-button save-button">Lưu</button>
+      </div>
+    </div>
+  `
+  );
+
+  const modal = document.querySelector(".name-change-modal");
+  const modalOverlay = document.querySelector(".modal-overlay");
+  const newNameInput = document.getElementById("newNameInput");
+  const welcomeMessage = document.querySelector(".welcome-message");
+
+  // Toggle menu settings
   settingsIcon.addEventListener("click", function (event) {
     event.stopPropagation();
 
-    console.log("Settings icon clicked");
-
-    // Toggle active class để kích hoạt hiệu ứng
+    settingsContent.classList.toggle("active");
     mainBgContainer.classList.toggle("active");
     scheduleBgContainer.classList.toggle("active");
     resetBackgroundButton.classList.toggle("active");
+    changeNameContainer.classList.toggle("active");
 
-    // Xoay icon răng cưa
-    settingsIcon.style.transform = mainBgContainer.classList.contains("active")
+    settingsIcon.style.transform = settingsContent.classList.contains("active")
       ? "rotate(90deg)"
       : "rotate(0deg)";
+  });
+
+  // Xử lý click change name button
+  const changeNameButton = document.querySelector(".change-name-button");
+  changeNameButton.addEventListener("click", function (event) {
+    event.stopPropagation();
+    modal.classList.add("active");
+    modalOverlay.classList.add("active");
+    newNameInput.value = welcomeMessage.textContent;
+    newNameInput.focus();
+  });
+
+  // Xử lý nút Cancel
+  document
+    .querySelector(".cancel-button")
+    .addEventListener("click", function () {
+      modal.classList.remove("active");
+      modalOverlay.classList.remove("active");
+    });
+
+  // Xử lý nút Save
+  document.querySelector(".save-button").addEventListener("click", function () {
+    const newName = newNameInput.value.trim();
+    if (newName) {
+      welcomeMessage.textContent = newName;
+      // Lưu vào localStorage nếu cần
+      localStorage.setItem("welcomeMessage", newName);
+    }
+    modal.classList.remove("active");
+    modalOverlay.classList.remove("active");
+  });
+
+  // Đóng modal khi click outside
+  modalOverlay.addEventListener("click", function () {
+    modal.classList.remove("active");
+    modalOverlay.classList.remove("active");
   });
 
   // Đóng menu khi click ngoài
   document.addEventListener("click", function (event) {
     if (!event.target.closest(".background-management")) {
+      settingsContent.classList.remove("active");
       mainBgContainer.classList.remove("active");
       scheduleBgContainer.classList.remove("active");
       resetBackgroundButton.classList.remove("active");
+      changeNameContainer.classList.remove("active");
       settingsIcon.style.transform = "rotate(0deg)";
     }
   });
+
+  // Load saved welcome message if exists
+  const savedMessage = localStorage.getItem("welcomeMessage");
+  if (savedMessage) {
+    welcomeMessage.textContent = savedMessage;
+  }
 });
 
 document.addEventListener("DOMContentLoaded", function () {
