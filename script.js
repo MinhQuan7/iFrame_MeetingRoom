@@ -761,22 +761,6 @@ function initClock() {
   updateClock(); // Cập nhật ngay lập tức
   setInterval(updateClock, 1000); // Cập nhật mỗi giây
 }
-// Hàm lọc lịch họp theo ngày
-function filterMeetingsByDate(selectedDate) {
-  const rows = document.querySelectorAll(".schedule-table .table-row");
-  rows.forEach((row) => {
-    const meetingDateText = row.children[1].textContent; // Cột ngày
-    const meetingDate = new Date(
-      meetingDateText.split("/").reverse().join("-")
-    ); // Chuyển đổi định dạng ngày
-    if (meetingDate.toDateString() === selectedDate.toDateString()) {
-      row.style.display = ""; // Hiển thị nếu trùng khớp
-    } else {
-      row.style.display = "none"; // Ẩn nếu không trùng khớp
-    }
-  });
-}
-
 // Hàm kiểm tra xung đột thời gian giữa các cuộc họp
 function checkTimeConflict(meeting1, meeting2) {
   const start1 = timeToMinutes(meeting1.startTime);
@@ -1478,7 +1462,7 @@ async function checkFileChanges() {
       });
 
       console.log("Sử dụng dữ liệu từ cache:", todayMeetings);
-      updateScheduleTable(todayMeetings);
+      // updateScheduleTable(todayMeetings);
       updateRoomStatus(todayMeetings);
     }
   } catch (error) {
@@ -1517,37 +1501,10 @@ function padZero(num) {
 document.addEventListener("DOMContentLoaded", initClock);
 document.addEventListener("DOMContentLoaded", function () {
   const datePicker = document.getElementById("meetingDate");
-  hideProgressBar();
-
-  datePicker.addEventListener("change", function () {
-    // Lấy dữ liệu từ localStorage
-    const cachedData = JSON.parse(localStorage.getItem("fileCache"));
-
-    if (cachedData && cachedData.data) {
-      const selectedDate = new Date(this.value);
-      const filteredData = cachedData.data.filter((meeting) => {
-        const meetingDate = new Date(
-          meeting.date.split("/").reverse().join("-")
-        );
-        return meetingDate.toDateString() === selectedDate.toDateString();
-      });
-      updateScheduleTable(filteredData);
-    }
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const datePicker = document.getElementById("meetingDate");
-  hideProgressBar();
-
-  // Set giá trị mặc định là ngày hiện tại
   const today = new Date();
   const formattedDate = today.toISOString().split("T")[0];
   datePicker.value = formattedDate;
-
-  // Kích hoạt sự kiện change để hiển thị dữ liệu của ngày hiện tại
-  const changeEvent = new Event("change");
-  datePicker.dispatchEvent(changeEvent);
+  hideProgressBar();
 
   datePicker.addEventListener("change", function () {
     // Lấy dữ liệu từ localStorage
