@@ -1717,9 +1717,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-let actionOn = null,
-  actionOff = null,
-  statusAirConditioner = null;
+let statusAirConditioner = null;
+
+let action = {
+  lotus: {
+    actionOn: false,
+    actionOff: false,
+  },
+  "lavender-1": {
+    actionOn2: false,
+    actionOff2: false,
+  },
+  "lavender-1": {
+    actionOn3: false,
+    actionOff3: false,
+  },
+};
 
 let acStates = {
   lotus: {
@@ -2221,10 +2234,12 @@ function updateACStatus(container, room) {
     powerButton.classList.add("active");
     powerButton.classList.remove("OFF");
     startTemperatureUpdates(sanitizedRoom);
+    eraWidget.triggerAction(action[room].actionOn.action, null);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
+    eraWidget.triggerAction(action[room].actionOff.action, null);
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }

@@ -371,7 +371,13 @@
     configPower3 = null,
     configAirConditioner = null,
     configAirConditioner2 = null,
-    configAirConditioner3 = null;
+    configAirConditioner3 = null,
+    actionOff1 = null,
+    actionOff2 = null,
+    actionOff3 = null,
+    actionOn1 = null ,
+    actionOn2 = null,
+    actionOn3 = null;
 
   eraWidget.init({
     onConfiguration: (configuration) => {
@@ -395,8 +401,15 @@
       configAirConditioner2 = configuration.realtime_configs[13];
       configAirConditioner3 = configuration.realtime_configs[14];
 
-      actionOn = configuration.actions[0]; // Lưu cấu hình hành động : On
-      actionOff = configuration.actions[1]; // Lưu cấu hình hành động : Off
+      actionOn1 = configuration.actions[0]; // Lưu cấu hình hành động : On
+      actionOff1 = configuration.actions[1]; // Lưu cấu hình hành động : Off
+
+      actionOn2 = configuration.actions[2]; // Lưu cấu hình hành động : On
+      actionOff2 = configuration.actions[3]; // Lưu cấu hình hành động : Off
+
+      actionOn3 = configuration.actions[4]; // Lưu cấu hình hành động : On
+      actionOff3 = configuration.actions[5]; // Lưu cấu hình hành động : Off
+
     },
     // Hàm lấy giá trị từ các ID và cập nhật giao diện
     onValues: (values) => {
