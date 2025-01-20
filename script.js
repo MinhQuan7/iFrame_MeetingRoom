@@ -2234,12 +2234,14 @@ function updateACStatus(container, room) {
     powerButton.classList.add("active");
     powerButton.classList.remove("OFF");
     startTemperatureUpdates(sanitizedRoom);
-    eraWidget.triggerAction(action[room].actionOn.action, null);
+    // eraWidget.triggerAction(action[room].actionOn.action, null);
+    eraWidget.triggerAction(actionOn1.action, null);
   } else {
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
-    eraWidget.triggerAction(action[room].actionOff.action, null);
+    // eraWidget.triggerAction(action[room].actionOff.action, null);
+    eraWidget.triggerAction(actionOff1.action, null);
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
