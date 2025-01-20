@@ -1739,6 +1739,13 @@ schedule-table {
   position: relative;
   transition: transform 0.3s ease;
 }
+.change-name-container.move-to-top {
+  top: 0;
+}
+
+.change-name-container:not(.move-to-top) {
+  bottom: 0;
+}
 
 .change-name-container.keyboard-active {
   transform: translateY(

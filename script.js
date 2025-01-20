@@ -967,6 +967,7 @@ document.addEventListener("DOMContentLoaded", function () {
   newNameInput.addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
       saveAndCloseModal();
+      changeNameContainer.classList.remove("move-to-top");
     }
   });
 
@@ -1623,7 +1624,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   changeNameButton.addEventListener("click", function (event) {
     event.stopPropagation();
-
+    changeNameContainer.classList.add("move-to-top");
     // Đảm bảo modal được append vào element đúng
     if (document.fullscreenElement) {
       document.fullscreenElement.appendChild(nameChangeModal);
@@ -1663,6 +1664,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("click", function () {
       nameChangeModal.classList.remove("active");
       modalOverlay.classList.remove("active");
+      changeNameContainer.classList.remove("move-to-top");
     });
 
   document.querySelector(".save-button").addEventListener("click", function () {
@@ -1670,6 +1672,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (newName) {
       welcomeMessage.textContent = newName;
       localStorage.setItem("welcomeMessage", newName);
+      changeNameContainer.classList.remove("move-to-top");
     }
     nameChangeModal.classList.remove("active");
     modalOverlay.classList.remove("active");
