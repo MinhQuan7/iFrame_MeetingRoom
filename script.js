@@ -924,19 +924,19 @@ function showErrorModal(message) {
 
 /*======Change Background Feature========= */
 document.addEventListener("DOMContentLoaded", function () {
-  const settingsIcon = document.querySelector(".settings-icon");
-  const settingsContent = document.querySelector(".settings-content");
-  const mainBgContainer = document.querySelector(".main-bg-container");
-  const scheduleBgContainer = document.querySelector(".schedule-bg-container");
-  const resetBackgroundButton = document.querySelector(
-    ".reset-background-button"
-  );
-  const changeNameContainer = document.querySelector(".change-name-container");
+  // Khai báo các elements
+  const elements = {
+    settingsIcon: document.querySelector(".settings-icon"),
+    settingsContent: document.querySelector(".settings-content"),
+    mainBgContainer: document.querySelector(".main-bg-container"),
+    scheduleBgContainer: document.querySelector(".schedule-bg-container"),
+    resetBackgroundButton: document.querySelector(".reset-background-button"),
+    changeNameContainer: document.querySelector(".change-name-container"),
+    welcomeMessage: document.querySelector(".welcome-message"),
+  };
 
-  // Thêm HTML cho modal
-  document.body.insertAdjacentHTML(
-    "beforeend",
-    `
+  // Template cho modal
+  const modalTemplate = `
     <div class="modal-overlay"></div>
     <div class="name-change-modal">
       <input type="text" id="newNameInput" placeholder="Nhập tên mới">
@@ -945,126 +945,127 @@ document.addEventListener("DOMContentLoaded", function () {
         <button class="modal-button save-button">Lưu</button>
       </div>
     </div>
-  `
+  `;
+
+  // Khởi tạo modal
+  function initializeModal() {
+    document.body.insertAdjacentHTML("beforeend", modalTemplate);
+    return {
+      modal: document.querySelector(".name-change-modal"),
+      overlay: document.querySelector(".modal-overlay"),
+      input: document.getElementById("newNameInput"),
+      saveBtn: document.querySelector(".save-button"),
+      cancelBtn: document.querySelector(".cancel-button"),
+    };
+  }
+
+  const modalElements = initializeModal();
+
+  // Các functions xử lý modal
+  const modalHandlers = {
+    open() {
+      modalElements.modal.classList.add("active");
+      modalElements.overlay.classList.add("active");
+      modalElements.input.value = elements.welcomeMessage.textContent;
+      modalElements.input.focus();
+    },
+
+    close() {
+      modalElements.modal.classList.remove("active", "keyboard-active");
+      modalElements.overlay.classList.remove("active");
+      elements.changeNameContainer.classList.remove("keyboard-visible");
+      modalElements.input.blur();
+    },
+
+    save() {
+      const newName = modalElements.input.value.trim();
+      if (newName) {
+        elements.welcomeMessage.textContent = newName;
+        localStorage.setItem("welcomeMessage", newName);
+      }
+      this.close();
+    },
+  };
+
+  // Functions xử lý settings menu
+  const settingsHandlers = {
+    toggleMenu(event) {
+      event.stopPropagation();
+      const classes = [
+        elements.settingsContent,
+        elements.mainBgContainer,
+        elements.scheduleBgContainer,
+        elements.resetBackgroundButton,
+        elements.changeNameContainer,
+      ];
+
+      classes.forEach((element) => element.classList.toggle("active"));
+
+      elements.settingsIcon.style.transform =
+        elements.settingsContent.classList.contains("active")
+          ? "rotate(90deg)"
+          : "rotate(0deg)";
+    },
+
+    closeMenu() {
+      const classes = [
+        elements.settingsContent,
+        elements.mainBgContainer,
+        elements.scheduleBgContainer,
+        elements.resetBackgroundButton,
+        elements.changeNameContainer,
+      ];
+
+      classes.forEach((element) => element.classList.remove("active"));
+      elements.settingsIcon.style.transform = "rotate(0deg)";
+    },
+  };
+
+  // Event Listeners cho keyboard
+  modalElements.input.addEventListener("focus", () => {
+    modalElements.modal.classList.add("keyboard-active");
+    elements.changeNameContainer.classList.add("keyboard-visible");
+  });
+
+  modalElements.input.addEventListener("blur", () => {
+    modalElements.modal.classList.remove("keyboard-active");
+    elements.changeNameContainer.classList.remove("keyboard-visible");
+  });
+
+  // Event Listeners cho các buttons
+  elements.settingsIcon.addEventListener("click", settingsHandlers.toggleMenu);
+
+  document
+    .querySelector(".change-name-button")
+    .addEventListener("click", (e) => {
+      e.stopPropagation();
+      modalHandlers.open();
+    });
+
+  modalElements.saveBtn.addEventListener("click", () => modalHandlers.save());
+  modalElements.cancelBtn.addEventListener("click", () =>
+    modalHandlers.close()
   );
 
-  const modal = document.querySelector(".name-change-modal");
-  const modalOverlay = document.querySelector(".modal-overlay");
-  const newNameInput = document.getElementById("newNameInput");
-  const welcomeMessage = document.querySelector(".welcome-message");
-
-  // Handle input focus (keyboard appears)
-  newNameInput.addEventListener("focus", function () {
-    modal.classList.add("keyboard-active");
-  });
-
-  // Handle input blur (keyboard disappears)
-  newNameInput.addEventListener("blur", function () {
-    modal.classList.remove("keyboard-active");
-  });
-
-  // Handle Enter key press
-  newNameInput.addEventListener("keyup", function (event) {
+  // Event Listener cho phím Enter
+  modalElements.input.addEventListener("keyup", (event) => {
     if (event.key === "Enter") {
-      saveAndCloseModal();
-      changeNameContainer.classList.remove("move-to-top");
+      modalHandlers.save();
     }
   });
 
-  // Toggle menu settings
-  settingsIcon.addEventListener("click", function (event) {
-    event.stopPropagation();
-
-    settingsContent.classList.toggle("active");
-    mainBgContainer.classList.toggle("active");
-    scheduleBgContainer.classList.toggle("active");
-    resetBackgroundButton.classList.toggle("active");
-    changeNameContainer.classList.toggle("active");
-
-    settingsIcon.style.transform = settingsContent.classList.contains("active")
-      ? "rotate(90deg)"
-      : "rotate(0deg)";
-  });
-
-  // Xử lý click change name button
-  const changeNameButton = document.querySelector(".change-name-button");
-  changeNameButton.addEventListener("click", function (event) {
-    event.stopPropagation();
-    modal.classList.add("active");
-    modalOverlay.classList.add("active");
-    newNameInput.value = welcomeMessage.textContent;
-    newNameInput.focus();
-  });
-
-  // Chỉ xử lý nút Cancel để đóng modal
-  document
-    .querySelector(".cancel-button")
-    .addEventListener("click", function () {
-      modal.classList.remove("active");
-      modalOverlay.classList.remove("active");
-    });
-
-  // Xử lý nút Save
-  function saveAndCloseModal() {
-    const newName = newNameInput.value.trim();
-    if (newName) {
-      welcomeMessage.textContent = newName;
-      localStorage.setItem("welcomeMessage", newName);
-    }
-    modal.classList.remove("active");
-    modal.classList.remove("keyboard-active");
-    modalOverlay.classList.remove("active");
-    newNameInput.blur(); // Hide keyboard
-  }
-
-  // Đóng modal khi click outside
-  // modalOverlay.addEventListener("click", function () {
-  //   modal.classList.remove("active");
-  //   modalOverlay.classList.remove("active");
-  // });
-
-  // Đóng menu khi click ngoài
-  document.addEventListener("click", function (event) {
+  // Event Listener cho click outside
+  document.addEventListener("click", (event) => {
     if (!event.target.closest(".background-management")) {
-      settingsContent.classList.remove("active");
-      mainBgContainer.classList.remove("active");
-      scheduleBgContainer.classList.remove("active");
-      resetBackgroundButton.classList.remove("active");
-      changeNameContainer.classList.remove("active");
-      settingsIcon.style.transform = "rotate(0deg)";
+      settingsHandlers.closeMenu();
     }
   });
 
-  // Load saved welcome message if exists
+  // Load saved welcome message
   const savedMessage = localStorage.getItem("welcomeMessage");
   if (savedMessage) {
-    welcomeMessage.textContent = savedMessage;
+    elements.welcomeMessage.textContent = savedMessage;
   }
-
-  // Update Save button click handler
-  document
-    .querySelector(".save-button")
-    .addEventListener("click", saveAndCloseModal);
-
-  // Update Cancel button click handler
-  document
-    .querySelector(".cancel-button")
-    .addEventListener("click", function () {
-      modal.classList.remove("active");
-      modal.classList.remove("keyboard-active");
-      modalOverlay.classList.remove("active");
-      newNameInput.blur(); // Hide keyboard
-    });
-
-  // Only close modal when clicking Cancel button
-  modalOverlay.addEventListener("click", function (event) {
-    if (event.target.classList.contains("cancel-button")) {
-      modal.classList.remove("active");
-      modal.classList.remove("keyboard-active");
-      modalOverlay.classList.remove("active");
-      newNameInput.blur(); // Hide keyboard
-    }
-  });
 });
 
 document.addEventListener("DOMContentLoaded", function () {

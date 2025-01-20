@@ -1752,7 +1752,11 @@ schedule-table {
     -100vh
   ); /* Điều chỉnh giá trị này tùy theo kích thước màn hình */
 }
-
+.change-name-container.keyboard-visible {
+  transform: translateY(
+    -320px
+  ); /* Điều chỉnh giá trị này tùy thuộc vào chiều cao bàn phím */
+}
 .name-change-modal.active {
   transform: translateY(0);
 }
