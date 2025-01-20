@@ -1244,26 +1244,6 @@ schedule-table {
   transition: transform 0.3s ease;
 }
 
-.reset-background-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 40px;
-  /* background: linear-gradient(135deg, #4ecdc4, #45b7d1); */
-  color: white;
-  font-weight: 600;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  box-shadow: 0 6px 12px rgba(78, 205, 196, 0.3),
-    0 4px 8px rgba(69, 183, 209, 0.2);
-  transition: all 0.4s ease;
-}
-
 /* Hover Effects */
 .background-upload-button:hover,
 .reset-background-button:hover {
@@ -1671,7 +1651,7 @@ schedule-table {
   color: white;
   font-weight: 600;
   font-size: 11px;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1772,7 +1752,7 @@ schedule-table {
   color: white;
   font-weight: 600; /* Giữ font-weight giống */
   font-size: 11px; /* Điều chỉnh font size để giống nhau */
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   letter-spacing: 1px;
   cursor: pointer;
   position: relative;
