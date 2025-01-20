@@ -978,7 +978,7 @@ document.addEventListener("DOMContentLoaded", function () {
     newNameInput.focus();
   });
 
-  // Xử lý nút Cancel
+  // Chỉ xử lý nút Cancel để đóng modal
   document
     .querySelector(".cancel-button")
     .addEventListener("click", function () {
@@ -991,7 +991,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const newName = newNameInput.value.trim();
     if (newName) {
       welcomeMessage.textContent = newName;
-      // Lưu vào localStorage nếu cần
       localStorage.setItem("welcomeMessage", newName);
     }
     modal.classList.remove("active");
@@ -999,10 +998,10 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Đóng modal khi click outside
-  modalOverlay.addEventListener("click", function () {
-    modal.classList.remove("active");
-    modalOverlay.classList.remove("active");
-  });
+  // modalOverlay.addEventListener("click", function () {
+  //   modal.classList.remove("active");
+  //   modalOverlay.classList.remove("active");
+  // });
 
   // Đóng menu khi click ngoài
   document.addEventListener("click", function (event) {
