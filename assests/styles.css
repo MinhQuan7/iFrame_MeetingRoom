@@ -2227,7 +2227,7 @@ schedule-table {
 }
 @media (min-width: 330px) and (max-width: 1200px) {
   .room-button {
-    margin-bottom: -18%;
+    margin-bottom: -12%;
   }
 }
 /* Tablet (768px and up) */
