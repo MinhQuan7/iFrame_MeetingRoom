@@ -1745,6 +1745,7 @@ let acStates = {
 };
 function normalizeRoomKey(roomName) {
   return roomName.toLowerCase().trim();
+  // return roomName.toLowerCase().replace(/\s+/g, "-");
 }
 // Hàm render trang động riêng biệt
 function renderRoomPage(data, roomKeyword, roomName) {
@@ -1753,7 +1754,8 @@ function renderRoomPage(data, roomKeyword, roomName) {
 
   // Lọc các cuộc họp cho phòng
   const roomMeetings = data.filter((meeting) =>
-    meeting.room.toLowerCase().includes(roomKeyword.toLowerCase())
+    // meeting.room.toLowerCase().includes(roomKeyword.toLowerCase())
+    meeting.room.toLowerCase().replace(/\s+/g, "-")
   );
   console.log("Filtered room meetings:", roomMeetings);
 
@@ -2151,7 +2153,11 @@ function handleEndMeeting(event) {
       // Cập nhật giao diện
       updateRoomStatus(updatedData);
       updateScheduleTable(todayMeetings);
-      renderRoomPage(updatedData, roomName.toLowerCase(), roomName);
+      renderRoomPage(
+        updatedData,
+        roomName.toLowerCase().replace(/\s+/g, "-"),
+        roomName.toLowerCase().replace(/\s+/g, "-")
+      );
 
       console.log(`Meeting ended early:`, {
         room: roomName,
@@ -2160,11 +2166,6 @@ function handleEndMeeting(event) {
         isEnded: true,
         forceEndedByUser: true,
       });
-
-      // alert(
-      //   `Đã kết thúc cuộc họp tại phòng ${roomName} vào lúc ${currentTime}\n` +
-      //     `(Thời gian kết thúc dự kiến ban đầu: ${currentMeeting.endTime})`
-      // );
     }
   }
 }
@@ -2207,7 +2208,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-//=================Air Conditioner ===
+//=================Air Conditioner =================
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container, room) {
   const sanitizedRoom = sanitizeRoomName(room);
