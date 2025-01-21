@@ -2221,32 +2221,12 @@ document.head.appendChild(style);
 
 //=================Air Conditioner =================
 // Hàm cập nhật trạng thái điều hòa
-let updateIntervals = {};
-let actionOff1 = null,
-  actionOff2 = null,
-  actionOff3 = null,
-  actionOn1 = null,
-  actionOn2 = null,
-  actionOn3 = null;
-// Helper function for room name sanitization
-function sanitizeRoomName(room) {
-  return room.toLowerCase().replace(/\s+/g, "-");
-}
 function updateACStatus(container, room) {
   const sanitizedRoom = sanitizeRoomName(room);
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
-
-  // Debug logs to check action structure
-  console.log("Room:", room);
-  console.log("Action ON1:", actionOn1);
-  console.log("Action OFF1:", actionOff1);
-  console.log("Action ON2:", actionOn2);
-  console.log("Action OFF2:", actionOff2);
-  console.log("Action ON3:", actionOn3);
-  console.log("Action OFF3:", actionOff3);
 
   // Define room-specific actions
   const roomActions = {
@@ -2255,45 +2235,26 @@ function updateACStatus(container, room) {
     "lavender-2": { actionOn: actionOn3, actionOff: actionOff3 },
   };
 
-  console.log("Selected room actions:", roomActions[room]);
-  console.log("AC State for room:", acStates[room]);
-
   if (acStates[room].isOn) {
-    // Debug log before triggering ON action
-    console.log("Attempting to trigger ON action for room:", room);
-    console.log("ON Action being triggered:", roomActions[room].actionOn);
-
+    // Update UI elements for ON state
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
     powerButton.classList.remove("OFF");
     startTemperatureUpdates(sanitizedRoom);
-
-    // Add try-catch to catch any errors during action trigger
-    try {
-      if (roomActions[room]) {
-        eraWidget.triggerAction(roomActions[room].actionOn.action, null);
-        console.log("ON Action triggered successfully");
-      }
-    } catch (error) {
-      console.error("Error triggering ON action:", error);
+    // Trigger the appropriate ON action for the room
+    if (roomActions[room]) {
+      eraWidget.triggerAction(roomActions[room].actionOn.action, null);
     }
   } else {
-    // Debug log before triggering OFF action
-    console.log("Attempting to trigger OFF action for room:", room);
-    console.log("OFF Action being triggered:", roomActions[room].actionOff);
-
+    // Update UI elements for OFF state
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
 
-    try {
-      if (roomActions[room]) {
-        eraWidget.triggerAction(roomActions[room].actionOff.action, null);
-        console.log("OFF Action triggered successfully");
-      }
-    } catch (error) {
-      console.error("Error triggering OFF action:", error);
+    // Trigger the appropriate OFF action for the room
+    if (roomActions[room]) {
+      eraWidget.triggerAction(roomActions[room].actionOff.action, null);
     }
 
     if (tempDisplay) {
@@ -2301,6 +2262,11 @@ function updateACStatus(container, room) {
     }
     stopTemperatureUpdates(sanitizedRoom);
   }
+}
+
+// Helper function for room name sanitization
+function sanitizeRoomName(room) {
+  return room.toLowerCase().replace(/\s+/g, "-");
 }
 
 // Temperature update management functions
