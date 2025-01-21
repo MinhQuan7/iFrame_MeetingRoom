@@ -2221,6 +2221,13 @@ document.head.appendChild(style);
 
 //=================Air Conditioner =================
 // Hàm cập nhật trạng thái điều hòa
+let updateIntervals = {};
+let actionOff1 = null,
+  actionOff2 = null,
+  actionOff3 = null,
+  actionOn1 = null,
+  actionOn2 = null,
+  actionOn3 = null;
 function updateACStatus(container, room) {
   const sanitizedRoom = sanitizeRoomName(room);
   const statusDot = container.querySelector(".status-air-dot");
