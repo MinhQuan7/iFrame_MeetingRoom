@@ -2228,6 +2228,10 @@ let actionOff1 = null,
   actionOn1 = null,
   actionOn2 = null,
   actionOn3 = null;
+// Helper function for room name sanitization
+function sanitizeRoomName(room) {
+  return room.toLowerCase().replace(/\s+/g, "-");
+}
 function updateACStatus(container, room) {
   const sanitizedRoom = sanitizeRoomName(room);
   const statusDot = container.querySelector(".status-air-dot");
@@ -2296,5 +2300,40 @@ function updateACStatus(container, room) {
       tempDisplay.textContent = "OFF";
     }
     stopTemperatureUpdates(sanitizedRoom);
+  }
+}
+
+// Temperature update management functions
+function startTemperatureUpdates(room) {
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
+  }
+
+  updateIntervals[room] = setInterval(() => {
+    if (acStates[room] && acStates[room].isOn) {
+      updateRoomTemperatureDisplay(room, roomTemperatures[room]);
+    }
+  }, 1000);
+}
+
+function stopTemperatureUpdates(room) {
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
+    delete updateIntervals[room];
+  }
+}
+
+function updateRoomTemperatureDisplay(roomName, temperature) {
+  const sanitizedRoom = sanitizeRoomName(roomName);
+  const tempDisplay = document.querySelector(
+    `#${sanitizedRoom} .temperature-air`
+  );
+
+  if (tempDisplay) {
+    if (acStates[roomName] && acStates[roomName].isOn) {
+      tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
+    } else {
+      tempDisplay.textContent = "OFF";
+    }
   }
 }
