@@ -924,19 +924,19 @@ function showErrorModal(message) {
 
 /*======Change Background Feature========= */
 document.addEventListener("DOMContentLoaded", function () {
-  const settingsIcon = document.querySelector(".settings-icon");
-  const settingsContent = document.querySelector(".settings-content");
-  const mainBgContainer = document.querySelector(".main-bg-container");
-  const scheduleBgContainer = document.querySelector(".schedule-bg-container");
-  const resetBackgroundButton = document.querySelector(
-    ".reset-background-button"
-  );
-  const changeNameContainer = document.querySelector(".change-name-container");
+  // Khai báo các elements
+  const elements = {
+    settingsIcon: document.querySelector(".settings-icon"),
+    settingsContent: document.querySelector(".settings-content"),
+    mainBgContainer: document.querySelector(".main-bg-container"),
+    scheduleBgContainer: document.querySelector(".schedule-bg-container"),
+    resetBackgroundButton: document.querySelector(".reset-background-button"),
+    changeNameContainer: document.querySelector(".change-name-container"),
+    welcomeMessage: document.querySelector(".welcome-message"),
+  };
 
-  // Thêm HTML cho modal
-  document.body.insertAdjacentHTML(
-    "beforeend",
-    `
+  // Template cho modal
+  const modalTemplate = `
     <div class="modal-overlay"></div>
     <div class="name-change-modal">
       <input type="text" id="newNameInput" placeholder="Nhập tên mới">
@@ -945,83 +945,126 @@ document.addEventListener("DOMContentLoaded", function () {
         <button class="modal-button save-button">Lưu</button>
       </div>
     </div>
-  `
+  `;
+
+  // Khởi tạo modal
+  function initializeModal() {
+    document.body.insertAdjacentHTML("beforeend", modalTemplate);
+    return {
+      modal: document.querySelector(".name-change-modal"),
+      overlay: document.querySelector(".modal-overlay"),
+      input: document.getElementById("newNameInput"),
+      saveBtn: document.querySelector(".save-button"),
+      cancelBtn: document.querySelector(".cancel-button"),
+    };
+  }
+
+  const modalElements = initializeModal();
+
+  // Các functions xử lý modal
+  const modalHandlers = {
+    open() {
+      modalElements.modal.classList.add("active");
+      modalElements.overlay.classList.add("active");
+      modalElements.input.value = elements.welcomeMessage.textContent;
+      modalElements.input.focus();
+    },
+
+    close() {
+      modalElements.modal.classList.remove("active", "keyboard-active");
+      modalElements.overlay.classList.remove("active");
+      elements.changeNameContainer.classList.remove("keyboard-visible");
+      modalElements.input.blur();
+    },
+
+    save() {
+      const newName = modalElements.input.value.trim();
+      if (newName) {
+        elements.welcomeMessage.textContent = newName;
+        localStorage.setItem("welcomeMessage", newName);
+      }
+      this.close();
+    },
+  };
+
+  // Functions xử lý settings menu
+  const settingsHandlers = {
+    toggleMenu(event) {
+      event.stopPropagation();
+      const classes = [
+        elements.settingsContent,
+        elements.mainBgContainer,
+        elements.scheduleBgContainer,
+        elements.resetBackgroundButton,
+        elements.changeNameContainer,
+      ];
+
+      classes.forEach((element) => element.classList.toggle("active"));
+
+      elements.settingsIcon.style.transform =
+        elements.settingsContent.classList.contains("active")
+          ? "rotate(90deg)"
+          : "rotate(0deg)";
+    },
+
+    closeMenu() {
+      const classes = [
+        elements.settingsContent,
+        elements.mainBgContainer,
+        elements.scheduleBgContainer,
+        elements.resetBackgroundButton,
+        elements.changeNameContainer,
+      ];
+
+      classes.forEach((element) => element.classList.remove("active"));
+      elements.settingsIcon.style.transform = "rotate(0deg)";
+    },
+  };
+
+  // Event Listeners cho keyboard
+  modalElements.input.addEventListener("focus", () => {
+    modalElements.modal.classList.add("keyboard-active");
+    elements.changeNameContainer.classList.add("keyboard-visible");
+  });
+
+  modalElements.input.addEventListener("blur", () => {
+    modalElements.modal.classList.remove("keyboard-active");
+    elements.changeNameContainer.classList.remove("keyboard-visible");
+  });
+
+  // Event Listeners cho các buttons
+  elements.settingsIcon.addEventListener("click", settingsHandlers.toggleMenu);
+
+  document
+    .querySelector(".change-name-button")
+    .addEventListener("click", (e) => {
+      e.stopPropagation();
+      modalHandlers.open();
+    });
+
+  modalElements.saveBtn.addEventListener("click", () => modalHandlers.save());
+  modalElements.cancelBtn.addEventListener("click", () =>
+    modalHandlers.close()
   );
 
-  const modal = document.querySelector(".name-change-modal");
-  const modalOverlay = document.querySelector(".modal-overlay");
-  const newNameInput = document.getElementById("newNameInput");
-  const welcomeMessage = document.querySelector(".welcome-message");
-
-  // Toggle menu settings
-  settingsIcon.addEventListener("click", function (event) {
-    event.stopPropagation();
-
-    settingsContent.classList.toggle("active");
-    mainBgContainer.classList.toggle("active");
-    scheduleBgContainer.classList.toggle("active");
-    resetBackgroundButton.classList.toggle("active");
-    changeNameContainer.classList.toggle("active");
-
-    settingsIcon.style.transform = settingsContent.classList.contains("active")
-      ? "rotate(90deg)"
-      : "rotate(0deg)";
-  });
-
-  // Xử lý click change name button
-  const changeNameButton = document.querySelector(".change-name-button");
-  changeNameButton.addEventListener("click", function (event) {
-    event.stopPropagation();
-    modal.classList.add("active");
-    modalOverlay.classList.add("active");
-    newNameInput.value = welcomeMessage.textContent;
-    newNameInput.focus();
-  });
-
-  // Xử lý nút Cancel trong modal
-  const modalCancelButton = document.querySelector(
-    ".modal-button.cancel-button"
-  );
-  modalCancelButton.addEventListener("click", function () {
-    modal.classList.remove("active");
-    modalOverlay.classList.remove("active");
-    // Đóng change-name-container khi click Hủy
-    changeNameContainer.classList.remove("active");
-  });
-
-  // Xử lý nút Save
-  document.querySelector(".save-button").addEventListener("click", function () {
-    const newName = newNameInput.value.trim();
-    if (newName) {
-      welcomeMessage.textContent = newName;
-      localStorage.setItem("welcomeMessage", newName);
-    }
-    modal.classList.remove("active");
-    modalOverlay.classList.remove("active");
-    // Đóng change-name-container sau khi save
-    changeNameContainer.classList.remove("active");
-  });
-
-  // Đóng menu khi click ngoài
-  document.addEventListener("click", function (event) {
-    const isClickInsideBackgroundManagement = event.target.closest(
-      ".background-management"
-    );
-
-    if (!isClickInsideBackgroundManagement) {
-      settingsContent.classList.remove("active");
-      mainBgContainer.classList.remove("active");
-      scheduleBgContainer.classList.remove("active");
-      resetBackgroundButton.classList.remove("active");
-      changeNameContainer.classList.remove("active");
-      settingsIcon.style.transform = "rotate(0deg)";
+  // Event Listener cho phím Enter
+  modalElements.input.addEventListener("keyup", (event) => {
+    if (event.key === "Enter") {
+      modalHandlers.save();
     }
   });
 
-  // Load saved welcome message if exists
+  // Event Listener cho click outside
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".background-management")) {
+      settingsHandlers.closeMenu();
+    }
+  });
+
+  // Load saved welcome message
   const savedMessage = localStorage.getItem("welcomeMessage");
   if (savedMessage) {
-    welcomeMessage.textContent = savedMessage;
+    elements.welcomeMessage.textContent = savedMessage;
   }
 });
 
@@ -1582,7 +1625,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   changeNameButton.addEventListener("click", function (event) {
     event.stopPropagation();
-
+    changeNameContainer.classList.add("move-to-top");
     // Đảm bảo modal được append vào element đúng
     if (document.fullscreenElement) {
       document.fullscreenElement.appendChild(nameChangeModal);
@@ -1615,13 +1658,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add click event to fullscreen button
   fullscreenBtn.addEventListener("click", toggleFullScreen);
-
-  // Xử lý đóng modal
   document
     .querySelector(".cancel-button")
     .addEventListener("click", function () {
       nameChangeModal.classList.remove("active");
       modalOverlay.classList.remove("active");
+      changeNameContainer.classList.remove("move-to-top"); // Chỉ remove class move-to-top khi click nút Hủy
     });
 
   document.querySelector(".save-button").addEventListener("click", function () {
@@ -1629,6 +1671,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (newName) {
       welcomeMessage.textContent = newName;
       localStorage.setItem("welcomeMessage", newName);
+      changeNameContainer.classList.remove("move-to-top");
     }
     nameChangeModal.classList.remove("active");
     modalOverlay.classList.remove("active");
@@ -1659,24 +1702,37 @@ document.addEventListener("DOMContentLoaded", function () {
   roomButtons.forEach((button) => {
     button.addEventListener("click", function () {
       const roomText = this.querySelector(".button-text").textContent;
-      if (roomText === "P.1") {
+      if (roomText === "P.LOTUS") {
         loadDynamicPage("room1");
         console.log("Press button of P.1");
       }
-      if (roomText === "P.2") {
+      if (roomText === "P.LAVENDER 1") {
         loadDynamicPage("room2");
         console.log("Press button of P.2");
       }
-      if (roomText === "P.3") {
+      if (roomText === "P.LAVENDER 2") {
         loadDynamicPage("room3");
         console.log("Press button of P.3");
       }
     });
   });
 });
-let actionOn = null,
-  actionOff = null,
-  statusAirConditioner = null;
+let statusAirConditioner = null;
+
+let action = {
+  lotus: {
+    actionOn: false,
+    actionOff: false,
+  },
+  "lavender-1": {
+    actionOn2: false,
+    actionOff2: false,
+  },
+  "lavender-1": {
+    actionOn3: false,
+    actionOff3: false,
+  },
+};
 
 let acStates = {
   lotus: {
@@ -1700,6 +1756,7 @@ let acStates = {
 };
 function normalizeRoomKey(roomName) {
   return roomName.toLowerCase().trim();
+  // return roomName.toLowerCase().replace(/\s+/g, "-");
 }
 // Hàm render trang động riêng biệt
 function renderRoomPage(data, roomKeyword, roomName) {
@@ -1708,7 +1765,8 @@ function renderRoomPage(data, roomKeyword, roomName) {
 
   // Lọc các cuộc họp cho phòng
   const roomMeetings = data.filter((meeting) =>
-    meeting.room.toLowerCase().includes(roomKeyword.toLowerCase())
+    // meeting.room.toLowerCase().includes(roomKeyword.toLowerCase())
+    meeting.room.toLowerCase().replace(/\s+/g, "-")
   );
   console.log("Filtered room meetings:", roomMeetings);
 
@@ -2055,7 +2113,7 @@ function handleEndMeeting(event) {
   // Tìm cuộc họp hiện tại
   const roomMeetings = data.filter(
     (meeting) =>
-      meeting.room.toLowerCase().includes(roomName.toLowerCase()) &&
+      meeting.room.toLowerCase().replace(/\s+/g, "-") &&
       meeting.date === currentDate
   );
 
@@ -2106,7 +2164,11 @@ function handleEndMeeting(event) {
       // Cập nhật giao diện
       updateRoomStatus(updatedData);
       updateScheduleTable(todayMeetings);
-      renderRoomPage(updatedData, roomName.toLowerCase(), roomName);
+      renderRoomPage(
+        updatedData,
+        roomName.toLowerCase().replace(/\s+/g, "-"),
+        roomName.toLowerCase().replace(/\s+/g, "-")
+      );
 
       console.log(`Meeting ended early:`, {
         room: roomName,
@@ -2115,11 +2177,6 @@ function handleEndMeeting(event) {
         isEnded: true,
         forceEndedByUser: true,
       });
-
-      // alert(
-      //   `Đã kết thúc cuộc họp tại phòng ${roomName} vào lúc ${currentTime}\n` +
-      //     `(Thời gian kết thúc dự kiến ban đầu: ${currentMeeting.endTime})`
-      // );
     }
   }
 }
@@ -2162,7 +2219,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-//=================Air Conditioner ===
+//=================Air Conditioner =================
 // Hàm cập nhật trạng thái điều hòa
 function updateACStatus(container, room) {
   const sanitizedRoom = sanitizeRoomName(room);
@@ -2171,16 +2228,35 @@ function updateACStatus(container, room) {
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
 
+  // Define room-specific actions
+  const roomActions = {
+    lotus: { actionOn: actionOn1, actionOff: actionOff1 },
+    "lavender-1": { actionOn: actionOn2, actionOff: actionOff2 },
+    "lavender-2": { actionOn: actionOn3, actionOff: actionOff3 },
+  };
+
   if (acStates[room].isOn) {
+    // Update UI elements for ON state
     statusDot.style.backgroundColor = "#4CAF50";
     statusText.textContent = "Online";
     powerButton.classList.add("active");
     powerButton.classList.remove("OFF");
     startTemperatureUpdates(sanitizedRoom);
+    // Trigger the appropriate ON action for the room
+    if (roomActions[room]) {
+      eraWidget.triggerAction(roomActions[room].actionOn.action, null);
+    }
   } else {
+    // Update UI elements for OFF state
     statusDot.style.backgroundColor = "#ff0000";
     statusText.textContent = "Offline";
     powerButton.classList.remove("active");
+
+    // Trigger the appropriate OFF action for the room
+    if (roomActions[room]) {
+      eraWidget.triggerAction(roomActions[room].actionOff.action, null);
+    }
+
     if (tempDisplay) {
       tempDisplay.textContent = "OFF";
     }
@@ -2188,25 +2264,12 @@ function updateACStatus(container, room) {
   }
 }
 
-let updateIntervals = {};
-
-function getRoomSelector(room) {
-  // Replace spaces with hyphens and convert to lowercase for consistency
+// Helper function for room name sanitization
+function sanitizeRoomName(room) {
   return room.toLowerCase().replace(/\s+/g, "-");
 }
 
-function updateTemperature(tempDisplay, room) {
-  if (tempDisplay && acStates[room]) {
-    if (acStates[room].isOn) {
-      // Use the updateRoomTemperatureDisplay function for consistency
-      updateRoomTemperatureDisplay(room, acStates[room].roomTemperatures);
-    } else {
-      tempDisplay.textContent = "OFF";
-    }
-  }
-}
-
-// Start IoT temperature updates for each room
+// Temperature update management functions
 function startTemperatureUpdates(room) {
   if (updateIntervals[room]) {
     clearInterval(updateIntervals[room]);
@@ -2218,18 +2281,14 @@ function startTemperatureUpdates(room) {
     }
   }, 1000);
 }
-// Helper function to stop temperature updates
+
 function stopTemperatureUpdates(room) {
   if (updateIntervals[room]) {
     clearInterval(updateIntervals[room]);
     delete updateIntervals[room];
   }
 }
-function sanitizeRoomName(room) {
-  return room.toLowerCase().replace(/\s+/g, "-");
-}
 
-// Helper function to update the temperature display immediately
 function updateRoomTemperatureDisplay(roomName, temperature) {
   const sanitizedRoom = sanitizeRoomName(roomName);
   const tempDisplay = document.querySelector(

@@ -2,32 +2,15 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  rel="stylesheet"
-/>
-<link
-  href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap"
-  rel="stylesheet"
-/>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-/>
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap"
-  rel="stylesheet"
-/>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-/>
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
 
 <div class="meeting-page">
+  <div class="dynamic-page-container" id="dynamicPageContent" style="display: none"></div>
   <div class="meeting-screen">
     <div class="meeting-container">
       <div class="content-wrapper">
@@ -208,15 +191,8 @@
                       </button>
                     </div>
                     <div class="background-upload-container main-bg-container">
-                      <input
-                        type="file"
-                        id="mainBackgroundUpload"
-                        accept="image/*"
-                        hidden
-                      />
-                      <button
-                        class="background-upload-button main-background-btn"
-                      >
+                      <input type="file" id="mainBackgroundUpload" accept="image/*" hidden />
+                      <button class="background-upload-button main-background-btn">
                         <div class="button-icon-wrapper">
                           <i class="fas fa-desktop"></i>
                         </div>
@@ -224,18 +200,9 @@
                       </button>
                     </div>
 
-                    <div
-                      class="background-upload-container schedule-bg-container"
-                    >
-                      <input
-                        type="file"
-                        id="scheduleBackgroundUpload"
-                        accept="image/*"
-                        hidden
-                      />
-                      <button
-                        class="background-upload-button schedule-background-btn"
-                      >
+                    <div class="background-upload-container schedule-bg-container">
+                      <input type="file" id="scheduleBackgroundUpload" accept="image/*" hidden />
+                      <button class="background-upload-button schedule-background-btn">
                         <div class="button-icon-wrapper">
                           <i class="fas fa-table"></i>
                         </div>
@@ -263,19 +230,13 @@
               <div class="schedule-actions">
                 <button class="upload-button">
                   Upload Meeting From
-                  <img
-                    class="upload-icon"
+                  <img class="upload-icon"
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/63b8f295cfd8166b173b26ae08d375f7f940976a41ab185ea145bd917523e537?placeholderIfAbsent=true&apiKey=b0c49e93ca95415e8bbe88f5e7bbd808"
-                    alt="Upload icon"
-                  />
+                    alt="Upload icon" />
                 </button>
                 <input type="date" id="meetingDate" class="date-picker" />
               </div>
-              <div
-                class="schedule-table"
-                role="table"
-                aria-label="Meeting Schedule"
-              >
+              <div class="schedule-table" role="table" aria-label="Meeting Schedule">
                 <div class="table-header" role="row">
                   <div role="columnheader">TT</div>
                   <div role="columnheader">Ngày</div>
@@ -312,28 +273,24 @@
               </div>
             </div>
             <div class="fullscreen-toggle">
-              <button
-                id="fullscreenBtn"
-                class="fullscreen-button"
-                aria-label="Toggle Fullscreen"
-              >
+              <button id="fullscreenBtn" class="fullscreen-button" aria-label="Toggle Fullscreen">
                 <i class="fas fa-expand"></i>
               </button>
             </div>
             <div class="room-buttons">
               <button class="room-button" aria-label="Select Room 1">
                 <div class="button-content">
-                  <div class="button-text">P.1</div>
+                  <div class="button-text">P.LOTUS</div>
                 </div>
               </button>
               <button class="room-button" aria-label="Select Room 2">
                 <div class="button-content">
-                  <div class="button-text">P.2</div>
+                  <div class="button-text">P.LAVENDER 1</div>
                 </div>
               </button>
               <button class="room-button" aria-label="Select Room 3">
                 <div class="button-content">
-                  <div class="button-text">P.3</div>
+                  <div class="button-text">P.LAVENDER 2</div>
                 </div>
               </button>
             </div>
@@ -343,11 +300,6 @@
     </div>
   </div>
   <div class="modal-container"></div>
-  <div
-    class="dynamic-page-container"
-    id="dynamicPageContent"
-    style="display: none"
-  ></div>
 </div>
 
 <div class="window">
@@ -419,7 +371,13 @@
     configPower3 = null,
     configAirConditioner = null,
     configAirConditioner2 = null,
-    configAirConditioner3 = null;
+    configAirConditioner3 = null,
+    actionOff1 = null,
+    actionOff2 = null,
+    actionOff3 = null,
+    actionOn1 = null ,
+    actionOn2 = null,
+    actionOn3 = null;
 
   eraWidget.init({
     onConfiguration: (configuration) => {
@@ -443,8 +401,15 @@
       configAirConditioner2 = configuration.realtime_configs[13];
       configAirConditioner3 = configuration.realtime_configs[14];
 
-      actionOn = configuration.actions[0]; // Lưu cấu hình hành động : On
-      actionOff = configuration.actions[1]; // Lưu cấu hình hành động : Off
+      actionOn1 = configuration.actions[0]; // Lưu cấu hình hành động : On
+      actionOff1 = configuration.actions[1]; // Lưu cấu hình hành động : Off
+
+      actionOn2 = configuration.actions[2]; // Lưu cấu hình hành động : On
+      actionOff2 = configuration.actions[3]; // Lưu cấu hình hành động : Off
+
+      actionOn3 = configuration.actions[4]; // Lưu cấu hình hành động : On
+      actionOff3 = configuration.actions[5]; // Lưu cấu hình hành động : Off
+
     },
     // Hàm lấy giá trị từ các ID và cập nhật giao diện
     onValues: (values) => {
