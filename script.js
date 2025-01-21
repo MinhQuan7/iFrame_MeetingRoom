@@ -978,13 +978,16 @@ document.addEventListener("DOMContentLoaded", function () {
     newNameInput.focus();
   });
 
-  // Chỉ xử lý nút Cancel để đóng modal
-  document
-    .querySelector(".cancel-button")
-    .addEventListener("click", function () {
-      modal.classList.remove("active");
-      modalOverlay.classList.remove("active");
-    });
+  // Xử lý nút Cancel trong modal
+  const modalCancelButton = document.querySelector(
+    ".modal-button.cancel-button"
+  );
+  modalCancelButton.addEventListener("click", function () {
+    modal.classList.remove("active");
+    modalOverlay.classList.remove("active");
+    // Đóng change-name-container khi click Hủy
+    changeNameContainer.classList.remove("active");
+  });
 
   // Xử lý nút Save
   document.querySelector(".save-button").addEventListener("click", function () {
@@ -995,17 +998,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     modal.classList.remove("active");
     modalOverlay.classList.remove("active");
+    // Đóng change-name-container sau khi save
+    changeNameContainer.classList.remove("active");
   });
-
-  // Đóng modal khi click outside
-  // modalOverlay.addEventListener("click", function () {
-  //   modal.classList.remove("active");
-  //   modalOverlay.classList.remove("active");
-  // });
 
   // Đóng menu khi click ngoài
   document.addEventListener("click", function (event) {
-    if (!event.target.closest(".background-management")) {
+    const isClickInsideBackgroundManagement = event.target.closest(
+      ".background-management"
+    );
+
+    if (!isClickInsideBackgroundManagement) {
       settingsContent.classList.remove("active");
       mainBgContainer.classList.remove("active");
       scheduleBgContainer.classList.remove("active");
