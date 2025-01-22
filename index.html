@@ -375,7 +375,7 @@
     actionOff1 = null,
     actionOff2 = null,
     actionOff3 = null,
-    actionOn1 = null ,
+    actionOn1 = null,
     actionOn2 = null,
     actionOn3 = null;
 
@@ -433,6 +433,12 @@
         configAirConditioner3,
       });
 
+      console.log('Actions initialized:', {
+        actionOn1, actionOff1,
+        actionOn2, actionOff2,
+        actionOn3, actionOff3
+      });
+      
       console.log("Current values:", values);
 
       if (configTemp && values[configTemp.id]) {
