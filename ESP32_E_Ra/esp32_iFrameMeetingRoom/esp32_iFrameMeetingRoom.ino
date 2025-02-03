@@ -41,8 +41,6 @@ ERA_WRITE(V30) {
 void timerEvent()
 {
   ERA_LOG("Timer", "Uptime: %d", ERaMillis() / 1000L);
-  int sensorValue1 = random(50,130) /10;
-  ERa.virtualWrite(V0, sensorValue1);
   // Tạo giá trị ngẫu nhiên cho dòng điện từ 0.5 đến 10 Amps
   float current = random(5, 101) / 10.0;
   ERa.virtualWrite(V15, current);

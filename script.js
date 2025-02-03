@@ -1754,6 +1754,12 @@ let acStates = {
     maxTemp: 30,
   },
 };
+const roomSuffixMap = {
+  lotus: "eRa",
+  "lavender-1": "eRa2",
+  "lavender-2": "eRa3",
+};
+
 function normalizeRoomKey(roomName) {
   return roomName.toLowerCase().trim();
   // return roomName.toLowerCase().replace(/\s+/g, "-");
@@ -1787,6 +1793,8 @@ function renderRoomPage(data, roomKeyword, roomName) {
       roomTemperatures: 20,
       minTemp: 16,
       maxTemp: 30,
+      current: 0, // Thêm dòng điện mặc định
+      power: 0, // Thêm công suất mặc định
     };
   }
 
@@ -1840,6 +1848,9 @@ function renderRoomPage(data, roomKeyword, roomName) {
 
       if (e.target.closest(".controls .btn:first-child")) {
         acStates[room].isOn = !acStates[room].isOn;
+        // Cập nhật trạng thái current và power dựa trên trạng thái isOn
+        acStates[room].current = acStates[room].isOn ? 8.5 : 0;
+        acStates[room].power = acStates[room].isOn ? 0.56 : 0;
         updateACStatus(acCard, room);
       }
 
@@ -1864,7 +1875,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
       }
     });
   }, 0);
-
+  const suffix = roomSuffixMap[roomKey];
   return `
     <div class="container">
       <div class="left-panel">
@@ -1884,7 +1895,14 @@ function renderRoomPage(data, roomKeyword, roomName) {
             />
             <div>
               <div>Power meter AC 1</div>
-              <div>Dòng điện: 8.5 A | Công suất: 0.56 KW</div>
+              <div>Dòng điện: <span id="current-${suffix}">${acStates[
+    roomKey
+  ].current.toFixed(
+    1
+  )}</span> A | Công suất: <span id="power-${suffix}">${acStates[
+    roomKey
+  ].power.toFixed(2)}</span> KW</div>
+
             </div>
             <div class="status">
               <i class="fas fa-circle"> </i>
@@ -2223,14 +2241,15 @@ document.head.appendChild(style);
 // Hàm cập nhật trạng thái điều hòa
 let updateIntervals = {};
 
-
 function updateACStatus(container, room) {
   const sanitizedRoom = sanitizeRoomName(room);
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
-
+  const suffix = roomSuffixMap[roomKey];
+  const currentElement = document.getElementById(`current-${suffix}`);
+  const powerElement = document.getElementById(`power-${suffix}`);
   // Define room-specific actions with null checks
   const roomActions = {
     lotus: {
@@ -2292,6 +2311,10 @@ function updateACStatus(container, room) {
       console.error(`Error triggering OFF action for ${room}:`, error);
     }
   }
+  if (currentElement)
+    currentElement.textContent = acStates[roomKey].current.toFixed(1);
+  if (powerElement)
+    powerElement.textContent = acStates[roomKey].power.toFixed(2);
 }
 
 // Helper function for room name sanitization
