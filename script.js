@@ -1895,11 +1895,11 @@ function renderRoomPage(data, roomKeyword, roomName) {
             />
             <div>
               <div>Power meter AC 1</div>
-              <<div>Dòng điện: ${(acStates[roomKey]?.current || 0).toFixed(
-                1
-              )} A | Công suất: ${(acStates[roomKey]?.power || 0).toFixed(
-    2
-  )} KW</div>
+              <div>Dòng điện: <span id="current-${suffix}">${(
+    acStates[roomKey]?.current || 0
+  ).toFixed(1)}</span> A | Công suất: <span id="power-${suffix}">${(
+    acStates[roomKey]?.power || 0
+  ).toFixed(2)}</span> KW</div>
 
             </div>
             <div class="status">
@@ -2245,9 +2245,8 @@ function updateACStatus(container, room) {
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
-  const suffix = roomSuffixMap[roomKey];
-  const currentElement = document.getElementById(`current-${suffix}`);
-  const powerElement = document.getElementById(`power-${suffix}`);
+  const roomKey = normalizeRoomKey(room);
+  const suffix = roomSuffixMap[room];
   // Define room-specific actions with null checks
   const roomActions = {
     lotus: {
@@ -2309,10 +2308,12 @@ function updateACStatus(container, room) {
       console.error(`Error triggering OFF action for ${room}:`, error);
     }
   }
-  if (currentElement)
-    currentElement.textContent = acStates[roomKey].current.toFixed(1);
-  if (powerElement)
-    powerElement.textContent = acStates[roomKey].power.toFixed(2);
+  const currentElement = document.getElementById(`current-${suffix}`);
+  const powerElement = document.getElementById(`power-${suffix}`);
+
+  // Cập nhật giá trị với fallback về 0 nếu undefined
+  currentElement.textContent = (acStates[roomKey].current || 0).toFixed(1);
+  powerElement.textContent = (acStates[roomKey].power || 0).toFixed(2);
 }
 
 // Helper function for room name sanitization
