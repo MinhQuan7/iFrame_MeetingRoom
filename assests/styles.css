@@ -1667,17 +1667,30 @@ schedule-table {
   border-radius: 12px;
   margin-top: 5px;
   min-width: 200px;
-  opacity: 1;
+  opacity: 0;
   visibility: hidden;
+  transform: scale(0.95); /* Thêm transform để tối ưu hiệu ứng */
+  transition: opacity 0.2s ease-out, visibility 0.2s ease-out,
+    transform 0.2s ease-out; /* Transition cho 3 thuộc tính */
+  will-change: opacity, transform; /* Tối ưu rendering */
 }
+
 .settings-content.active {
   opacity: 1;
   visibility: visible;
+  transform: scale(1);
   background: linear-gradient(
     180deg,
     rgba(0, 0, 0, 0.95) 0%,
     rgba(0, 0, 0, 0.85) 100%
   );
+  transition: opacity 0.2s ease-in, transform 0.2s ease-in; /* Transition riêng cho trạng thái active */
+}
+.background-upload-container.active,
+.reset-background-button.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scaleX(1);
 }
 .change-name-container {
   width: 100%;
