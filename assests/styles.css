@@ -2712,35 +2712,107 @@ body {
 .main-panel {
   background: white;
   border-radius: 20px;
-  padding: calc(var(--panel-spacing) * 1.5);
+  padding: 2rem; /* Sử dụng đơn vị rem thay vì calc */
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 1.5rem; /* Tạo khoảng cách đều giữa các phần tử con */
+  min-height: 400px; /* Chiều cao tối thiểu cho iPad */
+  height: 100%; /* Chiếm full chiều cao container cha */
 }
 
 .main-panel h1 {
-  font-size: var(--font-medium);
-  margin-bottom: 1rem;
+  font-size: clamp(1.5rem, 3vw, 2rem); /* Responsive font size */
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
 }
 
 .current-status {
   color: red;
-  font-size: var(--font-medium);
-  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
 }
 
 .meeting-title-1 {
-  font-size: var(--font-large);
-  margin-bottom: 1.5rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  word-break: break-word; /* Ngắt dòng cho text dài */
 }
 
 .meeting-time-1 {
   color: blue;
-  font-size: var(--font-large);
+  font-size: 1.25rem;
   margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
+.purpose {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.purpose-value {
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: #333;
+  word-break: break-word;
+}
+
+.end-meeting {
+  margin-top: auto; /* Đẩy button xuống dưới cùng */
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: fit-content; /* Chiều rộng theo nội dung */
+  align-self: center; /* Căn giữa theo chiều ngang */
+}
+
+/* Media query cho iPad (768px) */
+@media (max-width: 768px) {
+  .main-panel {
+    padding: 1.5rem;
+    min-height: 350px;
+  }
+
+  .meeting-title-1 {
+    font-size: 1.5rem;
+  }
+
+  .meeting-time-1 {
+    font-size: 1.1rem;
+    flex-direction: column;
+  }
+
+  .end-meeting {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+/* Media query cho màn hình nhỏ hơn (480px) */
+@media (max-width: 480px) {
+  .main-panel {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .main-panel h1 {
+    font-size: 1.3rem;
+  }
+
+  .meeting-title-1 {
+    font-size: 1.25rem;
+  }
+}
 .right-panel {
   background: var(--secondary-gradient);
   border-radius: 20px;

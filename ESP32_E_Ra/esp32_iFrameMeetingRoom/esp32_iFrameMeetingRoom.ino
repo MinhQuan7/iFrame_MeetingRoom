@@ -3,14 +3,14 @@
 #define ERA_LOCATION_VN
 // #define ERA_LOCATION_SG
 // You should get Auth Token in the ERa App or ERa Dashboard
-#define ERA_AUTH_TOKEN "ca614c19-2a5c-4a12-9cd8-895cf754d84e"
+#define ERA_AUTH_TOKEN "e07c3b86-7627-4df0-a88a-bb151c5c8bfd"
 #define LEDPIN 6
 #define LEDPIN1 7
 #include <Arduino.h>
 #include <ERa.hpp>    
 
-const char ssid[] = "Vitaltrack";
-const char pass[] = "vitaltrack";
+const char ssid[] = "eoh.io";
+const char pass[] = "Eoh@2020";
 
 ERA_CONNECTED()
 {
@@ -41,6 +41,8 @@ ERA_WRITE(V30) {
 void timerEvent()
 {
   ERA_LOG("Timer", "Uptime: %d", ERaMillis() / 1000L);
+  int sensorValue1 = random(50,130) /10;
+  ERa.virtualWrite(V0, sensorValue1);
   // Tạo giá trị ngẫu nhiên cho dòng điện từ 0.5 đến 10 Amps
   float current = random(5, 101) / 10.0;
   ERa.virtualWrite(V15, current);
