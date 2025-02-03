@@ -1032,6 +1032,11 @@ schedule-table {
   justify-content: space-between;
   flex-shrink: 0; /* Prevent buttons from shrinking */
 }
+@media (min-width: 1300px) and (max-width: 1600px) {
+  .room-buttons {
+    margin-bottom: 2%;
+  }
+}
 @media (min-width: 1900px) {
   .room-buttons {
     margin-bottom: 2%;
@@ -1210,9 +1215,15 @@ schedule-table {
     margin-top: -5%;
   }
 }
-@media (min-width: 1200px) and (max-width: 1290px) {
+@media (min-width: 1200px) and (max-width: 1350px) {
   .date-picker {
-    margin-left: 30%;
+    margin-left: 80%;
+    margin-top: -5%;
+  }
+}
+@media (min-width: 1300px) and (max-width: 1600px) {
+  .date-picker {
+    margin-left: 85%;
   }
 }
 @media (min-width: 992px) and (max-width: 1190px) {
@@ -1239,20 +1250,6 @@ schedule-table {
 }
 
 /*========Upgrade with Change Background Feature============*/
-/* .main-background-btn {
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-  color: white;
-  box-shadow: 0 6px 12px rgba(106, 17, 203, 0.3),
-    0 4px 8px rgba(37, 117, 252, 0.2);
-} */
-
-/* .schedule-background-btn {
-  background: linear-gradient(135deg, #ff6b6b, #ff9a9a);
-  color: white;
-  box-shadow: 0 6px 12px rgba(255, 107, 107, 0.3),
-    0 4px 8px rgba(255, 154, 154, 0.2);
-} */
-
 .button-icon-wrapper {
   background-color: rgba(255, 255, 255, 0.2);
   width: 35px;
@@ -1271,12 +1268,19 @@ schedule-table {
 }
 
 /* Hover Effects */
+.change-name-button:hover,
 .background-upload-button:hover,
 .reset-background-button:hover {
   transform: translateY(-4px);
   box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2), 0 20px 20px rgba(0, 0, 0, 0.1);
 }
+.change-name-button:hover .button-icon-wrapper {
+  transform: rotate(360deg);
+}
 
+.change-name-button:hover .button-icon-wrapper i {
+  transform: scale(1.2);
+}
 .background-upload-button:hover .button-icon-wrapper {
   transform: rotate(360deg);
 }
@@ -1285,6 +1289,38 @@ schedule-table {
   transform: scale(1.2);
 }
 
+.reset-background-button:hover .button-icon-wrapper {
+  transform: rotate(360deg);
+}
+
+.reset-background-button:hover .button-icon-wrapper i {
+  transform: scale(1.2);
+}
+
+.change-name-button:hover::before,
+.background-upload-button:hover::before,
+.reset-background-button:hover::before {
+  left: 100%;
+}
+
+/* Active State */
+.change-name-button:active,
+.background-upload-button:active,
+.reset-background-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.change-name-button,
+.reset-background-button,
+.background-upload-button,
+.reset-background-button {
+  position: relative;
+  overflow: hidden; /* Ẩn phần tràn của pseudo-element */
+}
+
+.reset-background-button::before,
+.change-name-button::before,
 .background-upload-button::before,
 .reset-background-button::before {
   content: "";
@@ -1301,19 +1337,6 @@ schedule-table {
   );
   transition: all 0.4s ease;
 }
-
-.background-upload-button:hover::before,
-.reset-background-button:hover::before {
-  left: 100%;
-}
-
-/* Active State */
-.background-upload-button:active,
-.reset-background-button:active {
-  transform: translateY(2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .background-management {

@@ -7,10 +7,10 @@
 #define LEDPIN 6
 #define LEDPIN1 7
 #include <Arduino.h>
-#include <ERa.hpp>
+#include <ERa.hpp>    
 
-const char ssid[] = "eoh.io";
-const char pass[] = "Eoh@2020";
+const char ssid[] = "Vitaltrack";
+const char pass[] = "vitaltrack";
 
 ERA_CONNECTED()
 {
@@ -61,8 +61,7 @@ void timerEvent()
   
   int airValue =random(16,30);
   ERa.virtualWrite(V29, airValue);
-
-    int airValue2 =random(25,30);
+  int airValue2 =random(25,30);
   ERa.virtualWrite(V31, airValue2);
 
     int airValue3 =random(16,20);
