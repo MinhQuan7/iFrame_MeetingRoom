@@ -1194,7 +1194,7 @@ document.addEventListener("DOMContentLoaded", function () {
     confirmModal.className = "background-preview-modal";
     confirmModal.innerHTML = `
       <div class="background-preview-content">
-        <h3>Bạn muốn Reset Background nào?</h3>
+           <h3 style="color: rgba(255, 255, 255, 0.9);margin-bottom: 25px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">Bạn muốn Reset Background nào?</h3>
         <div class="background-preview-actions">
           <button class="reset-main-btn">Background Chính</button>
           <button class="reset-schedule-btn">Background Lịch</button>
