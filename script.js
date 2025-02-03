@@ -1895,13 +1895,11 @@ function renderRoomPage(data, roomKeyword, roomName) {
             />
             <div>
               <div>Power meter AC 1</div>
-              <div>Dòng điện: <span id="current-${suffix}">${acStates[
-    roomKey
-  ].current.toFixed(
-    1
-  )}</span> A | Công suất: <span id="power-${suffix}">${acStates[
-    roomKey
-  ].power.toFixed(2)}</span> KW</div>
+              <<div>Dòng điện: ${(acStates[roomKey]?.current || 0).toFixed(
+                1
+              )} A | Công suất: ${(acStates[roomKey]?.power || 0).toFixed(
+    2
+  )} KW</div>
 
             </div>
             <div class="status">
