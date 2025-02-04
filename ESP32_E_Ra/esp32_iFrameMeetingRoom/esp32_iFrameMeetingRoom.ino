@@ -3,7 +3,7 @@
 #define ERA_LOCATION_VN
 // #define ERA_LOCATION_SG
 // You should get Auth Token in the ERa App or ERa Dashboard
-#define ERA_AUTH_TOKEN "e07c3b86-7627-4df0-a88a-bb151c5c8bfd"
+#define ERA_AUTH_TOKEN "ca614c19-2a5c-4a12-9cd8-895cf754d84e"
 #define LEDPIN 6
 #define LEDPIN1 7
 #include <Arduino.h>

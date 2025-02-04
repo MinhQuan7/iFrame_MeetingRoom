@@ -1900,7 +1900,6 @@ function renderRoomPage(data, roomKeyword, roomName) {
   ).toFixed(1)}</span> A | Công suất: <span id="power-${suffix}">${(
     acStates[roomKey]?.power || 0
   ).toFixed(2)}</span> KW</div>
-
             </div>
             <div class="status">
               <i class="fas fa-circle"> </i>
@@ -1926,7 +1925,6 @@ function renderRoomPage(data, roomKeyword, roomName) {
                       <path d="M19 9l-7 7-7-7" stroke-width="2" />
                     </svg>
                   </button>
-
                   <span class="temperature-air" id="temperature-${roomName}">${
     acStates[roomKey].roomTemperatures
   }°C</span>
@@ -2355,3 +2353,229 @@ function updateRoomTemperatureDisplay(roomName, temperature) {
     }
   }
 }
+//====================E-Ra Servies==================
+
+function sanitizeRoomName(room) {
+  return room.toLowerCase().replace(/\s+/g, "-");
+}
+
+let roomTemperatures = {
+  lotus: 20,
+  "lavender-1": 20,
+  "lavender-2": 20,
+};
+const eraWidget = new EraWidget();
+// Lấy các phần tử HTML dựa trên ID, liên kết với giao diện người dùng
+const temp = document.getElementById("temperature-eRa");
+const humi = document.getElementById("humidity-eRa");
+const currentIndex = document.getElementById("current-eRa");
+const powerIndex = document.getElementById("power-eRa");
+
+const temp2 = document.getElementById("temperature-eRa2");
+const humi2 = document.getElementById("humidity-eRa2");
+const currentIndex2 = document.getElementById("current-eRa2");
+const powerIndex2 = document.getElementById("power-eRa2");
+
+const temp3 = document.getElementById("temperature-eRa3");
+const humi3 = document.getElementById("humidity-eRa3");
+const currentIndex3 = document.getElementById("current-eRa3");
+const powerIndex3 = document.getElementById("power-eRa3");
+
+const airConditioner = document.getElementById("temperature-airConditioner");
+const airConditioner2 = document.getElementById("temperature-airConditioner");
+const airConditioner3 = document.getElementById("temperature-airConditioner");
+let currentACTemperature = 20; // Giá trị mặc định
+let configTemp = null,
+  configHumi = null,
+  configCurrent = null,
+  configPower = null,
+  configTemp2 = null,
+  configHumi2 = null,
+  configCurrent2 = null,
+  configPower2 = null,
+  configTemp3 = null,
+  configHumi3 = null,
+  configCurrent3 = null,
+  configPower3 = null,
+  configAirConditioner = null,
+  configAirConditioner2 = null,
+  configAirConditioner3 = null,
+  actionOff1 = null,
+  actionOff2 = null,
+  actionOff3 = null,
+  actionOn1 = null,
+  actionOn2 = null,
+  actionOn3 = null;
+
+eraWidget.init({
+  onConfiguration: (configuration) => {
+    // Lưu các cấu hình khi nhận được từ widget
+    configTemp = configuration.realtime_configs[0]; // Lưu cấu hình nhiệt độ
+    configHumi = configuration.realtime_configs[1]; // Lưu cấu hình độ ẩm
+    configCurrent = configuration.realtime_configs[2]; // Lưu cấu hình power
+    configPower = configuration.realtime_configs[3]; // Lưu cấu hình toggle light
+
+    configTemp2 = configuration.realtime_configs[4]; // Lưu cấu hình nhiệt độ
+    configHumi2 = configuration.realtime_configs[5]; // Lưu cấu hình độ ẩm
+    configCurrent2 = configuration.realtime_configs[6]; // Lưu cấu hình power
+    configPower2 = configuration.realtime_configs[7]; // Lưu cấu hình toggle light
+
+    configTemp3 = configuration.realtime_configs[8]; // Lưu cấu hình nhiệt độ
+    configHumi3 = configuration.realtime_configs[9]; // Lưu cấu hình độ ẩm
+    configCurrent3 = configuration.realtime_configs[10]; // Lưu cấu hình power
+    configPower3 = configuration.realtime_configs[11]; // Lưu cấu hình toggle light
+
+    configAirConditioner = configuration.realtime_configs[12];
+    configAirConditioner2 = configuration.realtime_configs[13];
+    configAirConditioner3 = configuration.realtime_configs[14];
+
+    actionOn1 = configuration.actions[0]; // Lưu cấu hình hành động : On
+    actionOff1 = configuration.actions[1]; // Lưu cấu hình hành động : Off
+
+    actionOn2 = configuration.actions[2]; // Lưu cấu hình hành động : On
+    actionOff2 = configuration.actions[3]; // Lưu cấu hình hành động : Off
+
+    actionOn3 = configuration.actions[4]; // Lưu cấu hình hành động : On
+    actionOff3 = configuration.actions[5]; // Lưu cấu hình hành động : Off
+  },
+  // Hàm lấy giá trị từ các ID và cập nhật giao diện
+  onValues: (values) => {
+    console.log("Configuration:", {
+      configTemp,
+      configHumi,
+      configCurrent,
+      configPower,
+
+      configTemp2,
+      configHumi2,
+      configCurrent2,
+      configPower2,
+
+      configTemp3,
+      configHumi3,
+      configCurrent3,
+      configPower3,
+      configAirConditioner,
+      configAirConditioner2,
+      configAirConditioner3,
+    });
+
+    console.log("Actions initialized:", {
+      actionOn1,
+      actionOff1,
+      actionOn2,
+      actionOff2,
+      actionOn3,
+      actionOff3,
+    });
+
+    console.log("Current values:", values);
+
+    if (configTemp && values[configTemp.id]) {
+      const tempValue = values[configTemp.id].value;
+      if (temp) temp.textContent = tempValue;
+    }
+
+    if (configHumi && values[configHumi.id]) {
+      const humidValue = values[configHumi.id].value;
+      if (humi) humi.textContent = humidValue;
+    }
+
+    if (configCurrent && values[configCurrent.id]) {
+      const currentValue = values[configCurrent.id].value;
+      if (currentIndex) currentIndex.textContent = currentValue;
+    }
+
+    if (configPower && values[configPower.id]) {
+      const powerValue = values[configPower.id].value;
+      if (powerIndex) powerIndex.textContent = powerValue;
+    }
+
+    if (configTemp2 && values[configTemp2.id]) {
+      const tempValue2 = values[configTemp2.id].value;
+      if (temp2) temp2.textContent = tempValue2;
+    }
+
+    if (configHumi2 && values[configHumi2.id]) {
+      const humidValue2 = values[configHumi2.id].value;
+      if (humi2) humi2.textContent = humidValue2;
+    }
+
+    if (configCurrent2 && values[configCurrent2.id]) {
+      const currentValue2 = values[configCurrent2.id].value;
+      if (currentIndex2) currentIndex2.textContent = currentValue2;
+    }
+
+    if (configPower2 && values[configPower2.id]) {
+      const powerValue2 = values[configPower2.id].value;
+      if (powerIndex2) powerIndex2.textContent = powerValue2;
+    }
+
+    if (configTemp3 && values[configTemp3.id]) {
+      const tempValue3 = values[configTemp3.id].value;
+      if (temp3) temp3.textContent = tempValue3;
+    }
+
+    if (configHumi3 && values[configHumi3.id]) {
+      const humidValue3 = values[configHumi3.id].value;
+      if (humi3) humi3.textContent = humidValue3;
+    }
+
+    if (configCurrent3 && values[configCurrent3.id]) {
+      const currentValue3 = values[configCurrent3.id].value;
+      if (currentIndex3) currentIndex3.textContent = currentValue3;
+    }
+
+    if (configPower3 && values[configPower3.id]) {
+      const powerValue3 = values[configPower3.id].value;
+      if (powerIndex3) powerIndex3.textContent = powerValue3;
+    }
+
+    if (configAirConditioner && values[configAirConditioner.id]) {
+      const airValue = values[configAirConditioner.id].value;
+      roomTemperatures.lotus = parseFloat(airValue);
+      updateRoomTemperatureDisplay("lotus", airValue);
+      console.log("Air Value (lotus):", airValue);
+    }
+
+    if (configAirConditioner2 && values[configAirConditioner2.id]) {
+      const airValue2 = values[configAirConditioner2.id].value;
+      roomTemperatures["lavender-1"] = parseFloat(airValue2);
+      updateRoomTemperatureDisplay("lavender-1", airValue2);
+      console.log("Air Value (lotus):", airValue2);
+    }
+
+    if (configAirConditioner3 && values[configAirConditioner3.id]) {
+      const airValue3 = values[configAirConditioner3.id].value;
+      roomTemperatures["lavender-2"] = parseFloat(airValue3);
+      updateRoomTemperatureDisplay("lavender-2", airValue3);
+      console.log("Air Value (lotus):", airValue3);
+    }
+  },
+});
+// Function to start temperature monitoring
+function startTemperatureMonitoring() {
+  if (!window.roomTemperatures) {
+    window.roomTemperatures = {
+      lotus: 20,
+      "lavender-1": 20,
+      "lavender-2": 20,
+    };
+  }
+
+  setInterval(() => {
+    Object.keys(roomTemperatures).forEach((room) => {
+      const sanitizedRoom = sanitizeRoomName(room);
+      if (acStates[room] && acStates[room].isOn) {
+        const tempDisplay = document.querySelector(
+          `#temperature-${sanitizedRoom}`
+        );
+        if (tempDisplay) {
+          tempDisplay.textContent = `${roomTemperatures[room].toFixed(0)}°C`;
+        }
+      }
+    });
+  }, 1000);
+}
+// Initialize the monitoring when the page loads
+document.addEventListener("DOMContentLoaded", startTemperatureMonitoring);
