@@ -1887,10 +1887,12 @@ function renderRoomPage(data, roomKeyword, roomName) {
         // acStates[room].current = acStates[room].isOn ? 8.5 : 0;
         // acStates[room].power = acStates[room].isOn ? 0.56 : 0;
         //
-        if (acStates[roomKey].isOn) {
-          startTemperatureUpdates(roomKey);
-          updateACStatus(acCard, room);
-        }
+        // if (acStates[roomKey].isOn) {
+        //   startTemperatureUpdates(roomKey);
+        //   updateACStatus(acCard, room);
+        // }
+        startTemperatureUpdates(roomKey);
+        updateACStatus(acCard, room);
       }
 
       if (e.target.closest(".controls .btn:nth-child(3)")) {
