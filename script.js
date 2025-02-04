@@ -2489,6 +2489,10 @@ function updateACStatus(container, room) {
   const tempDisplay = container.querySelector(".temperature-air");
   const roomKey = normalizeRoomKey(room);
   const suffix = roomSuffixMap[room];
+
+  // Get the corresponding eRa suffix for the room
+  const eraSuffix = roomEraMap[roomKey];
+
   // Define room-specific actions with null checks
   const roomActions = {
     lotus: {
@@ -2505,7 +2509,6 @@ function updateACStatus(container, room) {
     },
   };
 
-  // Verify that actions exist for the room before proceeding
   if (
     !roomActions[room] ||
     !roomActions[room].actionOn ||
@@ -2515,17 +2518,22 @@ function updateACStatus(container, room) {
     return;
   }
 
+  // Get current power stats from eRa elements
+  const powerStats = getRoomPowerStats(eraSuffix);
+
   if (acStates[room].isOn) {
     try {
       if (roomActions[room].actionOn && roomActions[room].actionOn.action) {
         eraWidget.triggerAction(roomActions[room].actionOn.action, null);
         console.log(`ON Action triggered successfully for ${room}`);
 
-        // Update UI only after successful action trigger
+        // Update UI and state with actual power values
         statusDot.style.backgroundColor = "#4CAF50";
         statusText.textContent = "Online";
         powerButton.classList.add("active");
         powerButton.classList.remove("OFF");
+        acStates[roomKey].current = powerStats.current;
+        acStates[roomKey].power = powerStats.power;
         startTemperatureUpdates(sanitizedRoom);
       }
     } catch (error) {
@@ -2537,10 +2545,12 @@ function updateACStatus(container, room) {
         eraWidget.triggerAction(roomActions[room].actionOff.action, null);
         console.log(`OFF Action triggered successfully for ${room}`);
 
-        // Update UI only after successful action trigger
+        // Update UI and state with zero values when turned off
         statusDot.style.backgroundColor = "#ff0000";
         statusText.textContent = "Offline";
         powerButton.classList.remove("active");
+        acStates[roomKey].current = 0;
+        acStates[roomKey].power = 0;
         if (tempDisplay) {
           tempDisplay.textContent = "OFF";
         }
@@ -2550,12 +2560,17 @@ function updateACStatus(container, room) {
       console.error(`Error triggering OFF action for ${room}:`, error);
     }
   }
+
+  // Update display elements with current state
   const currentElement = document.getElementById(`current-${suffix}`);
   const powerElement = document.getElementById(`power-${suffix}`);
 
-  // Cập nhật giá trị với fallback về 0 nếu undefined
-  currentElement.textContent = (acStates[roomKey].current || 0).toFixed(1);
-  powerElement.textContent = (acStates[roomKey].power || 0).toFixed(2);
+  if (currentElement) {
+    currentElement.textContent = acStates[roomKey].current.toFixed(1);
+  }
+  if (powerElement) {
+    powerElement.textContent = acStates[roomKey].power.toFixed(2);
+  }
 }
 
 // Helper function for room name sanitization
