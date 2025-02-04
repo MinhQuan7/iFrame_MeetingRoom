@@ -1886,9 +1886,10 @@ function renderRoomPage(data, roomKeyword, roomName) {
         // // Cập nhật trạng thái current và power dựa trên trạng thái isOn
         // acStates[room].current = acStates[room].isOn ? 8.5 : 0;
         // acStates[room].power = acStates[room].isOn ? 0.56 : 0;
-        // updateACStatus(acCard, room);
+        //
         if (acStates[roomKey].isOn) {
           startTemperatureUpdates(roomKey);
+          updateACStatus(acCard, room);
         } else {
           clearRoomUpdates(roomKey);
         }
@@ -2546,7 +2547,6 @@ function updateACStatus(container, room) {
       if (roomActions[room].actionOn && roomActions[room].actionOn.action) {
         eraWidget.triggerAction(roomActions[room].actionOn.action, null);
         console.log(`ON Action triggered successfully for ${room}`);
-
         // Update UI and state with actual power values
         statusDot.style.backgroundColor = "#4CAF50";
         statusText.textContent = "Online";
