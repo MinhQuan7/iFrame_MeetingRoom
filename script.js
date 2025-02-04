@@ -1764,6 +1764,22 @@ function normalizeRoomKey(roomName) {
   return roomName.toLowerCase().trim();
   // return roomName.toLowerCase().replace(/\s+/g, "-");
 }
+
+// Helper function to get power stats from elements
+function getRoomPowerStats(roomSuffix) {
+  const currentElement = document.getElementById(`current-${roomSuffix}`);
+  const powerElement = document.getElementById(`power-${roomSuffix}`);
+
+  return {
+    current: currentElement ? parseFloat(currentElement.textContent) || 0 : 0,
+    power: powerElement ? parseFloat(powerElement.textContent) || 0 : 0,
+  };
+}
+const roomEraMap = {
+  lotus: "eRa",
+  "lavender-1": "eRa2",
+  "lavender-2": "eRa3",
+};
 // Hàm render trang động riêng biệt
 function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Rendering room page for:", roomName);
@@ -1785,7 +1801,8 @@ function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Today's meetings:", filteredData);
 
   const roomKey = normalizeRoomKey(roomKeyword);
-
+  const eraSuffix = roomEraMap[roomKey];
+  const powerStats = getRoomPowerStats(eraSuffix);
   // Initialize room state if it doesn't exist
   if (!acStates[roomKey]) {
     acStates[roomKey] = {
@@ -1793,9 +1810,12 @@ function renderRoomPage(data, roomKeyword, roomName) {
       roomTemperatures: 20,
       minTemp: 16,
       maxTemp: 30,
-      current: 0, // Thêm dòng điện mặc định
-      power: 0, // Thêm công suất mặc định
+      current: powerStats.current,
+      power: powerStats.power,
     };
+  } else {
+    acStates[roomKey].current = powerStats.current;
+    acStates[roomKey].power = powerStats.power;
   }
 
   // Lấy thời gian hiện tại
@@ -1895,11 +1915,11 @@ function renderRoomPage(data, roomKeyword, roomName) {
             />
             <div>
               <div>Power meter AC 1</div>
-              <div>Dòng điện: <span id="current-${suffix}">${(
-    acStates[roomKey]?.current || 0
-  ).toFixed(1)}</span> A | Công suất: <span id="power-${suffix}">${(
-    acStates[roomKey]?.power || 0
-  ).toFixed(2)}</span> KW</div>
+<div>Dòng điện: <span id="current-${suffix}">${powerStats.current.toFixed(
+    1
+  )}</span> A | Công suất: <span id="power-${suffix}">${powerStats.power.toFixed(
+    2
+  )}</span> KW</div>
             </div>
             <div class="status">
               <i class="fas fa-circle"> </i>
@@ -1987,8 +2007,6 @@ function renderRoomPage(data, roomKeyword, roomName) {
       </div>
     </div>
   `;
-  const currentIndex = document.getElementById("current-" + suffix);
-  const powerIndex = document.getElementById("power-" + suffix);
 }
 
 // Hàm chính để load trang động
