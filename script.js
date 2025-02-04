@@ -2601,40 +2601,99 @@ function sanitizeRoomName(room) {
 // Temperature update management functions
 function startTemperatureUpdates(room) {
   const roomKey = normalizeRoomKey(room);
+  console.log(
+    `[${new Date().toISOString()}] Starting updates for room: ${roomKey}`
+  );
 
   if (updateIntervals[roomKey]) {
+    console.warn(
+      `[${new Date().toISOString()}] Existing interval found for ${roomKey}, clearing...`
+    );
     clearInterval(updateIntervals[roomKey]);
   }
 
   updateIntervals[roomKey] = setInterval(() => {
-    // Lấy giá trị mới nhất từ cảm biến
-    const eraSuffix = roomEraMap[roomKey];
-    const powerStats = getRoomPowerStats(eraSuffix);
+    try {
+      console.log(
+        `[${new Date().toISOString()}] Running update cycle for ${roomKey}`
+      );
 
-    // Cập nhật state
-    acStates[roomKey].current = powerStats.current;
-    acStates[roomKey].power = powerStats.power;
+      const eraSuffix = roomEraMap[roomKey];
+      console.log(
+        `[${new Date().toISOString()}] Getting power stats for suffix: ${eraSuffix}`
+      );
+      const powerStats = getRoomPowerStats(eraSuffix);
 
-    // Cập nhật UI
-    const suffix = roomSuffixMap[roomKey];
-    document.getElementById(`current-${suffix}`).textContent =
-      powerStats.current.toFixed(1);
-    document.getElementById(`power-${suffix}`).textContent =
-      powerStats.power.toFixed(2);
+      console.log(`[${new Date().toISOString()}] Room: ${roomKey}`, {
+        previousCurrent: acStates[roomKey]?.current,
+        newCurrent: powerStats.current,
+        previousPower: acStates[roomKey]?.power,
+        newPower: powerStats.power,
+      });
 
-    // Cập nhật nhiệt độ
-    if (acStates[roomKey].isOn) {
-      const tempDisplay = document.querySelector(`#temperature-${roomName}`);
-      if (tempDisplay)
-        tempDisplay.textContent = `${acStates[roomKey].roomTemperatures}°C`;
+      // Cập nhật state
+      acStates[roomKey].current = powerStats.current;
+      acStates[roomKey].power = powerStats.power;
+
+      // Cập nhật UI
+      const suffix = roomSuffixMap[roomKey];
+      console.log(
+        `[${new Date().toISOString()}] Looking for elements with suffix: ${suffix}`
+      );
+
+      const currentElement = document.getElementById(`current-${suffix}`);
+      const powerElement = document.getElementById(`power-${suffix}`);
+
+      if (!currentElement)
+        console.error(`Current element not found for suffix: ${suffix}`);
+      if (!powerElement)
+        console.error(`Power element not found for suffix: ${suffix}`);
+
+      if (currentElement) {
+        console.log(
+          `Updating current from ${
+            currentElement.textContent
+          } to ${powerStats.current.toFixed(1)}`
+        );
+        currentElement.textContent = powerStats.current.toFixed(1);
+      }
+
+      if (powerElement) {
+        console.log(
+          `Updating power from ${
+            powerElement.textContent
+          } to ${powerStats.power.toFixed(2)}`
+        );
+        powerElement.textContent = powerStats.power.toFixed(2);
+      }
+    } catch (error) {
+      console.error(
+        `[${new Date().toISOString()}] Error in update cycle for ${roomKey}:`,
+        error
+      );
     }
   }, 1000);
+
+  console.log(
+    `[${new Date().toISOString()}] Interval set for ${roomKey}`,
+    updateIntervals[roomKey]
+  );
 }
 // Thêm hàm clear updates khi unmount component
 function clearRoomUpdates(roomKey) {
+  console.log(`[${new Date().toISOString()}] Clearing updates for ${roomKey}`);
   if (updateIntervals[roomKey]) {
+    console.log(
+      `[${new Date().toISOString()}] Found interval to clear:`,
+      updateIntervals[roomKey]
+    );
     clearInterval(updateIntervals[roomKey]);
     delete updateIntervals[roomKey];
+    console.log(`[${new Date().toISOString()}] Updates cleared for ${roomKey}`);
+  } else {
+    console.warn(
+      `[${new Date().toISOString()}] No active interval found for ${roomKey}`
+    );
   }
 }
 
@@ -2681,3 +2740,38 @@ function updateRoomTemperatureDisplay(roomName, temperature) {
     }
   }
 }
+// Trong phần xử lý click
+container.addEventListener("click", (e) => {
+  const acCard = e.target.closest(".ac-card");
+  if (!acCard) return;
+
+  const room = acCard.dataset.room.toLowerCase();
+  const roomKey = normalizeRoomKey(room);
+  console.log(`[${new Date().toISOString()}] AC card clicked for ${roomKey}`);
+
+  if (e.target.closest(".controls .btn:first-child")) {
+    console.log(
+      `[${new Date().toISOString()}] Power button clicked for ${roomKey}`
+    );
+    console.log(
+      `Previous state:`,
+      JSON.parse(JSON.stringify(acStates[roomKey]))
+    );
+
+    acStates[roomKey].isOn = !acStates[roomKey].isOn;
+
+    console.log(`New state:`, JSON.parse(JSON.stringify(acStates[roomKey])));
+
+    if (acStates[roomKey].isOn) {
+      console.log(
+        `[${new Date().toISOString()}] Starting temperature updates for ${roomKey}`
+      );
+      startTemperatureUpdates(roomKey);
+    } else {
+      console.log(
+        `[${new Date().toISOString()}] Stopping temperature updates for ${roomKey}`
+      );
+      clearRoomUpdates(roomKey);
+    }
+  }
+});
