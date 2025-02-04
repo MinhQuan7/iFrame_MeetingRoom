@@ -1890,8 +1890,6 @@ function renderRoomPage(data, roomKeyword, roomName) {
         if (acStates[roomKey].isOn) {
           startTemperatureUpdates(roomKey);
           updateACStatus(acCard, room);
-        } else {
-          clearRoomUpdates(roomKey);
         }
       }
 
@@ -2513,7 +2511,6 @@ function updateACStatus(container, room) {
 
   // Get the corresponding eRa suffix for the room
   const eraSuffix = roomEraMap[roomKey];
-
   // Define room-specific actions with null checks
   const roomActions = {
     lotus: {
