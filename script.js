@@ -1928,7 +1928,6 @@ function renderRoomPage(data, roomKeyword, roomName) {
                   <span class="temperature-air" id="temperature-${roomName}">${
     acStates[roomKey].roomTemperatures
   }°C</span>
-
                   <button class="btn-up">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path d="M5 15l7-7 7 7" stroke-width="2" />
@@ -1988,6 +1987,8 @@ function renderRoomPage(data, roomKeyword, roomName) {
       </div>
     </div>
   `;
+  const currentIndex = document.getElementById("current-" + suffix);
+  const powerIndex = document.getElementById("power-" + suffix);
 }
 
 // Hàm chính để load trang động
