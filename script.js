@@ -2233,128 +2233,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-//=================Air Conditioner =================
-// Hàm cập nhật trạng thái điều hòa
-let updateIntervals = {};
-
-function updateACStatus(container, room) {
-  const sanitizedRoom = sanitizeRoomName(room);
-  const statusDot = container.querySelector(".status-air-dot");
-  const statusText = container.querySelector(".status-air span");
-  const powerButton = container.querySelector(".controls .btn");
-  const tempDisplay = container.querySelector(".temperature-air");
-  const roomKey = normalizeRoomKey(room);
-  const suffix = roomSuffixMap[room];
-  // Define room-specific actions with null checks
-  const roomActions = {
-    lotus: {
-      actionOn: actionOn1,
-      actionOff: actionOff1,
-    },
-    "lavender-1": {
-      actionOn: actionOn2,
-      actionOff: actionOff2,
-    },
-    "lavender-2": {
-      actionOn: actionOn3,
-      actionOff: actionOff3,
-    },
-  };
-
-  // Verify that actions exist for the room before proceeding
-  if (
-    !roomActions[room] ||
-    !roomActions[room].actionOn ||
-    !roomActions[room].actionOff
-  ) {
-    console.error(`Actions not properly initialized for room: ${room}`);
-    return;
-  }
-
-  if (acStates[room].isOn) {
-    try {
-      if (roomActions[room].actionOn && roomActions[room].actionOn.action) {
-        eraWidget.triggerAction(roomActions[room].actionOn.action, null);
-        console.log(`ON Action triggered successfully for ${room}`);
-
-        // Update UI only after successful action trigger
-        statusDot.style.backgroundColor = "#4CAF50";
-        statusText.textContent = "Online";
-        powerButton.classList.add("active");
-        powerButton.classList.remove("OFF");
-        startTemperatureUpdates(sanitizedRoom);
-      }
-    } catch (error) {
-      console.error(`Error triggering ON action for ${room}:`, error);
-    }
-  } else {
-    try {
-      if (roomActions[room].actionOff && roomActions[room].actionOff.action) {
-        eraWidget.triggerAction(roomActions[room].actionOff.action, null);
-        console.log(`OFF Action triggered successfully for ${room}`);
-
-        // Update UI only after successful action trigger
-        statusDot.style.backgroundColor = "#ff0000";
-        statusText.textContent = "Offline";
-        powerButton.classList.remove("active");
-        if (tempDisplay) {
-          tempDisplay.textContent = "OFF";
-        }
-        stopTemperatureUpdates(sanitizedRoom);
-      }
-    } catch (error) {
-      console.error(`Error triggering OFF action for ${room}:`, error);
-    }
-  }
-  const currentElement = document.getElementById(`current-${suffix}`);
-  const powerElement = document.getElementById(`power-${suffix}`);
-
-  // Cập nhật giá trị với fallback về 0 nếu undefined
-  currentElement.textContent = (acStates[roomKey].current || 0).toFixed(1);
-  powerElement.textContent = (acStates[roomKey].power || 0).toFixed(2);
-}
-
-// Helper function for room name sanitization
-function sanitizeRoomName(room) {
-  return room.toLowerCase().replace(/\s+/g, "-");
-}
-
-// Temperature update management functions
-function startTemperatureUpdates(room) {
-  if (updateIntervals[room]) {
-    clearInterval(updateIntervals[room]);
-  }
-
-  updateIntervals[room] = setInterval(() => {
-    if (acStates[room] && acStates[room].isOn) {
-      updateRoomTemperatureDisplay(room, roomTemperatures[room]);
-    }
-  }, 1000);
-}
-
-function stopTemperatureUpdates(room) {
-  if (updateIntervals[room]) {
-    clearInterval(updateIntervals[room]);
-    delete updateIntervals[room];
-  }
-}
-
-function updateRoomTemperatureDisplay(roomName, temperature) {
-  const sanitizedRoom = sanitizeRoomName(roomName);
-  const tempDisplay = document.querySelector(
-    `#${sanitizedRoom} .temperature-air`
-  );
-
-  if (tempDisplay) {
-    if (acStates[roomName] && acStates[roomName].isOn) {
-      tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
-    } else {
-      tempDisplay.textContent = "OFF";
-    }
-  }
-}
 //====================E-Ra Servies==================
-
 function sanitizeRoomName(room) {
   return room.toLowerCase().replace(/\s+/g, "-");
 }
@@ -2579,3 +2458,123 @@ function startTemperatureMonitoring() {
 }
 // Initialize the monitoring when the page loads
 document.addEventListener("DOMContentLoaded", startTemperatureMonitoring);
+//=================Air Conditioner =================
+// Hàm cập nhật trạng thái điều hòa
+let updateIntervals = {};
+
+function updateACStatus(container, room) {
+  const sanitizedRoom = sanitizeRoomName(room);
+  const statusDot = container.querySelector(".status-air-dot");
+  const statusText = container.querySelector(".status-air span");
+  const powerButton = container.querySelector(".controls .btn");
+  const tempDisplay = container.querySelector(".temperature-air");
+  const roomKey = normalizeRoomKey(room);
+  const suffix = roomSuffixMap[room];
+  // Define room-specific actions with null checks
+  const roomActions = {
+    lotus: {
+      actionOn: actionOn1,
+      actionOff: actionOff1,
+    },
+    "lavender-1": {
+      actionOn: actionOn2,
+      actionOff: actionOff2,
+    },
+    "lavender-2": {
+      actionOn: actionOn3,
+      actionOff: actionOff3,
+    },
+  };
+
+  // Verify that actions exist for the room before proceeding
+  if (
+    !roomActions[room] ||
+    !roomActions[room].actionOn ||
+    !roomActions[room].actionOff
+  ) {
+    console.error(`Actions not properly initialized for room: ${room}`);
+    return;
+  }
+
+  if (acStates[room].isOn) {
+    try {
+      if (roomActions[room].actionOn && roomActions[room].actionOn.action) {
+        eraWidget.triggerAction(roomActions[room].actionOn.action, null);
+        console.log(`ON Action triggered successfully for ${room}`);
+
+        // Update UI only after successful action trigger
+        statusDot.style.backgroundColor = "#4CAF50";
+        statusText.textContent = "Online";
+        powerButton.classList.add("active");
+        powerButton.classList.remove("OFF");
+        startTemperatureUpdates(sanitizedRoom);
+      }
+    } catch (error) {
+      console.error(`Error triggering ON action for ${room}:`, error);
+    }
+  } else {
+    try {
+      if (roomActions[room].actionOff && roomActions[room].actionOff.action) {
+        eraWidget.triggerAction(roomActions[room].actionOff.action, null);
+        console.log(`OFF Action triggered successfully for ${room}`);
+
+        // Update UI only after successful action trigger
+        statusDot.style.backgroundColor = "#ff0000";
+        statusText.textContent = "Offline";
+        powerButton.classList.remove("active");
+        if (tempDisplay) {
+          tempDisplay.textContent = "OFF";
+        }
+        stopTemperatureUpdates(sanitizedRoom);
+      }
+    } catch (error) {
+      console.error(`Error triggering OFF action for ${room}:`, error);
+    }
+  }
+  const currentElement = document.getElementById(`current-${suffix}`);
+  const powerElement = document.getElementById(`power-${suffix}`);
+
+  // Cập nhật giá trị với fallback về 0 nếu undefined
+  currentElement.textContent = (acStates[roomKey].current || 0).toFixed(1);
+  powerElement.textContent = (acStates[roomKey].power || 0).toFixed(2);
+}
+
+// Helper function for room name sanitization
+function sanitizeRoomName(room) {
+  return room.toLowerCase().replace(/\s+/g, "-");
+}
+
+// Temperature update management functions
+function startTemperatureUpdates(room) {
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
+  }
+
+  updateIntervals[room] = setInterval(() => {
+    if (acStates[room] && acStates[room].isOn) {
+      updateRoomTemperatureDisplay(room, roomTemperatures[room]);
+    }
+  }, 1000);
+}
+
+function stopTemperatureUpdates(room) {
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
+    delete updateIntervals[room];
+  }
+}
+
+function updateRoomTemperatureDisplay(roomName, temperature) {
+  const sanitizedRoom = sanitizeRoomName(roomName);
+  const tempDisplay = document.querySelector(
+    `#${sanitizedRoom} .temperature-air`
+  );
+
+  if (tempDisplay) {
+    if (acStates[roomName] && acStates[roomName].isOn) {
+      tempDisplay.textContent = `${parseFloat(temperature).toFixed(0)}°C`;
+    } else {
+      tempDisplay.textContent = "OFF";
+    }
+  }
+}
