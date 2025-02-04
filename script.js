@@ -1813,6 +1813,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
       current: powerStats.current,
       power: powerStats.power,
     };
+    console.log("Establish acStates[roomKey]");
   } else {
     acStates[roomKey].current = powerStats.current;
     acStates[roomKey].power = powerStats.power;
@@ -2586,7 +2587,29 @@ function startTemperatureUpdates(room) {
 
   updateIntervals[room] = setInterval(() => {
     if (acStates[room] && acStates[room].isOn) {
+      // Cập nhật nhiệt độ
       updateRoomTemperatureDisplay(room, roomTemperatures[room]);
+
+      // Cập nhật current và power
+      const roomKey = normalizeRoomKey(room);
+      const eraSuffix = roomEraMap[roomKey];
+      const powerStats = getRoomPowerStats(eraSuffix);
+
+      // Cập nhật acStates với giá trị mới
+      acStates[room].current = powerStats.current;
+      acStates[room].power = powerStats.power;
+
+      // Cập nhật hiển thị
+      const suffix = roomSuffixMap[room];
+      const currentElement = document.getElementById(`current-${suffix}`);
+      const powerElement = document.getElementById(`power-${suffix}`);
+
+      if (currentElement) {
+        currentElement.textContent = powerStats.current.toFixed(1);
+      }
+      if (powerElement) {
+        powerElement.textContent = powerStats.power.toFixed(2);
+      }
     }
   }, 1000);
 }
@@ -2595,6 +2618,23 @@ function stopTemperatureUpdates(room) {
   if (updateIntervals[room]) {
     clearInterval(updateIntervals[room]);
     delete updateIntervals[room];
+  }
+
+  // Reset power stats to 0 when stopping
+  const roomKey = normalizeRoomKey(room);
+  const suffix = roomSuffixMap[room];
+
+  acStates[room].current = 0;
+  acStates[room].power = 0;
+
+  const currentElement = document.getElementById(`current-${suffix}`);
+  const powerElement = document.getElementById(`power-${suffix}`);
+
+  if (currentElement) {
+    currentElement.textContent = "0.0";
+  }
+  if (powerElement) {
+    powerElement.textContent = "0.00";
   }
 }
 
