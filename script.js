@@ -2397,6 +2397,7 @@ eraWidget.init({
     if (configCurrent && values[configCurrent.id]) {
       const currentValue = values[configCurrent.id].value;
       acStates.lotus.current = parseFloat(currentValue);
+      updateRoomTemperatureDisplay("lotus", currentValue);
       if (currentIndex) currentIndex.textContent = currentValue;
     }
 
@@ -2419,6 +2420,7 @@ eraWidget.init({
     if (configCurrent2 && values[configCurrent2.id]) {
       const currentValue2 = values[configCurrent2.id].value;
       acStates["lavender-1"].current = parseFloat(currentValue2);
+      updateRoomTemperatureDisplay("lavender-1", currentValue2);
       if (currentIndex2) currentIndex2.textContent = currentValue2;
     }
 
@@ -2441,6 +2443,7 @@ eraWidget.init({
     if (configCurrent3 && values[configCurrent3.id]) {
       const currentValue3 = values[configCurrent3.id].value;
       acStates["lavender-2"].current = parseFloat(currentValue3);
+      updateRoomTemperatureDisplay("lavender-2", currentValue3);
       if (currentIndex3) currentIndex3.textContent = currentValue3;
     }
 
@@ -2533,7 +2536,7 @@ function updateACStatus(container, room) {
     console.error(`Actions not properly initialized for room: ${room}`);
     return;
   }
-  
+
   if (acStates[room].isOn) {
     try {
       if (roomActions[room].actionOn && roomActions[room].actionOn.action) {
