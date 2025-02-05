@@ -1827,14 +1827,11 @@ function renderRoomPage(data, roomKeyword, roomName) {
       roomTemperatures: 20,
       minTemp: 16,
       maxTemp: 30,
-      current: powerStats.current,
-      power: powerStats.power,
+      current:0,
+      power:0,
     };
     console.log("Establish acStates[roomKey]");
-  } else {
-    acStates[roomKey].current = powerStats.current;
-    acStates[roomKey].power = powerStats.power;
-  }
+  } 
 
   // Lấy thời gian hiện tại
   const currentTime = new Date();
@@ -1874,21 +1871,21 @@ function renderRoomPage(data, roomKeyword, roomName) {
       // const room = acCard.dataset.room; // Lấy tên phòng từ thuộc tính data-room
       // Kiểm tra và khởi tạo acStates nếu chưa có phòng này
       const room = acCard.dataset.room.toLowerCase();
-      if (!acStates[room]) {
-        acStates[room] = {
-          isOn: false,
-          roomTemperatures: 20,
-          minTemp: 16,
-          maxTemp: 30,
-        }; // Khởi tạo phòng với giá trị mặc định
-      }
+    if (!acStates[room]) {
+      acStates[room] = {
+        isOn: false,
+        roomTemperatures: 20,
+        minTemp: 16,
+        maxTemp: 30,
+        current: 0,
+        power: 0,
+      };
+    }
+
       const tempDisplay = acCard.querySelector(".temperature-air");
 
       if (e.target.closest(".controls .btn:first-child")) {
         acStates[room].isOn = !acStates[room].isOn;
-        // Cập nhật trạng thái current và power dựa trên trạng thái isOn
-        acStates[room].current = acStates[room].isOn ? 8.5 : 0;
-        acStates[room].power = acStates[room].isOn ? 0.56 : 0;
         updateACStatus(acCard, room);
       }
 
@@ -2512,31 +2509,6 @@ function updateACStatus(container, room) {
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
   const roomKey = normalizeRoomKey(room);
-  const suffix = roomSuffixMap[room];
-
-  const roomActions = {
-    lotus: {
-      actionOn: actionOn1,
-      actionOff: actionOff1,
-    },
-    "lavender-1": {
-      actionOn: actionOn2,
-      actionOff: actionOff2,
-    },
-    "lavender-2": {
-      actionOn: actionOn3,
-      actionOff: actionOff3,
-    },
-  };
-
-  if (
-    !roomActions[room] ||
-    !roomActions[room].actionOn ||
-    !roomActions[room].actionOff
-  ) {
-    console.error(`Actions not properly initialized for room: ${room}`);
-    return;
-  }
 
   if (acStates[room].isOn) {
     try {
@@ -2544,14 +2516,14 @@ function updateACStatus(container, room) {
         eraWidget.triggerAction(roomActions[room].actionOn.action, null);
         console.log(`ON Action triggered successfully for ${room}`);
 
-        // Update UI
+        // Chỉ cập nhật UI state
         statusDot.style.backgroundColor = "#4CAF50";
         statusText.textContent = "Online";
         powerButton.classList.add("active");
         powerButton.classList.remove("OFF");
 
-        // Start updates
-        startTemperatureUpdates(sanitizedRoom);
+        // Không cần startTemperatureUpdates nữa vì onValues sẽ tự cập nhật
+        updateRoomTemperatureDisplay(room, roomTemperatures[room]);
       }
     } catch (error) {
       console.error(`Error triggering ON action for ${room}:`, error);
@@ -2562,7 +2534,7 @@ function updateACStatus(container, room) {
         eraWidget.triggerAction(roomActions[room].actionOff.action, null);
         console.log(`OFF Action triggered successfully for ${room}`);
 
-        // Update UI for OFF state
+        // Cập nhật UI sang trạng thái OFF
         statusDot.style.backgroundColor = "#ff0000";
         statusText.textContent = "Offline";
         powerButton.classList.remove("active");
@@ -2571,9 +2543,12 @@ function updateACStatus(container, room) {
           tempDisplay.textContent = "OFF";
         }
 
-        // Stop updates and reset values
-        stopTemperatureUpdates(sanitizedRoom);
-        updatePowerDisplay(room, { current: 0, power: 0 });
+        // Reset giá trị về 0 khi tắt
+        acStates[room].current = 0;
+        acStates[room].power = 0;
+
+        // Cập nhật display
+        updatePowerDisplay(room, 0, 0);
       }
     } catch (error) {
       console.error(`Error triggering OFF action for ${room}:`, error);
@@ -2581,22 +2556,18 @@ function updateACStatus(container, room) {
   }
 }
 
-function updatePowerDisplay(room, powerStats) {
+function updatePowerDisplay(room, current, power) {
   const suffix = roomSuffixMap[room];
 
   const currentElement = document.getElementById(`current-${suffix}`);
   const powerElement = document.getElementById(`power-${suffix}`);
 
   if (currentElement) {
-    currentElement.textContent = powerStats.current.toFixed(1);
+    currentElement.textContent = current.toFixed(1);
   }
   if (powerElement) {
-    powerElement.textContent = powerStats.power.toFixed(2);
+    powerElement.textContent = power.toFixed(2);
   }
-
-  // Update state
-  acStates[room].current = powerStats.current;
-  acStates[room].power = powerStats.power;
 }
 
 // Helper function for room name sanitization
@@ -2632,15 +2603,18 @@ function startTemperatureUpdates(room) {
 }
 
 function stopTemperatureUpdates(room) {
-  if (updateIntervals[room]) {
-    clearInterval(updateIntervals[room]);
-    delete updateIntervals[room];
+  const tempDisplay = document.querySelector(
+    `#${sanitizeRoomName(room)} .temperature-air`
+  );
+  if (tempDisplay) {
+    tempDisplay.textContent = "OFF";
   }
 
-  // Reset power stats to 0
-  updatePowerDisplay(room, { current: 0, power: 0 });
+  // Reset giá trị về 0
+  acStates[room].current = 0;
+  acStates[room].power = 0;
+  updatePowerDisplay(room, 0, 0);
 }
-
 function updateRoomTemperatureDisplay(roomName, temperature) {
   const sanitizedRoom = sanitizeRoomName(roomName);
   const tempDisplay = document.querySelector(
