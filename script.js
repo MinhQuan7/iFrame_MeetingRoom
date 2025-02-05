@@ -1795,11 +1795,15 @@ function getRoomPowerStats(roomSuffix) {
     power: powerValue,
   };
 }
+let roomUpdateIntervals = {};
 // Hàm render trang động riêng biệt
 function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Rendering room page for:", roomName);
   console.log("Data received:", data);
-
+  console.log("=== INITIAL ROOM RENDER ===", {
+    roomKeyword,
+    roomName,
+  });
   // Lọc các cuộc họp cho phòng
   const roomMeetings = data.filter((meeting) =>
     // meeting.room.toLowerCase().includes(roomKeyword.toLowerCase())
@@ -1840,6 +1844,12 @@ function renderRoomPage(data, roomKeyword, roomName) {
     acStates[roomKey].power = powerStats.power;
     console.log("Updated state:", acStates[roomKey]);
   }
+  // Cleanup existing interval nếu có
+  if (roomUpdateIntervals[roomKey]) {
+    console.log(`Cleaning up existing interval for ${roomKey}`);
+    clearInterval(roomUpdateIntervals[roomKey]);
+  }
+
   // Add debug logging to updateACStatus
   const originalUpdateACStatus = updateACStatus;
   updateACStatus = function (container, room) {
@@ -1881,6 +1891,38 @@ function renderRoomPage(data, roomKeyword, roomName) {
     }
 
     originalOnValues(values);
+  };
+  const updateRoomStats = () => {
+    console.log(`Updating stats for ${roomKey}`);
+
+    // Lấy elements hiện tại
+    const currentElement = document.getElementById(`current-${eraSuffix}`);
+    const powerElement = document.getElementById(`power-${eraSuffix}`);
+
+    if (!currentElement || !powerElement) {
+      console.log("Elements not found, skipping update");
+      return;
+    }
+
+    // Lấy giá trị mới từ E-Ra platform
+    try {
+      const values = eraWidget.getValues();
+      console.log("New values from ERA:", values);
+
+      if (configCurrent && values[configCurrent.id]) {
+        const currentValue = values[configCurrent.id].value;
+        currentElement.textContent = currentValue.toFixed(1);
+        console.log(`Updated current: ${currentValue}A`);
+      }
+
+      if (configPower && values[configPower.id]) {
+        const powerValue = values[configPower.id].value;
+        powerElement.textContent = powerValue.toFixed(2);
+        console.log(`Updated power: ${powerValue}KW`);
+      }
+    } catch (error) {
+      console.error("Error updating room stats:", error);
+    }
   };
 
   // Lấy thời gian hiện tại
@@ -1961,7 +2003,7 @@ function renderRoomPage(data, roomKeyword, roomName) {
     });
   }, 0);
   const suffix = roomSuffixMap[roomKey];
-  return `
+  const template = `
     <div class="container">
       <div class="left-panel">
         <div>
@@ -2072,6 +2114,38 @@ function renderRoomPage(data, roomKeyword, roomName) {
       </div>
     </div>
   `;
+  // Set up continuous updates
+  setTimeout(() => {
+    console.log(`Setting up continuous updates for ${roomKey}`);
+
+    // Chạy update ngay lập tức
+    updateRoomStats();
+
+    // Set up interval cho updates liên tục
+    roomUpdateIntervals[roomKey] = setInterval(updateRoomStats, 1000);
+
+    // Cleanup khi container bị remove
+    const container = document.getElementById(`room-${roomKey}-container`);
+    if (container) {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.removedNodes.length > 0) {
+            clearInterval(roomUpdateIntervals[roomKey]);
+            delete roomUpdateIntervals[roomKey];
+            observer.disconnect();
+            console.log(`Cleaned up updates for ${roomKey}`);
+          }
+        });
+      });
+
+      observer.observe(container.parentNode, {
+        childList: true,
+        subtree: true,
+      });
+    }
+  }, 0);
+
+  return template;
 }
 
 // Hàm chính để load trang động
@@ -2321,7 +2395,7 @@ document.head.appendChild(style);
 function sanitizeRoomName(room) {
   return room.toLowerCase().replace(/\s+/g, "-");
 }
-
+let latestValues = {};
 let roomTemperatures = {
   lotus: 20,
   "lavender-1": 20,
@@ -2434,6 +2508,9 @@ eraWidget.init({
 
     console.log("Current values:", values);
 
+    console.log("Received new values from ERA:", values);
+    latestValues = values; // Store latest values
+
     if (configTemp && values[configTemp.id]) {
       const tempValue = values[configTemp.id].value;
       if (temp) temp.textContent = tempValue;
@@ -2523,6 +2600,24 @@ eraWidget.init({
       updateRoomTemperatureDisplay("lavender-2", airValue3);
       console.log("Air Value (lotus):", airValue3);
     }
+
+    // Update all active rooms
+    Object.keys(roomUpdateIntervals).forEach((roomKey) => {
+      const eraSuffix = roomEraMap[roomKey];
+      const currentElement = document.getElementById(`current-${eraSuffix}`);
+      const powerElement = document.getElementById(`power-${eraSuffix}`);
+
+      if (currentElement && powerElement) {
+        if (configCurrent && values[configCurrent.id]) {
+          currentElement.textContent =
+            values[configCurrent.id].value.toFixed(1);
+        }
+        if (configPower && values[configPower.id]) {
+          powerElement.textContent = values[configPower.id].value.toFixed(2);
+        }
+      }
+    });
+    return latestValues;
   },
 });
 // Function to start temperature monitoring
