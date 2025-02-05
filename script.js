@@ -2513,7 +2513,6 @@ function updateACStatus(container, room) {
       powerElement.textContent = acStates[roomKey].power.toFixed(2);
     }
   };
-
   // Gọi cập nhật ngay lập tức
   updateRealtimeValues();
 
