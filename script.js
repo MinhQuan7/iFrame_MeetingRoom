@@ -2382,11 +2382,13 @@ eraWidget.init({
 
     if (configCurrent && values[configCurrent.id]) {
       const currentValue = values[configCurrent.id].value;
+      acStates.lotus.current = parseFloat(currentValue);
       if (currentIndex) currentIndex.textContent = currentValue;
     }
 
     if (configPower && values[configPower.id]) {
       const powerValue = values[configPower.id].value;
+       acStates.lotus.power = parseFloat(powerValue);
       if (powerIndex) powerIndex.textContent = powerValue;
     }
 
@@ -2402,11 +2404,13 @@ eraWidget.init({
 
     if (configCurrent2 && values[configCurrent2.id]) {
       const currentValue2 = values[configCurrent2.id].value;
+      acStates["lavender-1"].current = parseFloat(currentValue2);
       if (currentIndex2) currentIndex2.textContent = currentValue2;
     }
 
     if (configPower2 && values[configPower2.id]) {
       const powerValue2 = values[configPower2.id].value;
+      acStates["lavender-1"].power = parseFloat(powerValue2);
       if (powerIndex2) powerIndex2.textContent = powerValue2;
     }
 
@@ -2422,11 +2426,13 @@ eraWidget.init({
 
     if (configCurrent3 && values[configCurrent3.id]) {
       const currentValue3 = values[configCurrent3.id].value;
+      acStates["lavender-2"].current = parseFloat(currentValue3);
       if (currentIndex3) currentIndex3.textContent = currentValue3;
     }
 
     if (configPower3 && values[configPower3.id]) {
       const powerValue3 = values[configPower3.id].value;
+      acStates["lavender-2"].power = parseFloat(powerValue3);
       if (powerIndex3) powerIndex3.textContent = powerValue3;
     }
 
@@ -2595,6 +2601,10 @@ function startTemperatureUpdates(room) {
       const eraSuffix = roomEraMap[roomKey];
       const powerStats = getRoomPowerStats(eraSuffix);
 
+      // Lấy dữ liệu từ acStates đã được cập nhật bởi onValues
+      const current = acStates[room].current;
+      const power = acStates[room].power;
+      
       // Cập nhật acStates với giá trị mới
       acStates[room].current = powerStats.current;
       acStates[room].power = powerStats.power;
