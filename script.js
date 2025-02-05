@@ -2706,12 +2706,7 @@ function updateACStatus(container, room) {
         current: realTimeStats.current,
         power: realTimeStats.power,
       };
-    } else {
-      // When OFF, set to 0
-      acStates[roomKey].current = 0;
-      acStates[roomKey].power = 0;
     }
-
     // Update the display elements
     const currentElement = document.getElementById(`current-${suffix}`);
     const powerElement = document.getElementById(`power-${suffix}`);
@@ -2841,13 +2836,6 @@ function stopTemperatureUpdates(room) {
 
   const currentElement = document.getElementById(`current-${suffix}`);
   const powerElement = document.getElementById(`power-${suffix}`);
-
-  if (currentElement) {
-    currentElement.textContent = "0.0";
-  }
-  if (powerElement) {
-    powerElement.textContent = "0.00";
-  }
 }
 
 function updateRoomTemperatureDisplay(roomName, temperature) {
