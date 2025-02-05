@@ -2464,14 +2464,14 @@ eraWidget.init({
       const airValue2 = values[configAirConditioner2.id].value;
       roomTemperatures["lavender-1"] = parseFloat(airValue2);
       updateRoomTemperatureDisplay("lavender-1", airValue2);
-      console.log("Air Value (lotus):", airValue2);
+      console.log("Air Value (lavender-1):", airValue2);
     }
 
     if (configAirConditioner3 && values[configAirConditioner3.id]) {
       const airValue3 = values[configAirConditioner3.id].value;
       roomTemperatures["lavender-2"] = parseFloat(airValue3);
       updateRoomTemperatureDisplay("lavender-2", airValue3);
-      console.log("Air Value (lotus):", airValue3);
+      console.log("Air Value (lavender-2):", airValue3);
     }
   },
 });
