@@ -1818,20 +1818,6 @@ function renderRoomPage(data, roomKeyword, roomName) {
     acStates[roomKey].current = powerStats.current;
     acStates[roomKey].power = powerStats.power;
   }
-  if (!updateIntervals[roomKey]) {
-    updateIntervals[roomKey] = setInterval(() => {
-      const powerStats = getRoomPowerStats(eraSuffix);
-      acStates[roomKey].current = powerStats.current;
-      acStates[roomKey].power = powerStats.power;
-
-      // Cập nhật DOM
-      const currentElement = document.getElementById(`current-${suffix}`);
-      const powerElement = document.getElementById(`power-${suffix}`);
-      if (currentElement)
-        currentElement.textContent = powerStats.current.toFixed(1);
-      if (powerElement) powerElement.textContent = powerStats.power.toFixed(2);
-    }, 1000);
-  }
 
   // Lấy thời gian hiện tại
   const currentTime = new Date();
@@ -1883,15 +1869,10 @@ function renderRoomPage(data, roomKeyword, roomName) {
 
       if (e.target.closest(".controls .btn:first-child")) {
         acStates[room].isOn = !acStates[room].isOn;
-        // // Cập nhật trạng thái current và power dựa trên trạng thái isOn
-        // acStates[room].current = acStates[room].isOn ? 8.5 : 0;
-        // acStates[room].power = acStates[room].isOn ? 0.56 : 0;
-        // updateACStatus(acCard, room);
-        if (acStates[roomKey].isOn) {
-          startTemperatureUpdates(roomKey);
-        } else {
-          clearRoomUpdates(roomKey);
-        }
+        // Cập nhật trạng thái current và power dựa trên trạng thái isOn
+        acStates[room].current = acStates[room].isOn ? 8.5 : 0;
+        acStates[room].power = acStates[room].isOn ? 0.56 : 0;
+        updateACStatus(acCard, room);
       }
 
       if (e.target.closest(".controls .btn:nth-child(3)")) {
@@ -1917,116 +1898,116 @@ function renderRoomPage(data, roomKeyword, roomName) {
   }, 0);
   const suffix = roomSuffixMap[roomKey];
   return `
-      <div class="container">
-        <div class="left-panel">
-          <div>
-            <div class="clock-container">
-              <div class="time-1" id="currentTime-1"></div>
-            </div>
-            <div class="currentDateElement-1" id="currentDate-1"></div>
+    <div class="container">
+      <div class="left-panel">
+        <div>
+          <div class="clock-container">
+            <div class="time-1" id="currentTime-1"></div>
           </div>
-          <div>
-            <div class="device online">
-              <img
-                alt="Power meter icon"
-                height="30"
-                src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
-                width="30"
-              />
-              <div>
-                <div>Power meter AC 1</div>
-  <div>Dòng điện: <span id="current-${suffix}">${powerStats.current.toFixed(
+          <div class="currentDateElement-1" id="currentDate-1"></div>
+        </div>
+        <div>
+          <div class="device online">
+            <img
+              alt="Power meter icon"
+              height="30"
+              src="https://storage.googleapis.com/a1aa/image/sp20aym45F4OONkBFWtn8r5qRfuruyCtUwgjpyI96eXQQdCUA.jpg"
+              width="30"
+            />
+            <div>
+              <div>Power meter AC 1</div>
+<div>Dòng điện: <span id="current-${suffix}">${powerStats.current.toFixed(
     1
   )}</span> A | Công suất: <span id="power-${suffix}">${powerStats.power.toFixed(
     2
   )}</span> KW</div>
-              </div>
-              <div class="status">
-                <i class="fas fa-circle"> </i>
-                <span> Online </span>
-              </div>
             </div>
+            <div class="status">
+              <i class="fas fa-circle"> </i>
+              <span> Online </span>
+            </div>
+          </div>
 
-            <div class="ac-card"data-room="${roomName.toLowerCase()}">
-              <div class="card-content">
-                <img alt="Air conditioner icon" height="30" src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg" width="30" />
-                <div class="main-content">
-                  <h3 class="title">Máy lạnh ${roomName}</h3>
+          <div class="ac-card"data-room="${roomName.toLowerCase()}">
+            <div class="card-content">
+              <img alt="Air conditioner icon" height="30" src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg" width="30" />
+              <div class="main-content">
+                <h3 class="title">Máy lạnh ${roomName}</h3>
 
-                  <div class="controls">
-                    <button class="btn">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10" stroke-width="2" />
-                      </svg>
-                    </button>
-                    <div class="divider"></div>
-                    <button class="btn">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M19 9l-7 7-7-7" stroke-width="2" />
-                      </svg>
-                    </button>
-                    <span class="temperature-air" id="temperature-${roomName}">${
+                <div class="controls">
+                  <button class="btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10" stroke-width="2" />
+                    </svg>
+                  </button>
+                  <div class="divider"></div>
+                  <button class="btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M19 9l-7 7-7-7" stroke-width="2" />
+                    </svg>
+                  </button>
+                  <span class="temperature-air" id="temperature-${roomName}">${
     acStates[roomKey].roomTemperatures
   }°C</span>
-                    <button class="btn-up">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M5 15l7-7 7 7" stroke-width="2" />
-                      </svg>
-                    </button>
-                  </div>
+                  <button class="btn-up">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M5 15l7-7 7 7" stroke-width="2" />
+                    </svg>
+                  </button>
+                </div>
 
-                  <div class="status-air">
-                    <div class="status-air-dot"></div>
-                    <span>Offline</span>
-                  </div>
+                <div class="status-air">
+                  <div class="status-air-dot"></div>
+                  <span>Offline</span>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <button class="home-button">
-            <i class="fas fa-home"></i> TRANG CHỦ
-          </button>
-        </div>
-        <div class="main-panel">
-          <div>
-            <h1>${currentMeeting ? currentMeeting.room : roomName}</h1>
-            <div class="current-status">HIỆN TẠI</div>
-            <div class="meeting-title-1">${
-              currentMeeting ? currentMeeting.content : "Không có cuộc họp"
-            }</div>
-            <div class="meeting-time-1">
-              <div role="cell">
-                <span>Bắt đầu: ${
-                  currentMeeting ? currentMeeting.startTime : "--:--"
-                }</span>
-                <span> - Kết thúc: ${
-                  currentMeeting ? currentMeeting.endTime : "--:--"
-                }</span>
-              </div>
-            </div>
-            <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
-            <div class="purpose-value">${
-              currentMeeting ? currentMeeting.purpose : "Chưa xác định"
-            }</div>
-          </div>
-          <button class="end-meeting">END MEETING</button>
-        </div>
-        <div class="right-panel">
-          <h2>LỊCH HỌP PHÒNG ${roomName.toUpperCase()}</h2>
-          ${upcomingMeetings
-            .map(
-              (meeting) => `
-            <div class="upcoming-meeting">
-              <div class="meeting-title">${meeting.content}</div>
-              <div class="meeting-time-1">${meeting.startTime} - ${meeting.endTime}</div>
-            </div>
-          `
-            )
-            .join("")}
-        </div>
+        <button class="home-button">
+          <i class="fas fa-home"></i> TRANG CHỦ
+        </button>
       </div>
-    `;
+      <div class="main-panel">
+        <div>
+          <h1>${currentMeeting ? currentMeeting.room : roomName}</h1>
+          <div class="current-status">HIỆN TẠI</div>
+          <div class="meeting-title-1">${
+            currentMeeting ? currentMeeting.content : "Không có cuộc họp"
+          }</div>
+          <div class="meeting-time-1">
+            <div role="cell">
+              <span>Bắt đầu: ${
+                currentMeeting ? currentMeeting.startTime : "--:--"
+              }</span>
+              <span> - Kết thúc: ${
+                currentMeeting ? currentMeeting.endTime : "--:--"
+              }</span>
+            </div>
+          </div>
+          <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
+          <div class="purpose-value">${
+            currentMeeting ? currentMeeting.purpose : "Chưa xác định"
+          }</div>
+        </div>
+        <button class="end-meeting">END MEETING</button>
+      </div>
+      <div class="right-panel">
+        <h2>LỊCH HỌP PHÒNG ${roomName.toUpperCase()}</h2>
+        ${upcomingMeetings
+          .map(
+            (meeting) => `
+          <div class="upcoming-meeting">
+            <div class="meeting-title">${meeting.content}</div>
+            <div class="meeting-time-1">${meeting.startTime} - ${meeting.endTime}</div>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
 }
 
 // Hàm chính để load trang động
@@ -2600,48 +2581,38 @@ function sanitizeRoomName(room) {
 
 // Temperature update management functions
 function startTemperatureUpdates(room) {
-  const roomKey = normalizeRoomKey(room);
-
-  if (updateIntervals[roomKey]) {
-    clearInterval(updateIntervals[roomKey]);
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
   }
 
-  updateIntervals[roomKey] = setInterval(() => {
-    // Lấy giá trị mới nhất từ cảm biến
-    const eraSuffix = roomEraMap[roomKey];
-    const powerStats = getRoomPowerStats(eraSuffix);
+  updateIntervals[room] = setInterval(() => {
+    if (acStates[room] && acStates[room].isOn) {
+      // Cập nhật nhiệt độ
+      updateRoomTemperatureDisplay(room, roomTemperatures[room]);
 
-    // Cập nhật state
-    acStates[roomKey].current = powerStats.current;
-    acStates[roomKey].power = powerStats.power;
+      // Cập nhật current và power
+      const roomKey = normalizeRoomKey(room);
+      const eraSuffix = roomEraMap[roomKey];
+      const powerStats = getRoomPowerStats(eraSuffix);
 
-    // Cập nhật UI
-    const suffix = roomSuffixMap[roomKey];
-    document.getElementById(`current-${suffix}`).textContent =
-      powerStats.current.toFixed(1);
-    document.getElementById(`power-${suffix}`).textContent =
-      powerStats.power.toFixed(2);
+      // Cập nhật acStates với giá trị mới
+      acStates[room].current = powerStats.current;
+      acStates[room].power = powerStats.power;
 
-    // Cập nhật nhiệt độ
-    if (acStates[roomKey].isOn) {
-      const tempDisplay = document.querySelector(`#temperature-${roomName}`);
-      if (tempDisplay)
-        tempDisplay.textContent = `${acStates[roomKey].roomTemperatures}°C`;
+      // Cập nhật hiển thị
+      const suffix = roomSuffixMap[room];
+      const currentElement = document.getElementById(`current-${suffix}`);
+      const powerElement = document.getElementById(`power-${suffix}`);
+
+      if (currentElement) {
+        currentElement.textContent = powerStats.current.toFixed(1);
+      }
+      if (powerElement) {
+        powerElement.textContent = powerStats.power.toFixed(2);
+      }
     }
   }, 1000);
 }
-// Thêm hàm clear updates khi unmount component
-function clearRoomUpdates(roomKey) {
-  if (updateIntervals[roomKey]) {
-    clearInterval(updateIntervals[roomKey]);
-    delete updateIntervals[roomKey];
-  }
-}
-
-// Sử dụng khi chuyển trang
-document.querySelector(".home-button").addEventListener("click", () => {
-  Object.keys(updateIntervals).forEach(clearRoomUpdates);
-});
 
 function stopTemperatureUpdates(room) {
   if (updateIntervals[room]) {
