@@ -2383,6 +2383,7 @@ eraWidget.init({
     if (configCurrent && values[configCurrent.id]) {
       const currentValue = values[configCurrent.id].value;
       if (currentIndex) currentIndex.textContent = currentValue;
+      updateRoomTemperatureDisplay("lotus", currentValue);
     }
 
     if (configPower && values[configPower.id]) {
@@ -2403,6 +2404,7 @@ eraWidget.init({
     if (configCurrent2 && values[configCurrent2.id]) {
       const currentValue2 = values[configCurrent2.id].value;
       if (currentIndex2) currentIndex2.textContent = currentValue2;
+      updateRoomTemperatureDisplay("lavender-1", currentValue2);
     }
 
     if (configPower2 && values[configPower2.id]) {
@@ -2423,6 +2425,7 @@ eraWidget.init({
     if (configCurrent3 && values[configCurrent3.id]) {
       const currentValue3 = values[configCurrent3.id].value;
       if (currentIndex3) currentIndex3.textContent = currentValue3;
+       updateRoomTemperatureDisplay("lavender-2", currentValue3);
     }
 
     if (configPower3 && values[configPower3.id]) {
