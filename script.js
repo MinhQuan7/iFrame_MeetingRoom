@@ -2566,6 +2566,32 @@ function updateACStatus(container, room) {
 
   // Get real-time power stats before any state change
   const currentPowerStats = getRoomPowerStats(eraSuffix);
+  const roomActions = {
+    lotus: {
+      actionOn: actionOn1,
+      actionOff: actionOff1,
+    },
+    "lavender-1": {
+      actionOn: actionOn2,
+      actionOff: actionOff2,
+    },
+    "lavender-2": {
+      actionOn: actionOn3,
+      actionOff: actionOff3,
+    },
+  };
+
+  if (
+    !roomActions[room] ||
+    !roomActions[room].actionOn ||
+    !roomActions[room].actionOff
+  ) {
+    console.error(`Actions not properly initialized for room: ${room}`);
+    return;
+  }
+
+  // Get current power stats from eRa elements
+  const powerStats = getRoomPowerStats(eraSuffix);
 
   // Store the last known real values
   if (!acStates[roomKey].lastKnownValues) {
