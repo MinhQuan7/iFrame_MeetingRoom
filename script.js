@@ -2383,7 +2383,7 @@ eraWidget.init({
     if (configCurrent && values[configCurrent.id]) {
       const currentValue = values[configCurrent.id].value;
       if (currentIndex) currentIndex.textContent = currentValue;
-      updateRoomTemperatureDisplay("lotus", currentValue);
+      updateRoomTemperatureDisplay("lotus", values[configCurrent.id].value);
     }
 
     if (configPower && values[configPower.id]) {
@@ -2404,7 +2404,10 @@ eraWidget.init({
     if (configCurrent2 && values[configCurrent2.id]) {
       const currentValue2 = values[configCurrent2.id].value;
       if (currentIndex2) currentIndex2.textContent = currentValue2;
-      updateRoomTemperatureDisplay("lavender-1", currentValue2);
+      updateRoomTemperatureDisplay(
+        "lavender-1",
+        values[configCurrent2.id].value
+      );
     }
 
     if (configPower2 && values[configPower2.id]) {
@@ -2425,7 +2428,10 @@ eraWidget.init({
     if (configCurrent3 && values[configCurrent3.id]) {
       const currentValue3 = values[configCurrent3.id].value;
       if (currentIndex3) currentIndex3.textContent = currentValue3;
-       updateRoomTemperatureDisplay("lavender-2", currentValue3);
+      updateRoomTemperatureDisplay(
+        "lavender-2",
+        values[configCurrent3.id].value
+      );
     }
 
     if (configPower3 && values[configPower3.id]) {
@@ -2496,7 +2502,28 @@ function updateACStatus(container, room) {
 
   // Get the corresponding eRa suffix for the room
   const eraSuffix = roomEraMap[roomKey];
+  const updateRealtimeValues = () => {
+    const currentElement = document.getElementById(`current-${suffix}`);
+    const powerElement = document.getElementById(`power-${suffix}`);
 
+    if (currentElement) {
+      currentElement.textContent = acStates[roomKey].current.toFixed(1);
+    }
+    if (powerElement) {
+      powerElement.textContent = acStates[roomKey].power.toFixed(2);
+    }
+  };
+
+  // Gọi cập nhật ngay lập tức
+  updateRealtimeValues();
+
+  // Thiết lập interval cập nhật
+  const intervalId = setInterval(updateRealtimeValues, 1000);
+
+  // Cleanup khi không cần thiết
+  container.addEventListener("DOMNodeRemoved", () => {
+    clearInterval(intervalId);
+  });
   // Define room-specific actions with null checks
   const roomActions = {
     lotus: {
