@@ -1976,8 +1976,8 @@ function renderRoomPage(data, roomKeyword, roomName) {
       if (e.target.closest(".controls .btn:first-child")) {
         acStates[room].isOn = !acStates[room].isOn;
         // Cập nhật trạng thái current và power dựa trên trạng thái isOn
-        acStates[room].current = acStates[room].isOn ? 8.5 : 0;
-        acStates[room].power = acStates[room].isOn ? 0.56 : 0;
+        // acStates[room].current = acStates[room].isOn ? 8.5 : 0;
+        // acStates[room].power = acStates[room].isOn ? 0.56 : 0;
         updateACStatus(acCard, room);
       }
 
