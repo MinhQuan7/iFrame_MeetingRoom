@@ -1767,30 +1767,13 @@ function normalizeRoomKey(roomName) {
 
 // Helper function to get power stats from elements
 function getRoomPowerStats(roomSuffix) {
-  try {
-    // Get elements by their actual IDs
-    const currentElement = document.getElementById(`current-${roomSuffix}`);
-    const powerElement = document.getElementById(`power-${roomSuffix}`);
+  const currentElement = document.getElementById(`current-${roomSuffix}`);
+  const powerElement = document.getElementById(`power-${roomSuffix}`);
 
-    // Ensure proper parsing of values
-    const currentValue = currentElement
-      ? parseFloat(currentElement.textContent) || 0
-      : 0;
-    const powerValue = powerElement
-      ? parseFloat(powerElement.textContent) || 0
-      : 0;
-
-    return {
-      current: currentValue,
-      power: powerValue,
-    };
-  } catch (error) {
-    console.error(`Error getting power stats for ${roomSuffix}:`, error);
-    return {
-      current: 0,
-      power: 0,
-    };
-  }
+  return {
+    current: currentElement ? parseFloat(currentElement.textContent) || 0 : 0,
+    power: powerElement ? parseFloat(powerElement.textContent) || 0 : 0,
+  };
 }
 const roomEraMap = {
   lotus: "eRa",
@@ -1827,10 +1810,13 @@ function renderRoomPage(data, roomKeyword, roomName) {
       roomTemperatures: 20,
       minTemp: 16,
       maxTemp: 30,
-      current: 0,
-      power: 0,
+      current: powerStats.current,
+      power: powerStats.power,
     };
     console.log("Establish acStates[roomKey]");
+  } else {
+    acStates[roomKey].current = powerStats.current;
+    acStates[roomKey].power = powerStats.power;
   }
 
   // Lấy thời gian hiện tại
@@ -1877,15 +1863,15 @@ function renderRoomPage(data, roomKeyword, roomName) {
           roomTemperatures: 20,
           minTemp: 16,
           maxTemp: 30,
-          current: 0,
-          power: 0,
-        };
+        }; // Khởi tạo phòng với giá trị mặc định
       }
-
       const tempDisplay = acCard.querySelector(".temperature-air");
 
       if (e.target.closest(".controls .btn:first-child")) {
         acStates[room].isOn = !acStates[room].isOn;
+        // Cập nhật trạng thái current và power dựa trên trạng thái isOn
+        acStates[room].current = acStates[room].isOn ? 8.5 : 0;
+        acStates[room].power = acStates[room].isOn ? 0.56 : 0;
         updateACStatus(acCard, room);
       }
 
@@ -2396,14 +2382,11 @@ eraWidget.init({
 
     if (configCurrent && values[configCurrent.id]) {
       const currentValue = values[configCurrent.id].value;
-      acStates.lotus.current = parseFloat(currentValue);
-      updateRoomTemperatureDisplay("lotus", currentValue);
       if (currentIndex) currentIndex.textContent = currentValue;
     }
 
     if (configPower && values[configPower.id]) {
       const powerValue = values[configPower.id].value;
-      acStates.lotus.power = parseFloat(powerValue);
       if (powerIndex) powerIndex.textContent = powerValue;
     }
 
@@ -2419,14 +2402,11 @@ eraWidget.init({
 
     if (configCurrent2 && values[configCurrent2.id]) {
       const currentValue2 = values[configCurrent2.id].value;
-      acStates["lavender-1"].current = parseFloat(currentValue2);
-      updateRoomTemperatureDisplay("lavender-1", currentValue2);
       if (currentIndex2) currentIndex2.textContent = currentValue2;
     }
 
     if (configPower2 && values[configPower2.id]) {
       const powerValue2 = values[configPower2.id].value;
-      acStates["lavender-1"].power = parseFloat(powerValue2);
       if (powerIndex2) powerIndex2.textContent = powerValue2;
     }
 
@@ -2442,14 +2422,11 @@ eraWidget.init({
 
     if (configCurrent3 && values[configCurrent3.id]) {
       const currentValue3 = values[configCurrent3.id].value;
-      acStates["lavender-2"].current = parseFloat(currentValue3);
-      updateRoomTemperatureDisplay("lavender-2", currentValue3);
       if (currentIndex3) currentIndex3.textContent = currentValue3;
     }
 
     if (configPower3 && values[configPower3.id]) {
       const powerValue3 = values[configPower3.id].value;
-      acStates["lavender-2"].power = parseFloat(powerValue3);
       if (powerIndex3) powerIndex3.textContent = powerValue3;
     }
 
@@ -2464,14 +2441,14 @@ eraWidget.init({
       const airValue2 = values[configAirConditioner2.id].value;
       roomTemperatures["lavender-1"] = parseFloat(airValue2);
       updateRoomTemperatureDisplay("lavender-1", airValue2);
-      console.log("Air Value (lavender-1):", airValue2);
+      console.log("Air Value (lotus):", airValue2);
     }
 
     if (configAirConditioner3 && values[configAirConditioner3.id]) {
       const airValue3 = values[configAirConditioner3.id].value;
       roomTemperatures["lavender-2"] = parseFloat(airValue3);
       updateRoomTemperatureDisplay("lavender-2", airValue3);
-      console.log("Air Value (lavender-2):", airValue3);
+      console.log("Air Value (lotus):", airValue3);
     }
   },
 });
@@ -2512,7 +2489,12 @@ function updateACStatus(container, room) {
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
   const roomKey = normalizeRoomKey(room);
+  const suffix = roomSuffixMap[room];
 
+  // Get the corresponding eRa suffix for the room
+  const eraSuffix = roomEraMap[roomKey];
+
+  // Define room-specific actions with null checks
   const roomActions = {
     lotus: {
       actionOn: actionOn1,
@@ -2537,20 +2519,23 @@ function updateACStatus(container, room) {
     return;
   }
 
+  // Get current power stats from eRa elements
+  const powerStats = getRoomPowerStats(eraSuffix);
+
   if (acStates[room].isOn) {
     try {
       if (roomActions[room].actionOn && roomActions[room].actionOn.action) {
-        eraWidget.triggerAction(roomActions[room].actionOff.action, null);
+        eraWidget.triggerAction(roomActions[room].actionOn.action, null);
         console.log(`ON Action triggered successfully for ${room}`);
 
-        // Chỉ cập nhật UI state
+        // Update UI and state with actual power values
         statusDot.style.backgroundColor = "#4CAF50";
         statusText.textContent = "Online";
         powerButton.classList.add("active");
         powerButton.classList.remove("OFF");
-
-        // Không cần startTemperatureUpdates nữa vì onValues sẽ tự cập nhật
-        updateRoomTemperatureDisplay(room, roomTemperatures[room]);
+        acStates[roomKey].current = powerStats.current;
+        acStates[roomKey].power = powerStats.power;
+        startTemperatureUpdates(sanitizedRoom);
       }
     } catch (error) {
       console.error(`Error triggering ON action for ${room}:`, error);
@@ -2561,39 +2546,31 @@ function updateACStatus(container, room) {
         eraWidget.triggerAction(roomActions[room].actionOff.action, null);
         console.log(`OFF Action triggered successfully for ${room}`);
 
-        // Cập nhật UI sang trạng thái OFF
+        // Update UI and state with zero values when turned off
         statusDot.style.backgroundColor = "#ff0000";
         statusText.textContent = "Offline";
         powerButton.classList.remove("active");
-
+        acStates[roomKey].current = 0;
+        acStates[roomKey].power = 0;
         if (tempDisplay) {
           tempDisplay.textContent = "OFF";
         }
-
-        // Reset giá trị về 0 khi tắt
-        acStates[room].current = 0;
-        acStates[room].power = 0;
-
-        // Cập nhật display
-        updatePowerDisplay(room, 0, 0);
+        stopTemperatureUpdates(sanitizedRoom);
       }
     } catch (error) {
       console.error(`Error triggering OFF action for ${room}:`, error);
     }
   }
-}
 
-function updatePowerDisplay(room, current, power) {
-  const suffix = roomSuffixMap[room];
-
+  // Update display elements with current state
   const currentElement = document.getElementById(`current-${suffix}`);
   const powerElement = document.getElementById(`power-${suffix}`);
 
   if (currentElement) {
-    currentElement.textContent = current.toFixed(1);
+    currentElement.textContent = acStates[roomKey].current.toFixed(1);
   }
   if (powerElement) {
-    powerElement.textContent = power.toFixed(2);
+    powerElement.textContent = acStates[roomKey].power.toFixed(2);
   }
 }
 
@@ -2610,38 +2587,57 @@ function startTemperatureUpdates(room) {
 
   updateIntervals[room] = setInterval(() => {
     if (acStates[room] && acStates[room].isOn) {
-      // Update temperature
+      // Cập nhật nhiệt độ
       updateRoomTemperatureDisplay(room, roomTemperatures[room]);
 
-      // Get latest power stats from DOM
+      // Cập nhật current và power
       const roomKey = normalizeRoomKey(room);
       const eraSuffix = roomEraMap[roomKey];
       const powerStats = getRoomPowerStats(eraSuffix);
 
-      // Update display if values have changed
-      if (
-        powerStats.current !== acStates[room].current ||
-        powerStats.power !== acStates[room].power
-      ) {
-        updatePowerDisplay(room, powerStats);
+      // Cập nhật acStates với giá trị mới
+      acStates[room].current = powerStats.current;
+      acStates[room].power = powerStats.power;
+
+      // Cập nhật hiển thị
+      const suffix = roomSuffixMap[room];
+      const currentElement = document.getElementById(`current-${suffix}`);
+      const powerElement = document.getElementById(`power-${suffix}`);
+
+      if (currentElement) {
+        currentElement.textContent = powerStats.current.toFixed(1);
+      }
+      if (powerElement) {
+        powerElement.textContent = powerStats.power.toFixed(2);
       }
     }
   }, 1000);
 }
 
 function stopTemperatureUpdates(room) {
-  const tempDisplay = document.querySelector(
-    `#${sanitizeRoomName(room)} .temperature-air`
-  );
-  if (tempDisplay) {
-    tempDisplay.textContent = "OFF";
+  if (updateIntervals[room]) {
+    clearInterval(updateIntervals[room]);
+    delete updateIntervals[room];
   }
 
-  // Reset giá trị về 0
+  // Reset power stats to 0 when stopping
+  const roomKey = normalizeRoomKey(room);
+  const suffix = roomSuffixMap[room];
+
   acStates[room].current = 0;
   acStates[room].power = 0;
-  updatePowerDisplay(room, 0, 0);
+
+  const currentElement = document.getElementById(`current-${suffix}`);
+  const powerElement = document.getElementById(`power-${suffix}`);
+
+  if (currentElement) {
+    currentElement.textContent = "0.0";
+  }
+  if (powerElement) {
+    powerElement.textContent = "0.00";
+  }
 }
+
 function updateRoomTemperatureDisplay(roomName, temperature) {
   const sanitizedRoom = sanitizeRoomName(roomName);
   const tempDisplay = document.querySelector(
