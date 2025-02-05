@@ -1759,7 +1759,11 @@ const roomSuffixMap = {
   "lavender-1": "eRa2",
   "lavender-2": "eRa3",
 };
-
+const roomEraMap = {
+  lotus: "eRa",
+  "lavender-1": "eRa2",
+  "lavender-2": "eRa3",
+};
 function normalizeRoomKey(roomName) {
   return roomName.toLowerCase().trim();
   // return roomName.toLowerCase().replace(/\s+/g, "-");
@@ -1770,6 +1774,10 @@ function getRoomPowerStats(roomSuffix) {
   const currentElement = document.getElementById(`current-${roomSuffix}`);
   const powerElement = document.getElementById(`power-${roomSuffix}`);
 
+  console.log(`Getting power stats for room suffix: ${roomSuffix}`);
+  console.log("Current element:", currentElement);
+  console.log("Power element:", powerElement);
+
   // Get the actual values from the elements
   const currentValue = currentElement
     ? parseFloat(currentElement.textContent) || 0
@@ -1778,16 +1786,15 @@ function getRoomPowerStats(roomSuffix) {
     ? parseFloat(powerElement.textContent) || 0
     : 0;
 
+  console.log(
+    `Room ${roomSuffix} stats - Current: ${currentValue}A, Power: ${powerValue}KW`
+  );
+
   return {
     current: currentValue,
     power: powerValue,
   };
 }
-const roomEraMap = {
-  lotus: "eRa",
-  "lavender-1": "eRa2",
-  "lavender-2": "eRa3",
-};
 // Hàm render trang động riêng biệt
 function renderRoomPage(data, roomKeyword, roomName) {
   console.log("Rendering room page for:", roomName);
@@ -1811,8 +1818,13 @@ function renderRoomPage(data, roomKeyword, roomName) {
   const roomKey = normalizeRoomKey(roomKeyword);
   const eraSuffix = roomEraMap[roomKey];
   const powerStats = getRoomPowerStats(eraSuffix);
+  console.log("Normalized room key:", roomKey);
+  console.log("ERA suffix:", eraSuffix);
+  console.log("Initial power stats:", powerStats);
+
   // Initialize room state if it doesn't exist
   if (!acStates[roomKey]) {
+    console.log(`Initializing new state for room ${roomKey}`);
     acStates[roomKey] = {
       isOn: false,
       roomTemperatures: 20,
@@ -1821,11 +1833,55 @@ function renderRoomPage(data, roomKeyword, roomName) {
       current: powerStats.current,
       power: powerStats.power,
     };
-    console.log("Establish acStates[roomKey]");
   } else {
+    console.log(`Updating existing state for room ${roomKey}`);
+    console.log("Previous state:", acStates[roomKey]);
     acStates[roomKey].current = powerStats.current;
     acStates[roomKey].power = powerStats.power;
+    console.log("Updated state:", acStates[roomKey]);
   }
+  // Add debug logging to updateACStatus
+  const originalUpdateACStatus = updateACStatus;
+  updateACStatus = function (container, room) {
+    console.log("=== AC Status Update Debug ===");
+    console.log(`Updating AC status for room: ${room}`);
+    console.log("Current AC state:", acStates[room]);
+
+    const roomKey = normalizeRoomKey(room);
+    const eraSuffix = roomEraMap[roomKey];
+    console.log(
+      `Getting real-time stats for ${room} (ERA suffix: ${eraSuffix})`
+    );
+
+    const powerStats = getRoomPowerStats(eraSuffix);
+    console.log("Current power stats:", powerStats);
+
+    originalUpdateACStatus(container, room);
+
+    console.log("Updated AC state:", acStates[room]);
+  };
+
+  // Add debug logging to the eraWidget onValues callback
+  const originalOnValues = eraWidget.init.onValues;
+  eraWidget.init.onValues = function (values) {
+    console.log("=== ERA Widget Values Update Debug ===");
+    console.log("Received values:", values);
+
+    if (configCurrent && values[configCurrent.id]) {
+      console.log(
+        `Room ${roomKey} current value update:`,
+        values[configCurrent.id].value
+      );
+    }
+    if (configPower && values[configPower.id]) {
+      console.log(
+        `Room ${roomKey} power value update:`,
+        values[configPower.id].value
+      );
+    }
+
+    originalOnValues(values);
+  };
 
   // Lấy thời gian hiện tại
   const currentTime = new Date();
