@@ -1768,9 +1768,17 @@ function normalizeRoomKey(roomName) {
 // Helper function to get power stats from elements
 function getRoomPowerStats(roomSuffix) {
   try {
-    // Assuming eRa provides these values - adjust based on actual eRa implementation
-    const currentValue = eraWidget.getCurrentValue(roomSuffix) || 0;
-    const powerValue = eraWidget.getPowerValue(roomSuffix) || 0;
+    // Get elements by their actual IDs
+    const currentElement = document.getElementById(`current-${roomSuffix}`);
+    const powerElement = document.getElementById(`power-${roomSuffix}`);
+
+    // Ensure proper parsing of values
+    const currentValue = currentElement
+      ? parseFloat(currentElement.textContent) || 0
+      : 0;
+    const powerValue = powerElement
+      ? parseFloat(powerElement.textContent) || 0
+      : 0;
 
     return {
       current: currentValue,
@@ -2505,10 +2513,30 @@ function updateACStatus(container, room) {
   const tempDisplay = container.querySelector(".temperature-air");
   const roomKey = normalizeRoomKey(room);
   const suffix = roomSuffixMap[room];
-  const eraSuffix = roomEraMap[roomKey];
 
-  // Get fresh power stats directly from eRa elements
-  const powerStats = getRoomPowerStats(eraSuffix);
+  const roomActions = {
+    lotus: {
+      actionOn: actionOn1,
+      actionOff: actionOff1,
+    },
+    "lavender-1": {
+      actionOn: actionOn2,
+      actionOff: actionOff2,
+    },
+    "lavender-2": {
+      actionOn: actionOn3,
+      actionOff: actionOff3,
+    },
+  };
+
+  if (
+    !roomActions[room] ||
+    !roomActions[room].actionOn ||
+    !roomActions[room].actionOff
+  ) {
+    console.error(`Actions not properly initialized for room: ${room}`);
+    return;
+  }
 
   if (acStates[room].isOn) {
     try {
@@ -2516,13 +2544,13 @@ function updateACStatus(container, room) {
         eraWidget.triggerAction(roomActions[room].actionOn.action, null);
         console.log(`ON Action triggered successfully for ${room}`);
 
-        // Update UI with current power values
+        // Update UI
         statusDot.style.backgroundColor = "#4CAF50";
         statusText.textContent = "Online";
         powerButton.classList.add("active");
         powerButton.classList.remove("OFF");
 
-        // Start realtime updates
+        // Start updates
         startTemperatureUpdates(sanitizedRoom);
       }
     } catch (error) {
@@ -2534,6 +2562,7 @@ function updateACStatus(container, room) {
         eraWidget.triggerAction(roomActions[room].actionOff.action, null);
         console.log(`OFF Action triggered successfully for ${room}`);
 
+        // Update UI for OFF state
         statusDot.style.backgroundColor = "#ff0000";
         statusText.textContent = "Offline";
         powerButton.classList.remove("active");
@@ -2541,37 +2570,33 @@ function updateACStatus(container, room) {
         if (tempDisplay) {
           tempDisplay.textContent = "OFF";
         }
+
+        // Stop updates and reset values
         stopTemperatureUpdates(sanitizedRoom);
+        updatePowerDisplay(room, { current: 0, power: 0 });
       }
     } catch (error) {
       console.error(`Error triggering OFF action for ${room}:`, error);
     }
   }
-
-  // Update display with fresh values
-  updatePowerDisplay(room, powerStats);
 }
+
 function updatePowerDisplay(room, powerStats) {
-  const roomKey = normalizeRoomKey(room);
   const suffix = roomSuffixMap[room];
 
   const currentElement = document.getElementById(`current-${suffix}`);
   const powerElement = document.getElementById(`power-${suffix}`);
 
   if (currentElement) {
-    currentElement.textContent = acStates[room].isOn
-      ? powerStats.current.toFixed(1)
-      : "0.0";
+    currentElement.textContent = powerStats.current.toFixed(1);
   }
   if (powerElement) {
-    powerElement.textContent = acStates[room].isOn
-      ? powerStats.power.toFixed(2)
-      : "0.00";
+    powerElement.textContent = powerStats.power.toFixed(2);
   }
 
   // Update state
-  acStates[roomKey].current = acStates[room].isOn ? powerStats.current : 0;
-  acStates[roomKey].power = acStates[room].isOn ? powerStats.power : 0;
+  acStates[room].current = powerStats.current;
+  acStates[room].power = powerStats.power;
 }
 
 // Helper function for room name sanitization
@@ -2587,41 +2612,33 @@ function startTemperatureUpdates(room) {
 
   updateIntervals[room] = setInterval(() => {
     if (acStates[room] && acStates[room].isOn) {
-      // Update temperature display
+      // Update temperature
       updateRoomTemperatureDisplay(room, roomTemperatures[room]);
 
-      // Get fresh power stats
+      // Get latest power stats from DOM
       const roomKey = normalizeRoomKey(room);
       const eraSuffix = roomEraMap[roomKey];
       const powerStats = getRoomPowerStats(eraSuffix);
 
-      // Update display with fresh values
-      updatePowerDisplay(room, powerStats);
+      // Update display if values have changed
+      if (
+        powerStats.current !== acStates[room].current ||
+        powerStats.power !== acStates[room].power
+      ) {
+        updatePowerDisplay(room, powerStats);
+      }
     }
   }, 1000);
 }
+
 function stopTemperatureUpdates(room) {
   if (updateIntervals[room]) {
     clearInterval(updateIntervals[room]);
     delete updateIntervals[room];
   }
 
-  // Reset power stats to 0 when stopping
-  const roomKey = normalizeRoomKey(room);
-  const suffix = roomSuffixMap[room];
-
-  acStates[room].current = 0;
-  acStates[room].power = 0;
-
-  const currentElement = document.getElementById(`current-${suffix}`);
-  const powerElement = document.getElementById(`power-${suffix}`);
-
-  if (currentElement) {
-    currentElement.textContent = "0.0";
-  }
-  if (powerElement) {
-    powerElement.textContent = "0.00";
-  }
+  // Reset power stats to 0
+  updatePowerDisplay(room, { current: 0, power: 0 });
 }
 
 function updateRoomTemperatureDisplay(roomName, temperature) {
