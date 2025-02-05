@@ -1767,13 +1767,22 @@ function normalizeRoomKey(roomName) {
 
 // Helper function to get power stats from elements
 function getRoomPowerStats(roomSuffix) {
-  const currentElement = document.getElementById(`current-${roomSuffix}`);
-  const powerElement = document.getElementById(`power-${roomSuffix}`);
+  try {
+    // Assuming eRa provides these values - adjust based on actual eRa implementation
+    const currentValue = eraWidget.getCurrentValue(roomSuffix) || 0;
+    const powerValue = eraWidget.getPowerValue(roomSuffix) || 0;
 
-  return {
-    current: currentElement ? parseFloat(currentElement.textContent) || 0 : 0,
-    power: powerElement ? parseFloat(powerElement.textContent) || 0 : 0,
-  };
+    return {
+      current: currentValue,
+      power: powerValue,
+    };
+  } catch (error) {
+    console.error(`Error getting power stats for ${roomSuffix}:`, error);
+    return {
+      current: 0,
+      power: 0,
+    };
+  }
 }
 const roomEraMap = {
   lotus: "eRa",
@@ -2489,113 +2498,80 @@ document.addEventListener("DOMContentLoaded", startTemperatureMonitoring);
 let updateIntervals = {};
 
 function updateACStatus(container, room) {
-  // Dùng key thống nhất (normalized room key)
-  const roomKey = normalizeRoomKey(room);
   const sanitizedRoom = sanitizeRoomName(room);
-  const suffix = roomSuffixMap[roomKey]; // Sử dụng key thống nhất
-
-  // Lấy các phần tử DOM cần thiết
   const statusDot = container.querySelector(".status-air-dot");
   const statusText = container.querySelector(".status-air span");
   const powerButton = container.querySelector(".controls .btn");
   const tempDisplay = container.querySelector(".temperature-air");
-
-  // Lấy eRa suffix tương ứng cho phòng
+  const roomKey = normalizeRoomKey(room);
+  const suffix = roomSuffixMap[room];
   const eraSuffix = roomEraMap[roomKey];
 
-  // Định nghĩa các hành động cụ thể cho từng phòng (sử dụng roomKey làm key)
-  const roomActions = {
-    lotus: {
-      actionOn: actionOn1,
-      actionOff: actionOff1,
-    },
-    "lavender-1": {
-      actionOn: actionOn2,
-      actionOff: actionOff2,
-    },
-    "lavender-2": {
-      actionOn: actionOn3,
-      actionOff: actionOff3,
-    },
-  };
-
-  // Kiểm tra các action có được khởi tạo đúng hay không
-  if (
-    !roomActions[roomKey] ||
-    !roomActions[roomKey].actionOn ||
-    !roomActions[roomKey].actionOff
-  ) {
-    console.error(`Actions not properly initialized for room: ${roomKey}`);
-    return;
-  }
-
-  // Lấy các giá trị power từ eRa (DOM)
+  // Get fresh power stats directly from eRa elements
   const powerStats = getRoomPowerStats(eraSuffix);
 
-  if (acStates[roomKey].isOn) {
+  if (acStates[room].isOn) {
     try {
-      if (
-        roomActions[roomKey].actionOn &&
-        roomActions[roomKey].actionOn.action
-      ) {
-        eraWidget.triggerAction(roomActions[roomKey].actionOn.action, null);
-        console.log(`ON Action triggered successfully for ${roomKey}`);
+      if (roomActions[room].actionOn && roomActions[room].actionOn.action) {
+        eraWidget.triggerAction(roomActions[room].actionOn.action, null);
+        console.log(`ON Action triggered successfully for ${room}`);
 
-        // Cập nhật giao diện và trạng thái thực tế với giá trị power lấy được
+        // Update UI with current power values
         statusDot.style.backgroundColor = "#4CAF50";
         statusText.textContent = "Online";
         powerButton.classList.add("active");
         powerButton.classList.remove("OFF");
 
-        // Cập nhật trạng thái với giá trị mới
-        acStates[roomKey].current = powerStats.current;
-        acStates[roomKey].power = powerStats.power;
-
-        // Bắt đầu cập nhật nhiệt độ và power theo thời gian (sử dụng roomKey)
-        startTemperatureUpdates(roomKey);
+        // Start realtime updates
+        startTemperatureUpdates(sanitizedRoom);
       }
     } catch (error) {
-      console.error(`Error triggering ON action for ${roomKey}:`, error);
+      console.error(`Error triggering ON action for ${room}:`, error);
     }
   } else {
     try {
-      if (
-        roomActions[roomKey].actionOff &&
-        roomActions[roomKey].actionOff.action
-      ) {
-        eraWidget.triggerAction(roomActions[roomKey].actionOff.action, null);
-        console.log(`OFF Action triggered successfully for ${roomKey}`);
+      if (roomActions[room].actionOff && roomActions[room].actionOff.action) {
+        eraWidget.triggerAction(roomActions[room].actionOff.action, null);
+        console.log(`OFF Action triggered successfully for ${room}`);
 
-        // Cập nhật giao diện và trạng thái khi tắt: hiển thị màu đỏ, Offline
         statusDot.style.backgroundColor = "#ff0000";
         statusText.textContent = "Offline";
         powerButton.classList.remove("active");
 
-        // Đặt các giá trị power về 0
-        acStates[roomKey].current = 0;
-        acStates[roomKey].power = 0;
         if (tempDisplay) {
           tempDisplay.textContent = "OFF";
         }
-
-        // Dừng cập nhật nhiệt độ và power
-        stopTemperatureUpdates(roomKey);
+        stopTemperatureUpdates(sanitizedRoom);
       }
     } catch (error) {
-      console.error(`Error triggering OFF action for ${roomKey}:`, error);
+      console.error(`Error triggering OFF action for ${room}:`, error);
     }
   }
 
-  // Cập nhật các phần tử hiển thị current và power
+  // Update display with fresh values
+  updatePowerDisplay(room, powerStats);
+}
+function updatePowerDisplay(room, powerStats) {
+  const roomKey = normalizeRoomKey(room);
+  const suffix = roomSuffixMap[room];
+
   const currentElement = document.getElementById(`current-${suffix}`);
   const powerElement = document.getElementById(`power-${suffix}`);
 
   if (currentElement) {
-    currentElement.textContent = acStates[roomKey].current.toFixed(1);
+    currentElement.textContent = acStates[room].isOn
+      ? powerStats.current.toFixed(1)
+      : "0.0";
   }
   if (powerElement) {
-    powerElement.textContent = acStates[roomKey].power.toFixed(2);
-  } 
+    powerElement.textContent = acStates[room].isOn
+      ? powerStats.power.toFixed(2)
+      : "0.00";
+  }
+
+  // Update state
+  acStates[roomKey].current = acStates[room].isOn ? powerStats.current : 0;
+  acStates[roomKey].power = acStates[room].isOn ? powerStats.power : 0;
 }
 
 // Helper function for room name sanitization
@@ -2610,38 +2586,20 @@ function startTemperatureUpdates(room) {
   }
 
   updateIntervals[room] = setInterval(() => {
-    if (acStates[roomKey] && acStates[roomKey].isOn) {
-      // Cập nhật nhiệt độ
+    if (acStates[room] && acStates[room].isOn) {
+      // Update temperature display
       updateRoomTemperatureDisplay(room, roomTemperatures[room]);
 
-      // Cập nhật current và power
+      // Get fresh power stats
       const roomKey = normalizeRoomKey(room);
       const eraSuffix = roomEraMap[roomKey];
       const powerStats = getRoomPowerStats(eraSuffix);
 
-      // Lấy dữ liệu từ acStates đã được cập nhật bởi onValues
-      const current = acStates[room].current;
-      const power = acStates[room].power;
-
-      // Cập nhật acStates với giá trị mới
-      acStates[room].current = powerStats.current;
-      acStates[room].power = powerStats.power;
-
-      // Cập nhật hiển thị
-      const suffix = roomSuffixMap[room];
-      const currentElement = document.getElementById(`current-${suffix}`);
-      const powerElement = document.getElementById(`power-${suffix}`);
-
-      if (currentElement) {
-        currentElement.textContent = powerStats.current.toFixed(1);
-      }
-      if (powerElement) {
-        powerElement.textContent = powerStats.power.toFixed(2);
-      }
+      // Update display with fresh values
+      updatePowerDisplay(room, powerStats);
     }
   }, 1000);
 }
-
 function stopTemperatureUpdates(room) {
   if (updateIntervals[room]) {
     clearInterval(updateIntervals[room]);
