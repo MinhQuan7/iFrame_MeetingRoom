@@ -1827,11 +1827,11 @@ function renderRoomPage(data, roomKeyword, roomName) {
       roomTemperatures: 20,
       minTemp: 16,
       maxTemp: 30,
-      current:0,
-      power:0,
+      current: 0,
+      power: 0,
     };
     console.log("Establish acStates[roomKey]");
-  } 
+  }
 
   // Lấy thời gian hiện tại
   const currentTime = new Date();
@@ -1871,16 +1871,16 @@ function renderRoomPage(data, roomKeyword, roomName) {
       // const room = acCard.dataset.room; // Lấy tên phòng từ thuộc tính data-room
       // Kiểm tra và khởi tạo acStates nếu chưa có phòng này
       const room = acCard.dataset.room.toLowerCase();
-    if (!acStates[room]) {
-      acStates[room] = {
-        isOn: false,
-        roomTemperatures: 20,
-        minTemp: 16,
-        maxTemp: 30,
-        current: 0,
-        power: 0,
-      };
-    }
+      if (!acStates[room]) {
+        acStates[room] = {
+          isOn: false,
+          roomTemperatures: 20,
+          minTemp: 16,
+          maxTemp: 30,
+          current: 0,
+          power: 0,
+        };
+      }
 
       const tempDisplay = acCard.querySelector(".temperature-air");
 
@@ -2510,10 +2510,34 @@ function updateACStatus(container, room) {
   const tempDisplay = container.querySelector(".temperature-air");
   const roomKey = normalizeRoomKey(room);
 
+  const roomActions = {
+    lotus: {
+      actionOn: actionOn1,
+      actionOff: actionOff1,
+    },
+    "lavender-1": {
+      actionOn: actionOn2,
+      actionOff: actionOff2,
+    },
+    "lavender-2": {
+      actionOn: actionOn3,
+      actionOff: actionOff3,
+    },
+  };
+
+  if (
+    !roomActions[room] ||
+    !roomActions[room].actionOn ||
+    !roomActions[room].actionOff
+  ) {
+    console.error(`Actions not properly initialized for room: ${room}`);
+    return;
+  }
+  
   if (acStates[room].isOn) {
     try {
       if (roomActions[room].actionOn && roomActions[room].actionOn.action) {
-        eraWidget.triggerAction(roomActions[room].actionOn.action, null);
+        eraWidget.triggerAction(roomActions[room].actionOff.action, null);
         console.log(`ON Action triggered successfully for ${room}`);
 
         // Chỉ cập nhật UI state
