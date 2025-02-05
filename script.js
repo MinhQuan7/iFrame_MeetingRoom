@@ -578,8 +578,8 @@ async function handleFileUpload(file) {
     };
     const endedMeetings = existingCache.data
       ? existingCache.data.filter(
-        (meeting) => meeting.isEnded && meeting.forceEndedByUser
-      )
+          (meeting) => meeting.isEnded && meeting.forceEndedByUser
+        )
       : [];
 
     // Merge dữ liệu mới với trạng thái các cuộc họp đã kết thúc
@@ -787,7 +787,7 @@ async function validateMeetings(meetings) {
       if (
         currentMeeting.date === otherMeeting.date &&
         normalizeRoomName(currentMeeting.room) ===
-        normalizeRoomName(otherMeeting.room)
+          normalizeRoomName(otherMeeting.room)
       ) {
         if (checkTimeConflict(currentMeeting, otherMeeting)) {
           const conflictKey = [i, j].sort().join("_");
@@ -797,10 +797,13 @@ async function validateMeetings(meetings) {
               meeting2: otherMeeting,
               message:
                 `Xung đột lịch họp tại phòng ${currentMeeting.room} ngày ${currentMeeting.date}:\n` +
-                `- Cuộc họp 1: "${currentMeeting.content || currentMeeting.purpose
-                }" (${currentMeeting.startTime} - ${currentMeeting.endTime
+                `- Cuộc họp 1: "${
+                  currentMeeting.content || currentMeeting.purpose
+                }" (${currentMeeting.startTime} - ${
+                  currentMeeting.endTime
                 })\n` +
-                `- Cuộc họp 2: "${otherMeeting.content || otherMeeting.purpose
+                `- Cuộc họp 2: "${
+                  otherMeeting.content || otherMeeting.purpose
                 }" (${otherMeeting.startTime} - ${otherMeeting.endTime})`,
             });
             processedMeetings.add(conflictKey);
@@ -839,10 +842,12 @@ function validateNewMeeting(newMeeting, existingMeetings) {
       conflicts.push({
         conflictWith: existingMeeting,
         type: "TIME_OVERLAP",
-        message: `Xung đột với cuộc họp "${existingMeeting.content || existingMeeting.purpose
-          }" 
-                 từ ${existingMeeting.startTime} đến ${existingMeeting.endTime
-          }`,
+        message: `Xung đột với cuộc họp "${
+          existingMeeting.content || existingMeeting.purpose
+        }" 
+                 từ ${existingMeeting.startTime} đến ${
+          existingMeeting.endTime
+        }`,
       });
     }
   }
@@ -1374,8 +1379,9 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
 
   // Cập nhật giao diện
   if (activeMeeting) {
-    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${activeMeeting.content || activeMeeting.purpose
-      }`;
+    titleElement.innerHTML = `<span>Thông tin cuộc họp:</span> ${
+      activeMeeting.content || activeMeeting.purpose
+    }`;
     startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${activeMeeting.startTime}`;
     endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${activeMeeting.endTime}`;
     statusIndicator.textContent = "Đang họp";
@@ -1391,8 +1397,9 @@ function updateSingleRoomStatus(roomCode, meetings, currentTime) {
     );
 
     if (upcomingMeeting) {
-      titleElement.innerHTML = `<span>Thông tin cuộc họp sắp diễn ra:</span> ${upcomingMeeting.content || upcomingMeeting.purpose
-        }`;
+      titleElement.innerHTML = `<span>Thông tin cuộc họp sắp diễn ra:</span> ${
+        upcomingMeeting.content || upcomingMeeting.purpose
+      }`;
       startTimeElement.innerHTML = `<span>Thời gian bắt đầu:</span> ${upcomingMeeting.startTime}`;
       endTimeElement.innerHTML = `<span>Thời gian kết thúc:</span> ${upcomingMeeting.endTime}`;
       statusIndicator.textContent = "Sắp họp";
@@ -2015,22 +2022,24 @@ function renderRoomPage(data, roomKeyword, roomName) {
             />
             <div>
               <div>Power meter AC 1</div>
-<div>
-  Dòng điện: <span id="current-${suffix}">${powerStats.current.toFixed(
+                  <div>
+                    Dòng điện: <span id="current-${suffix}">${powerStats.current.toFixed(
     1
   )}</span> A
-</div>
-<div>
-  Công suất: <span id="power-${suffix}">${powerStats.power.toFixed(2)}</span> KW
-</div>
-
-            </div>
+                  </div>
+                  <div>
+                    Công suất: <span id="power-${suffix}">${powerStats.power.toFixed(
+    2
+  )}</span> KW
+                  </div>
             <div class="status">
               <i class="fas fa-circle"> </i>
+              <div>
               <span> Online </span>
+              </div>
+            </div>
             </div>
           </div>
-
           <div class="ac-card"data-room="${roomName.toLowerCase()}">
             <div class="card-content">
               <img alt="Air conditioner icon" height="30" src="https://storage.googleapis.com/a1aa/image/njDqCVkQeJWBSiJfuEdErKceXH7wtLOLqr3glGdBuqpkg6EoA.jpg" width="30" />
@@ -2049,8 +2058,9 @@ function renderRoomPage(data, roomKeyword, roomName) {
                       <path d="M19 9l-7 7-7-7" stroke-width="2" />
                     </svg>
                   </button>
-                  <span class="temperature-air" id="temperature-${roomName}">${acStates[roomKey].roomTemperatures
-    }°C</span>
+                  <span class="temperature-air" id="temperature-${roomName}">${
+    acStates[roomKey].roomTemperatures
+  }°C</span>
                   <button class="btn-up">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path d="M5 15l7-7 7 7" stroke-width="2" />
@@ -2075,34 +2085,38 @@ function renderRoomPage(data, roomKeyword, roomName) {
         <div>
           <h1>${currentMeeting ? currentMeeting.room : roomName}</h1>
           <div class="current-status">HIỆN TẠI</div>
-          <div class="meeting-title-1">${currentMeeting ? currentMeeting.content : "Không có cuộc họp"
-    }</div>
+          <div class="meeting-title-1">${
+            currentMeeting ? currentMeeting.content : "Không có cuộc họp"
+          }</div>
           <div class="meeting-time-1">
             <div role="cell">
-              <span>Bắt đầu: ${currentMeeting ? currentMeeting.startTime : "--:--"
-    }</span>
-              <span> - Kết thúc: ${currentMeeting ? currentMeeting.endTime : "--:--"
-    }</span>
+              <span>Bắt đầu: ${
+                currentMeeting ? currentMeeting.startTime : "--:--"
+              }</span>
+              <span> - Kết thúc: ${
+                currentMeeting ? currentMeeting.endTime : "--:--"
+              }</span>
             </div>
           </div>
           <div class="purpose">MỤC ĐÍCH SỬ DỤNG</div>
-          <div class="purpose-value">${currentMeeting ? currentMeeting.purpose : "Chưa xác định"
-    }</div>
+          <div class="purpose-value">${
+            currentMeeting ? currentMeeting.purpose : "Chưa xác định"
+          }</div>
         </div>
         <button class="end-meeting">END MEETING</button>
       </div>
       <div class="right-panel">
         <h2>LỊCH HỌP PHÒNG ${roomName.toUpperCase()}</h2>
         ${upcomingMeetings
-      .map(
-        (meeting) => `
+          .map(
+            (meeting) => `
           <div class="upcoming-meeting">
             <div class="meeting-title">${meeting.content}</div>
             <div class="meeting-time-1">${meeting.startTime} - ${meeting.endTime}</div>
           </div>
         `
-      )
-      .join("")}
+          )
+          .join("")}
       </div>
     </div>
   `;
