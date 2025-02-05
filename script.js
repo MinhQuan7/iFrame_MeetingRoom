@@ -2751,15 +2751,10 @@ function updateACStatus(container, room) {
         powerButton.classList.remove("active");
 
         // Store current values before turning off
-        acStates[roomKey].lastKnownValues = {
-          current: acStates[roomKey].current,
-          power: acStates[roomKey].power,
-        };
-
-        // Set to 0 when off
-        acStates[roomKey].current = 0;
-        acStates[roomKey].power = 0;
-
+        // acStates[roomKey].lastKnownValues = {
+        //   current: acStates[roomKey].current,
+        //   power: acStates[roomKey].power,
+        // };
         if (tempDisplay) {
           tempDisplay.textContent = "OFF";
         }
@@ -2826,18 +2821,11 @@ function stopTemperatureUpdates(room) {
     clearInterval(updateIntervals[room]);
     delete updateIntervals[room];
   }
-
-  // Reset power stats to 0 when stopping
-  const roomKey = normalizeRoomKey(room);
-  const suffix = roomSuffixMap[room];
-
-  acStates[room].current = 0;
-  acStates[room].power = 0;
-
-  const currentElement = document.getElementById(`current-${suffix}`);
-  const powerElement = document.getElementById(`power-${suffix}`);
+  const tempDisplay = document.querySelector(`#${room} .temperature-air`);
+  if (tempDisplay) {
+    tempDisplay.textContent = "OFF";
+  }
 }
-
 function updateRoomTemperatureDisplay(roomName, temperature) {
   const sanitizedRoom = sanitizeRoomName(roomName);
   const tempDisplay = document.querySelector(
